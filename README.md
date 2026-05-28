@@ -1,3 +1,9 @@
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Apache Jena](https://img.shields.io/badge/Apache%20Jena-Fuseki%206-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+
 # 🌐 WebDev Semantic Directory
 
 > Portal pencarian teknologi web development berbasis **Semantic Web**, ditenagai oleh **Apache Jena Fuseki**, **RDF**, dan **SPARQL**.

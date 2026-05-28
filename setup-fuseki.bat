@@ -1,0 +1,74 @@
+@echo off
+REM setup-fuseki.bat
+REM Script untuk setup Apache Jena Fuseki di Windows
+
+echo.
+echo ============================================
+echo   Apache Jena Fuseki Setup - WebDev Semantic
+echo ============================================
+echo.
+
+REM Check Java
+java -version >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Java tidak ditemukan. Install Java 17+ terlebih dahulu:
+    echo         https://adoptium.net/
+    pause
+    exit /b 1
+)
+echo [OK] Java ditemukan.
+
+SET FUSEKI_VERSION=4.10.0
+SET FUSEKI_DIR=apache-jena-fuseki-%FUSEKI_VERSION%
+SET DATASET=webdev
+SET TTL_FILE=ontology\webdev.ttl
+
+REM Download jika belum ada
+IF NOT EXIST "%FUSEKI_DIR%" (
+    echo.
+    echo Downloading Apache Jena Fuseki %FUSEKI_VERSION%...
+    powershell -Command "Invoke-WebRequest -Uri 'https://archive.apache.org/dist/jena/binaries/apache-jena-fuseki-%FUSEKI_VERSION%.zip' -OutFile 'fuseki.zip'"
+    echo Extracting...
+    powershell -Command "Expand-Archive -Path fuseki.zip -DestinationPath . -Force"
+    del fuseki.zip
+    echo [OK] Fuseki berhasil diekstrak.
+) ELSE (
+    echo [OK] Fuseki sudah ada di ./%FUSEKI_DIR%
+)
+
+IF NOT EXIST "%TTL_FILE%" (
+    echo [ERROR] File ontologi tidak ditemukan: %TTL_FILE%
+    pause
+    exit /b 1
+)
+echo [OK] File ontologi ditemukan: %TTL_FILE%
+
+echo.
+echo Menjalankan Fuseki...
+cd %FUSEKI_DIR%
+start "Fuseki Server" java -jar fuseki-server.jar --update --mem /%DATASET%
+cd ..
+
+echo Menunggu Fuseki siap...
+timeout /t 5 /nobreak > nul
+
+echo.
+echo Mengupload ontologi ke dataset '%DATASET%'...
+curl -X POST -H "Content-Type: text/turtle" --data-binary @%TTL_FILE% http://localhost:3030/%DATASET%/data
+echo.
+
+echo.
+echo ============================================
+echo   Setup Selesai!
+echo ============================================
+echo.
+echo   Fuseki SPARQL:  http://localhost:3030/%DATASET%/sparql
+echo   Fuseki Web UI:  http://localhost:3030
+echo.
+echo   Jalankan Next.js:
+echo     npm install
+echo     npm run dev
+echo.
+echo   Buka browser:   http://localhost:3000
+echo.
+pause

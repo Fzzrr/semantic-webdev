@@ -1,0 +1,343 @@
+@prefix ex:    <http://webdev.id/ontology#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+# ============================================================
+# ONTOLOGY DECLARATION
+# ============================================================
+<http://webdev.id/ontology>
+  a owl:Ontology ;
+  rdfs:label "Web Development Technology Ontology" ;
+  rdfs:comment "Semantic directory of web development technologies, frameworks, libraries, ORMs, and databases." .
+
+# ============================================================
+# CLASSES
+# ============================================================
+
+ex:Technology a rdfs:Class ;
+  rdfs:label "Technology" ;
+  rdfs:comment "A generic web development technology." .
+
+ex:Framework a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Framework" ;
+  rdfs:comment "A full-featured web application framework." .
+
+ex:Library a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Library" ;
+  rdfs:comment "A reusable code library." .
+
+ex:ORM a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "ORM" ;
+  rdfs:comment "Object-Relational Mapping tool." .
+
+ex:Database a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Database" ;
+  rdfs:comment "A database management system." .
+
+ex:Language a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Language" ;
+  rdfs:comment "A programming or scripting language." .
+
+ex:Runtime a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Runtime" ;
+  rdfs:comment "A JavaScript runtime environment." .
+
+ex:CSSFramework a rdfs:Class ;
+  rdfs:subClassOf ex:Library ;
+  rdfs:label "CSS Framework" ;
+  rdfs:comment "A CSS utility or styling framework." .
+
+# ============================================================
+# OBJECT PROPERTIES
+# ============================================================
+
+ex:isFrameworkOf a rdf:Property ;
+  rdfs:label "isFrameworkOf" ;
+  rdfs:comment "Indicates this framework is built on top of another technology." ;
+  rdfs:domain ex:Framework ;
+  rdfs:range ex:Library .
+
+ex:isBuiltOn a rdf:Property ;
+  rdfs:label "isBuiltOn" ;
+  rdfs:comment "This technology is built on top of another." ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:Technology .
+
+ex:isORMFor a rdf:Property ;
+  rdfs:label "isORMFor" ;
+  rdfs:comment "Indicates which database(s) this ORM supports." ;
+  rdfs:domain ex:ORM ;
+  rdfs:range ex:Database .
+
+ex:connectsTo a rdf:Property ;
+  rdfs:label "connectsTo" ;
+  rdfs:comment "Can connect to another technology." ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:Technology .
+
+ex:usesLanguage a rdf:Property ;
+  rdfs:label "usesLanguage" ;
+  rdfs:comment "The primary programming language used." ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:Language .
+
+ex:alternativeTo a rdf:Property ;
+  rdfs:label "alternativeTo" ;
+  rdfs:comment "An alternative technology." ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:Technology .
+
+ex:compatibleWith a rdf:Property ;
+  rdfs:label "compatibleWith" ;
+  rdfs:comment "Compatible with another technology." ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:Technology .
+
+# DATA PROPERTIES
+ex:description a rdf:Property ;
+  rdfs:label "description" ;
+  rdfs:comment "A short description of the technology." ;
+  rdfs:range xsd:string .
+
+ex:website a rdf:Property ;
+  rdfs:label "website" ;
+  rdfs:comment "Official website URL." ;
+  rdfs:range xsd:anyURI .
+
+ex:version a rdf:Property ;
+  rdfs:label "version" ;
+  rdfs:comment "Latest stable version." ;
+  rdfs:range xsd:string .
+
+ex:githubStars a rdf:Property ;
+  rdfs:label "githubStars" ;
+  rdfs:comment "GitHub stars count (approximate)." ;
+  rdfs:range xsd:string .
+
+# ============================================================
+# LANGUAGES
+# ============================================================
+
+ex:JavaScript a ex:Language ;
+  rdfs:label "JavaScript" ;
+  ex:description "The language of the web. Runs in browsers and servers via Node.js." ;
+  ex:website "https://developer.mozilla.org/en-US/docs/Web/JavaScript"^^xsd:anyURI .
+
+ex:TypeScript a ex:Language ;
+  rdfs:label "TypeScript" ;
+  ex:description "A strongly typed superset of JavaScript that compiles to plain JS." ;
+  ex:website "https://www.typescriptlang.org"^^xsd:anyURI ;
+  ex:isBuiltOn ex:JavaScript .
+
+ex:PHP a ex:Language ;
+  rdfs:label "PHP" ;
+  ex:description "A widely-used server-side scripting language designed for web development." ;
+  ex:website "https://www.php.net"^^xsd:anyURI .
+
+ex:Python a ex:Language ;
+  rdfs:label "Python" ;
+  ex:description "A general-purpose, high-level language known for readability." ;
+  ex:website "https://www.python.org"^^xsd:anyURI .
+
+# ============================================================
+# RUNTIMES
+# ============================================================
+
+ex:NodeJS a ex:Runtime ;
+  rdfs:label "Node.js" ;
+  ex:description "A JavaScript runtime built on Chrome V8 engine. Enables server-side JavaScript." ;
+  ex:website "https://nodejs.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:version "20 LTS" ;
+  ex:githubStars "~100k" .
+
+ex:Bun a ex:Runtime ;
+  rdfs:label "Bun" ;
+  ex:description "An all-in-one JavaScript runtime, bundler, test runner and package manager." ;
+  ex:website "https://bun.sh"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:NodeJS .
+
+# ============================================================
+# DATABASES
+# ============================================================
+
+ex:PostgreSQL a ex:Database ;
+  rdfs:label "PostgreSQL" ;
+  ex:description "A powerful, open-source object-relational database with strong ACID compliance." ;
+  ex:website "https://www.postgresql.org"^^xsd:anyURI ;
+  ex:version "16" ;
+  ex:githubStars "~15k" .
+
+ex:MySQL a ex:Database ;
+  rdfs:label "MySQL" ;
+  ex:description "The world's most popular open-source relational database." ;
+  ex:website "https://www.mysql.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:PostgreSQL .
+
+ex:MongoDB a ex:Database ;
+  rdfs:label "MongoDB" ;
+  ex:description "A document-oriented NoSQL database for flexible, JSON-like storage." ;
+  ex:website "https://www.mongodb.com"^^xsd:anyURI ;
+  ex:githubStars "~26k" .
+
+ex:SQLite a ex:Database ;
+  rdfs:label "SQLite" ;
+  ex:description "A lightweight, serverless, self-contained SQL database engine." ;
+  ex:website "https://www.sqlite.org"^^xsd:anyURI .
+
+ex:Redis a ex:Database ;
+  rdfs:label "Redis" ;
+  ex:description "An in-memory data structure store used as database, cache, and message broker." ;
+  ex:website "https://redis.io"^^xsd:anyURI ;
+  ex:githubStars "~65k" .
+
+# ============================================================
+# LIBRARIES
+# ============================================================
+
+ex:React a ex:Library ;
+  rdfs:label "React" ;
+  ex:description "A declarative, component-based JavaScript library for building user interfaces." ;
+  ex:website "https://react.dev"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:version "18" ;
+  ex:githubStars "~225k" .
+
+ex:Vue a ex:Library ;
+  rdfs:label "Vue.js" ;
+  ex:description "A progressive JavaScript framework for building user interfaces." ;
+  ex:website "https://vuejs.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:React .
+
+ex:Svelte a ex:Library ;
+  rdfs:label "Svelte" ;
+  ex:description "A compiler-based frontend framework that ships no runtime to the browser." ;
+  ex:website "https://svelte.dev"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:React .
+
+ex:TailwindCSS a ex:CSSFramework ;
+  rdfs:label "Tailwind CSS" ;
+  ex:description "A utility-first CSS framework for rapidly building custom user interfaces." ;
+  ex:website "https://tailwindcss.com"^^xsd:anyURI ;
+  ex:version "3.4" ;
+  ex:compatibleWith ex:NextJS ;
+  ex:compatibleWith ex:NuxtJS ;
+  ex:githubStars "~80k" .
+
+ex:Express a ex:Library ;
+  rdfs:label "Express.js" ;
+  ex:description "Fast, unopinionated, minimalist web framework for Node.js." ;
+  ex:website "https://expressjs.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:isBuiltOn ex:NodeJS .
+
+# ============================================================
+# FRAMEWORKS
+# ============================================================
+
+ex:NextJS a ex:Framework ;
+  rdfs:label "Next.js" ;
+  ex:description "The React framework for production. Supports SSR, SSG, and API routes." ;
+  ex:website "https://nextjs.org"^^xsd:anyURI ;
+  ex:isFrameworkOf ex:React ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:version "14" ;
+  ex:githubStars "~122k" ;
+  ex:isBuiltOn ex:NodeJS .
+
+ex:NuxtJS a ex:Framework ;
+  rdfs:label "Nuxt.js" ;
+  ex:description "The intuitive Vue framework for building full-stack web applications." ;
+  ex:website "https://nuxt.com"^^xsd:anyURI ;
+  ex:isFrameworkOf ex:Vue ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:NextJS .
+
+ex:Laravel a ex:Framework ;
+  rdfs:label "Laravel" ;
+  ex:description "A PHP framework with expressive syntax for building modern web applications." ;
+  ex:website "https://laravel.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:PHP ;
+  ex:version "11" ;
+  ex:githubStars "~78k" .
+
+ex:Django a ex:Framework ;
+  rdfs:label "Django" ;
+  ex:description "The high-level Python Web framework that encourages rapid development." ;
+  ex:website "https://www.djangoproject.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:Python ;
+  ex:githubStars "~79k" .
+
+ex:Remix a ex:Framework ;
+  rdfs:label "Remix" ;
+  ex:description "A full-stack web framework built on React Router for web standards." ;
+  ex:website "https://remix.run"^^xsd:anyURI ;
+  ex:isFrameworkOf ex:React ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:NextJS .
+
+# ============================================================
+# ORMs
+# ============================================================
+
+ex:Prisma a ex:ORM ;
+  rdfs:label "Prisma" ;
+  ex:description "Next-generation Node.js and TypeScript ORM with type-safe database access." ;
+  ex:website "https://www.prisma.io"^^xsd:anyURI ;
+  ex:isORMFor ex:PostgreSQL ;
+  ex:isORMFor ex:MySQL ;
+  ex:isORMFor ex:SQLite ;
+  ex:isORMFor ex:MongoDB ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:NextJS ;
+  ex:compatibleWith ex:NuxtJS ;
+  ex:version "5" ;
+  ex:githubStars "~39k" .
+
+ex:Sequelize a ex:ORM ;
+  rdfs:label "Sequelize" ;
+  ex:description "A promise-based Node.js ORM for SQL databases with model validation." ;
+  ex:website "https://sequelize.org"^^xsd:anyURI ;
+  ex:isORMFor ex:PostgreSQL ;
+  ex:isORMFor ex:MySQL ;
+  ex:isORMFor ex:SQLite ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:Prisma ;
+  ex:version "6" ;
+  ex:githubStars "~29k" .
+
+ex:TypeORM a ex:ORM ;
+  rdfs:label "TypeORM" ;
+  ex:description "An ORM for TypeScript and JavaScript that supports Active Record and Data Mapper patterns." ;
+  ex:website "https://typeorm.io"^^xsd:anyURI ;
+  ex:isORMFor ex:PostgreSQL ;
+  ex:isORMFor ex:MySQL ;
+  ex:isORMFor ex:SQLite ;
+  ex:isORMFor ex:MongoDB ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:Prisma ;
+  ex:githubStars "~33k" .
+
+ex:Drizzle a ex:ORM ;
+  rdfs:label "Drizzle ORM" ;
+  ex:description "A TypeScript ORM that feels like writing SQL. Lightweight and performant." ;
+  ex:website "https://orm.drizzle.team"^^xsd:anyURI ;
+  ex:isORMFor ex:PostgreSQL ;
+  ex:isORMFor ex:MySQL ;
+  ex:isORMFor ex:SQLite ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:NextJS ;
+  ex:alternativeTo ex:Prisma ;
+  ex:githubStars "~23k" .

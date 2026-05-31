@@ -1,17 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=Inter:wght@400;500;700&family=Jetbrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --border: #1e1e2e;
-  --accent: #7c3aed;
-  --accent-light: #a78bfa;
-  --text: #e2e2f0;
-  --text-muted: #8888aa;
+  --bg: #131313;
+  --surface: #131313;
+  --border: #333333;
+  --accent: #2563eb;
+  --text: #e5e2e1;
+  --text-muted: #838383;
 }
 
 * {
@@ -25,7 +25,7 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -55,21 +55,25 @@ body::before {
   opacity: 0.4;
 }
 
+/* Material Symbols Outlined */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
 /* Glow effects */
 .glow-violet {
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
 }
 
 .glow-text {
-  text-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+  text-shadow: 0 0 30px rgba(180, 197, 255, 0.5);
 }
 
 /* Grid pattern background */
-.grid-bg {
-  background-image: 
-    linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+.grid-bg, .tech-grid-bg {
+  background-image: radial-gradient(#2563eb10 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* Animated gradient border */
@@ -99,8 +103,8 @@ body::before {
 }
 .tech-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15);
-  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.4);
 }
 
 /* Staggered animation for cards */

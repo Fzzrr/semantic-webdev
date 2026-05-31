@@ -15,17 +15,6 @@ interface TechCardProps {
   index?: number;
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  Framework: "⬡",
-  Library: "◈",
-  ORM: "⬖",
-  Database: "⬕",
-  Language: "◉",
-  Runtime: "◎",
-  CSSFramework: "◈",
-  Technology: "◇",
-};
-
 export default function TechCard({
   name,
   label,
@@ -38,8 +27,14 @@ export default function TechCard({
   index = 0,
 }: TechCardProps) {
   const style = getCategoryStyle(type);
-  const icon = TYPE_ICONS[type] || "◇";
   const delay = Math.min(index * 40, 400);
+
+  // Initial letter placeholder as logo
+  const initial = label.substring(0, 2).toUpperCase();
+
+  // Custom border color if it is Next.js for high premium feel
+  const isSpecial = name.toLowerCase() === "nextjs";
+  const borderClass = isSpecial ? "border-[#2563eb]/40 bg-[#20201f]/80" : "border-[#333333] bg-[#20201f]";
 
   return (
     <Link
@@ -47,54 +42,38 @@ export default function TechCard({
       className="block group"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="tech-card card-enter border border-[#1e1e2e] bg-[#111118] rounded-xl p-5 hover:border-violet-500/40 cursor-pointer relative overflow-hidden">
-        {/* Subtle gradient on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/0 to-transparent group-hover:from-violet-500/5 transition-all duration-300 pointer-events-none" />
-
-        {/* Top row */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex items-center gap-2">
-            <span className={`text-lg ${style.text}`}>{icon}</span>
-            <h3 className="font-semibold text-[#e2e2f0] text-base leading-tight" style={{ fontFamily: "'Syne', sans-serif" }}>
-              {label}
-            </h3>
+      <div className={`tech-card card-enter border p-5 rounded-xl transition-all flex items-start gap-5 relative overflow-hidden ${borderClass}`}>
+        {version && (
+          <div className="absolute top-0 right-0 bg-[#2563eb]/10 px-3 py-1 text-[10px] font-mono text-[#b4c5ff] border-b border-l border-[#2563eb]/20">
+            v{version}
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {version && (
-              <span className="mono text-[10px] text-[#8888aa] bg-[#1e1e2e] px-2 py-0.5 rounded">
-                v{version}
-              </span>
-            )}
-            <span className={`pill ${style.bg} ${style.text}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${style.dot} inline-block`} />
-              {typeLabel || type}
-            </span>
-          </div>
-        </div>
-
-        {/* Description */}
-        {description && (
-          <p className="text-[#8888aa] text-sm leading-relaxed line-clamp-2 mb-3">
-            {description}
-          </p>
         )}
 
-        {/* Footer */}
-        <div className="flex items-center justify-between">
-          {githubStars && (
-            <span className="flex items-center gap-1 text-[#8888aa] text-xs mono">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              {githubStars}
+        {/* Pseudo image/logo placeholder matching mockup premium visual */}
+        <div className="w-14 h-14 bg-[#131313] rounded-lg flex items-center justify-center border border-[#333333] overflow-hidden shrink-0">
+          <span className="font-headline font-bold text-lg text-[#b4c5ff]">{initial}</span>
+        </div>
+
+        <div className="flex-1">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="font-headline text-lg font-bold text-[#e5e2e1] group-hover:text-[#b4c5ff] transition-colors">{label}</h4>
+            <span className="bg-[#353535] text-[#b4c5ff] font-mono text-[10px] px-2 py-0.5 rounded border border-[#333333]">
+              {githubStars ? `${githubStars} Stars` : "Terverifikasi"}
             </span>
-          )}
-          <span className={`text-xs ${style.text} group-hover:underline ml-auto flex items-center gap-1`}>
-            View details
-            <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </span>
+          </div>
+          <p className="text-[#c3c6d7] text-xs font-body mb-4 leading-relaxed line-clamp-2">
+            {description || "Tidak ada deskripsi yang tersedia untuk teknologi ini."}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <span className="bg-[#1b1b1b] border border-[#333333] px-2 py-0.5 rounded text-[10px] font-mono text-[#c6c6c6]">
+              #{typeLabel || type}
+            </span>
+            {website && (
+              <span className="bg-[#1b1b1b] border border-[#333333] px-2 py-0.5 rounded text-[10px] font-mono text-[#838383]">
+                {website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </Link>

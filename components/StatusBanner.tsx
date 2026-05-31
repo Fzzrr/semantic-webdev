@@ -8,14 +8,7 @@ interface StatusBannerProps {
 export default function StatusBanner({ isConnected }: StatusBannerProps) {
   if (isConnected === true) return null;
 
-  if (isConnected === null) {
-    return (
-      <div className="flex items-center gap-2 text-xs text-[#8888aa] mono">
-        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-        Connecting to Fuseki...
-      </div>
-    );
-  }
+  if (isConnected === null) return null;
 
   return (
     <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">

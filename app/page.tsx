@@ -1,14 +1,49 @@
 "use client";
 // app/page.tsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import TechCard from "@/components/TechCard";
 import SearchBar from "@/components/SearchBar";
 import SkeletonCard from "@/components/SkeletonCard";
 import StatusBanner from "@/components/StatusBanner";
+import TechLogo from "@/components/TechLogo";
+import RelationGraph from "@/components/RelationGraph";
 import type { Technology } from "@/lib/types";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
+
+interface TechDetail extends Technology {
+  relations: Record<string, { name: string; label: string }[]>;
+}
+
+const RELATION_LABELS: Record<string, { label: string; emoji: string }> = {
+  isFrameworkOf: { label: "Framework of", emoji: "layers" },
+  isORMFor: { label: "Supports Database", emoji: "database" },
+  isBuiltOn: { label: "Built on", emoji: "terminal" },
+  usesLanguage: { label: "Uses Language", emoji: "code" },
+  compatibleWith: { label: "Compatible with", emoji: "swap_horiz" },
+  alternativeTo: { label: "Alternative to", emoji: "compare_arrows" },
+  connectsTo: { label: "Connects to", emoji: "hub" },
+  integratesWith: { label: "Integrates with", emoji: "extension" },
+  testedWith: { label: "Tested with", emoji: "check_circle" },
+  deployedOn: { label: "Deployed on", emoji: "cloud" },
+  managedBy: { label: "Managed by", emoji: "settings" },
+};
+
+function sortTechnologies(items: Technology[], sortBy: string) {
+  const next = [...items];
+
+  if (sortBy === "newest") {
+    next.sort((a, b) => (b.version || "").localeCompare(a.version || ""));
+  } else if (sortBy === "popularity") {
+    next.sort((a, b) => parseInt(b.githubStars || "0") - parseInt(a.githubStars || "0"));
+  } else if (sortBy === "az") {
+    next.sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  return next;
+}
 
 export default function Home() {
   const [items, setItems] = useState<Technology[]>([]);
@@ -18,41 +53,35 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
-  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   
   // Selected technology for side preview details
   const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
+  const [selectedTechDetail, setSelectedTechDetail] = useState<TechDetail | null>(null);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   // Layout mode: grid or list
   const [layoutMode, setLayoutMode] = useState<"grid" | "list">("grid");
-
-  // Semantic filters state
-  const [filterStable, setFilterStable] = useState(false);
-  const [filterOpenSource, setFilterOpenSource] = useState(true); // checked by default in mockup
-  const [filterInteroperability, setFilterInteroperability] = useState(false);
 
   // Sorting state
   const [sortBy, setSortBy] = useState("relevance");
 
   // Load initial data
-  const loadData = useCallback(async (cat: string) => {
+  const loadData = useCallback(async (cat: string, query: string) => {
     setIsLoading(true);
+    setIsSearching(Boolean(query.trim()));
     try {
-      const url = cat !== "all" ? `/api/sparql?category=${cat}` : "/api/sparql";
+      const params = new URLSearchParams();
+      if (cat !== "all") params.set("category", cat);
+      if (query.trim()) params.set("q", query.trim());
+
+      const url = params.toString() ? `/api/sparql?${params.toString()}` : "/api/sparql";
       const res = await fetch(url);
       if (!res.ok) throw new Error("API error");
       const data: Technology[] = await res.json();
       if (data && !("error" in data)) {
         setItems(data);
         setIsConnected(true);
-
-        // Count per type
-        const c: Record<string, number> = {};
-        data.forEach((t) => {
-          const key = t.type;
-          c[key] = (c[key] || 0) + 1;
-        });
-        if (cat === "all") setCounts(c);
       } else {
         setIsConnected(false);
       }
@@ -60,65 +89,80 @@ export default function Home() {
       setIsConnected(false);
     } finally {
       setIsLoading(false);
+      setIsSearching(false);
     }
   }, []);
 
   useEffect(() => {
-    loadData("all");
+    const controller = new AbortController();
+    loadData(category, searchQuery);
+    return () => controller.abort();
+  }, [category, loadData, searchQuery]);
+
+  useEffect(() => {
+    fetch("/api/sparql?stats=true", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data: Array<{ type: string; count: number }>) => {
+        const nextCounts: Record<string, number> = {};
+        data.forEach((row) => {
+          nextCounts[row.type] = row.count;
+        });
+        setCategoryCounts(nextCounts);
+      })
+      .catch(() => setCategoryCounts({}));
   }, [loadData]);
 
-  // Apply search, categories, semantic filters, and sorting locally for fluid performance
   useEffect(() => {
-    let result = [...items];
+    const filteredItems = items.filter((tech) => {
+      const matchesCategory = category === "all" || tech.type === category || tech.typeLabel === category;
+      const normalizedQuery = searchQuery.trim().toLowerCase();
+      const matchesQuery = !normalizedQuery || [tech.label, tech.description, tech.type, tech.typeLabel]
+        .filter(Boolean)
+        .some((value) => value?.toLowerCase().includes(normalizedQuery));
 
-    // 1. Category Filter
-    if (category !== "all") {
-      result = result.filter(t => t.type === category || t.typeLabel === category);
-    }
+      return matchesCategory && matchesQuery;
+    });
 
-    // 2. Search Query Filter
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (t) =>
-          t.label.toLowerCase().includes(q) ||
-          t.description?.toLowerCase().includes(q) ||
-          t.type.toLowerCase().includes(q)
-      );
-    }
-
-    // 3. Semantic Filters
-    if (filterStable) {
-      // Simulate stable filter: technologies with version >= 10 or specifically marked
-      result = result.filter(t => t.version && parseFloat(t.version) >= 5);
-    }
-    if (filterOpenSource) {
-      // Almost all technologies in this developer ontology are open source
-      result = result.filter(t => t.name.toLowerCase() !== "oracle");
-    }
-    if (filterInteroperability) {
-      // Simulate high interoperability: has more than 1 usesLanguage or isORMFor multiple databases
-      result = result.filter(t => t.description && t.description.length > 50);
-    }
-
-    // 4. Sorting
-    if (sortBy === "newest") {
-      result.sort((a, b) => (b.version || "").localeCompare(a.version || ""));
-    } else if (sortBy === "popularity") {
-      result.sort((a, b) => parseInt(b.githubStars || "0") - parseInt(a.githubStars || "0"));
-    } else if (sortBy === "az") {
-      result.sort((a, b) => a.label.localeCompare(b.label));
-    }
-
+    const result = sortTechnologies(filteredItems, sortBy);
     setFiltered(result);
 
-    // Dynamic automatic selection for side preview panel
-    if (result.length > 0) {
-      setSelectedTech(result[0]);
-    } else {
-      setSelectedTech(null);
+    setSelectedTech((current) => {
+      if (current && result.some((tech) => tech.name === current.name)) {
+        return current;
+      }
+
+      return result[0] || null;
+    });
+  }, [items, category, searchQuery, sortBy]);
+
+  useEffect(() => {
+    if (!selectedTech) {
+      setSelectedTechDetail(null);
+      return;
     }
-  }, [items, category, searchQuery, filterStable, filterOpenSource, filterInteroperability, sortBy]);
+
+    const controller = new AbortController();
+    let isActive = true;
+
+    setIsDetailLoading(true);
+    fetch(`/api/tech/${selectedTech.name}`, { cache: "no-store", signal: controller.signal })
+      .then((res) => res.json())
+      .then((data: TechDetail) => {
+        if (!isActive) return;
+        setSelectedTechDetail(data && !("error" in data) ? data : null);
+      })
+      .catch(() => {
+        if (isActive) setSelectedTechDetail(null);
+      })
+      .finally(() => {
+        if (isActive) setIsDetailLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+      controller.abort();
+    };
+  }, [selectedTech]);
 
   // Handle Search input callback
   const handleSearch = useCallback((q: string) => {
@@ -127,6 +171,17 @@ export default function Home() {
 
   const handleCategoryChange = (cat: string) => {
     setCategory(cat);
+  };
+
+  const router = useRouter();
+
+  const handleCardClick = (tech: Technology) => () => {
+    setSelectedTech(tech);
+  };
+
+  const handleCardDoubleClick = (tech: Technology) => {
+    // navigate to detail page on double click
+    router.push(`/tech/${tech.name}`);
   };
 
   return (
@@ -153,9 +208,22 @@ export default function Home() {
             <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Kategori Utama</p>
             {CATEGORIES.map((cat) => {
               const isActive = category === cat.value;
-              const count = cat.value === "all"
-                ? items.length
-                : items.filter(t => t.type === cat.value || t.typeLabel === cat.value).length;
+
+              const totalFromCounts = Object.values(categoryCounts).reduce((s, v) => s + (v || 0), 0);
+
+              const count = (() => {
+                if (cat.value === "all") {
+                  return totalFromCounts || items.length;
+                }
+
+                // Prefer server-provided counts when available
+                if (categoryCounts && typeof categoryCounts[cat.value] === "number") {
+                  return categoryCounts[cat.value];
+                }
+
+                // Fallback: compute from the unfiltered item set (note: items may be filtered by category when selected)
+                return items.filter(t => t.type === cat.value || t.typeLabel === cat.value).length;
+              })();
 
               return (
                 <button
@@ -168,7 +236,7 @@ export default function Home() {
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className="font-mono text-[9px] text-[#838383] bg-[#131313] px-1.5 py-0.5 rounded border border-[#333333]">
+                  <span className="font-mono text-[9px] text-[#838383] px-1">
                     {count}
                   </span>
                 </button>
@@ -177,35 +245,17 @@ export default function Home() {
           </div>
 
           <div className="px-4 mt-8 space-y-4">
-            <p className="px-4 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Filter Semantik</p>
+            <p className="px-4 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Ontologi TTL</p>
             <div className="px-4 space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={filterStable}
-                  onChange={(e) => setFilterStable(e.target.checked)}
-                  className="rounded border-[#333333] bg-[#131313] text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0 focus:outline-none"
-                />
-                <span className="text-xs text-[#c3c6d7] group-hover:text-[#e5e2e1] transition-colors">Stable Release</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={filterOpenSource}
-                  onChange={(e) => setFilterOpenSource(e.target.checked)}
-                  className="rounded border-[#333333] bg-[#131313] text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0 focus:outline-none"
-                />
-                <span className="text-xs text-[#c3c6d7] group-hover:text-[#e5e2e1] transition-colors">Open Source</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={filterInteroperability}
-                  onChange={(e) => setFilterInteroperability(e.target.checked)}
-                  className="rounded border-[#333333] bg-[#131313] text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0 focus:outline-none"
-                />
-                <span className="text-xs text-[#c3c6d7] group-hover:text-[#e5e2e1] transition-colors">High Interoperability</span>
-              </label>
+              <div className="rounded-lg border border-[#333333] bg-[#131313] p-4 space-y-2">
+                <p className="text-xs text-[#c3c6d7] leading-relaxed">
+                  Kategori dan relasi diambil dari kelas RDFS pada <span className="text-[#b4c5ff]">ontology/webdev.ttl</span>.
+                </p>
+                <div className="flex items-center justify-between text-[10px] font-mono text-[#838383] uppercase tracking-widest">
+                  <span>Kelas terbaca</span>
+                  <span>{Object.keys(categoryCounts).length || CATEGORIES.length - 1}</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -270,7 +320,7 @@ export default function Home() {
             </div>
 
             {/* Search and Sorting Bar */}
-            <div className="bg-[#1b1b1b] border border-[#333333] p-4 rounded-xl mb-10 flex flex-col md:flex-row gap-4 items-center">
+            <div className="bg-transparent p-4 mb-10 flex flex-col md:flex-row gap-4 items-center">
               <div className="flex-1 w-full">
                 <SearchBar onSearch={handleSearch} isLoading={isSearching} />
               </div>
@@ -317,14 +367,23 @@ export default function Home() {
                 )}
 
                 {!isLoading && filtered.length > 0 && (
-                  <div className={layoutMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "space-y-4"}>
+                  <div className={layoutMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch" : "space-y-4"}>
                     {filtered.map((tech, idx) => (
                       <div
                         key={tech.uri || tech.name}
-                        onClick={() => setSelectedTech(tech)}
+                        onClick={handleCardClick(tech)}
+                        onDoubleClick={() => handleCardDoubleClick(tech)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleCardClick(tech)();
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
                         className={`cursor-pointer transition-all ${
-                          selectedTech?.name === tech.name ? "ring-2 ring-[#2563eb] rounded-xl" : ""
-                        }`}
+                          selectedTech?.name === tech.name ? "selected-outline rounded-xl" : ""
+                        } h-full`}
                       >
                         <TechCard {...tech} index={idx} />
                       </div>
@@ -335,13 +394,11 @@ export default function Home() {
 
               {/* Dynamic Side Details Panel & Direct Graph Widget */}
               <div className="xl:col-span-4 space-y-8">
-                <div className="bg-[#212121] border border-[#333333] rounded-xl p-6 shadow-xl sticky top-24">
+                <div className="bg-transparent rounded-xl p-6 sticky top-24">
                   {selectedTech ? (
                     <div>
                       <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 rounded bg-[#131313] border border-[#333333] flex items-center justify-center font-headline font-bold text-lg text-[#b4c5ff]">
-                          {selectedTech.label.substring(0, 2).toUpperCase()}
-                        </div>
+                        <TechLogo label={selectedTech.label} name={selectedTech.name} website={selectedTech.website} size="sm" />
                         <div>
                           <h4 className="font-headline text-lg font-bold text-[#e5e2e1]">{selectedTech.label}</h4>
                           <span className="font-mono text-[10px] text-[#b4c5ff] bg-[#2563eb]/10 px-2 py-0.5 rounded uppercase tracking-wider">
@@ -356,32 +413,32 @@ export default function Home() {
                             Deskripsi
                           </span>
                           <p className="font-body text-xs text-[#c3c6d7] leading-relaxed">
-                            {selectedTech.description || "Tidak ada rincian deskripsi untuk entitas semantik ini."}
+                            {selectedTechDetail?.description || selectedTech.description || "Tidak ada rincian deskripsi untuk entitas semantik ini."}
                           </p>
                         </div>
 
-                        {selectedTech.version && (
+                        {(selectedTechDetail?.version || selectedTech.version) && (
                           <div>
                             <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-1">
                               Versi Rilis
                             </span>
-                            <p className="font-mono text-xs text-[#e5e2e1]">v{selectedTech.version}</p>
+                            <p className="font-mono text-xs text-[#e5e2e1]">v{selectedTechDetail?.version || selectedTech.version}</p>
                           </div>
                         )}
 
-                        {selectedTech.website && (
+                        {(selectedTechDetail?.website || selectedTech.website) && (
                           <div>
                             <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-1">
                               Situs Resmi
                             </span>
                             <a
-                              href={selectedTech.website}
+                              href={selectedTechDetail?.website || selectedTech.website || "#"}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="font-mono text-xs text-[#b4c5ff] hover:underline break-all inline-flex items-center gap-1"
                             >
                               <span className="material-symbols-outlined text-xs">link</span>
-                              {selectedTech.website.replace(/^https?:\/\/(www\.)?/, "")}
+                              {(selectedTechDetail?.website || selectedTech.website || "").replace(/^https?:\/\/(www\.)?/, "")}
                             </a>
                           </div>
                         )}
@@ -390,37 +447,51 @@ export default function Home() {
                       {/* Direct Graph Widget */}
                       <div className="mb-6">
                         <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-3">
-                          Relasi Langsung (Graph)
+                          Relasi Langsung (Ontology)
                         </span>
-                        <div className="relative h-48 bg-[#131313] rounded-lg border border-[#333333] flex items-center justify-center overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-32 h-[1px] bg-[#2563eb]/20 rotate-45"></div>
-                            <div className="w-32 h-[1px] bg-[#2563eb]/20 -rotate-45"></div>
-                            <div className="w-32 h-[1px] bg-[#2563eb]/20 rotate-90"></div>
-                            <div className="w-32 h-[1px] bg-[#2563eb]/20"></div>
-                          </div>
-                          
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-12 h-12 bg-[#2563eb] rounded-full flex items-center justify-center z-10 border-4 border-[#131313] shadow-[0_0_15px_rgba(37,99,235,0.5)]">
-                              <span className="text-[9px] font-bold text-[#eeefff] font-mono">
-                                {selectedTech.name.substring(0, 4).toUpperCase()}
-                              </span>
+                        <div className="min-h-48 bg-[#131313] rounded-lg border border-[#333333] p-4">
+                          {isDetailLoading ? (
+                            <div className="space-y-3">
+                              <div className="skeleton w-40 h-4 rounded" />
+                              <div className="skeleton w-full h-10 rounded" />
+                              <div className="skeleton w-5/6 h-10 rounded" />
+                              <div className="skeleton w-2/3 h-10 rounded" />
                             </div>
-                            
-                            {/* Dynamically simulated relations based on name */}
-                            <div className="absolute top-4 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#20201f] rounded border border-[#333333] z-10 text-[9px] font-mono">
-                              React
-                            </div>
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#20201f] rounded border border-[#333333] z-10 text-[9px] font-mono">
-                              TS
-                            </div>
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-[#20201f] rounded border border-[#333333] z-10 text-[9px] font-mono">
-                              Jena
-                            </div>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-[#20201f] rounded border border-[#333333] z-10 text-[9px] font-mono">
-                              RDF
-                            </div>
-                          </div>
+                          ) : (() => {
+                            const relationEntries = selectedTechDetail
+                              ? Object.entries(selectedTechDetail.relations).flatMap(([prop, targets]) =>
+                                  targets.map((target) => ({ prop, target }))
+                                )
+                              : [];
+
+                            if (relationEntries.length === 0) {
+                              return (
+                                <div className="h-full flex items-center justify-center text-center text-[#838383] text-xs leading-relaxed">
+                                  Ontologi belum mengembalikan relasi langsung untuk entitas ini.
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between text-[10px] font-mono text-[#838383] uppercase tracking-widest">
+                                  <span>Relasi Langsung</span>
+                                  <span>{relationEntries.length}</span>
+                                </div>
+                                <RelationGraph
+                                  center={{ name: selectedTech.name, label: selectedTech.label, website: selectedTech.website }}
+                                  nodes={relationEntries.slice(0, 8).map((entry) => ({
+                                    prop: entry.prop,
+                                    target: {
+                                      ...entry.target,
+                                      website: items.find((i) => i.name === entry.target.name)?.website,
+                                    },
+                                  }))}
+                                  size={220}
+                                />
+                              </div>
+                            );
+                          })()}
                         </div>
                       </div>
 

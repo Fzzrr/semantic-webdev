@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { querySPARQL, localName } from "@/lib/sparql";
 import { searchTechnologiesQuery } from "@/lib/queries";
+import { searchLocalTechnologies } from "@/lib/localOntology";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -13,16 +14,18 @@ export async function GET(req: NextRequest) {
 
   try {
     const data = await querySPARQL(searchTechnologiesQuery(q));
-    const results = data.results.bindings.map((b) => ({
-      uri: b.tech?.value || "",
-      name: localName(b.tech?.value || ""),
-      label: b.label?.value || localName(b.tech?.value || ""),
-      type: localName(b.type?.value || "Technology"),
-      typeLabel: b.typeLabel?.value || localName(b.type?.value || "Technology"),
-      description: b.description?.value || "",
-      website: b.website?.value || "",
-      version: b.version?.value || "",
-    }));
+    const results = data.results.bindings.length
+      ? data.results.bindings.map((b) => ({
+          uri: b.tech?.value || "",
+          name: localName(b.tech?.value || ""),
+          label: b.label?.value || localName(b.tech?.value || ""),
+          type: localName(b.type?.value || "Technology"),
+          typeLabel: b.typeLabel?.value || localName(b.type?.value || "Technology"),
+          description: b.description?.value || "",
+          website: b.website?.value || "",
+          version: b.version?.value || "",
+        }))
+      : await searchLocalTechnologies(q);
 
     return NextResponse.json(results);
   } catch (error: unknown) {

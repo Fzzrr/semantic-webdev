@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { getCategoryStyle } from "@/lib/sparql";
+import TechLogo from "@/components/TechLogo";
 
 interface TechDetail {
   uri: string;
@@ -27,6 +28,10 @@ const RELATION_LABELS: Record<string, { label: string; emoji: string }> = {
   compatibleWith: { label: "Compatible with", emoji: "swap_horiz" },
   alternativeTo: { label: "Alternative to", emoji: "compare_arrows" },
   connectsTo: { label: "Connects to", emoji: "hub" },
+  integratesWith: { label: "Integrates with", emoji: "extension" },
+  testedWith: { label: "Tested with", emoji: "check_circle" },
+  deployedOn: { label: "Deployed on", emoji: "cloud" },
+  managedBy: { label: "Managed by", emoji: "settings" },
 };
 
 export default function TechDetailPage() {
@@ -119,6 +124,8 @@ export default function TechDetailPage() {
                     {tech.label}
                   </h1>
                 </div>
+
+                <TechLogo label={tech.label} name={tech.name} website={tech.website} size="lg" />
 
                 {tech.githubStars && (
                   <div className="flex-shrink-0 flex items-center gap-1.5 bg-[#1b1b1b] border border-[#333333] px-3 py-1.5 rounded-lg">

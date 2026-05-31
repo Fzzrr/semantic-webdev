@@ -3,13 +3,25 @@
 
 import { PREFIX } from "./sparql";
 
-/**
- * Get all technologies with their type and label
- */
-export const getAllTechnologiesQuery = () => `
-${PREFIX}
-SELECT DISTINCT ?tech ?label ?type ?typeLabel ?description ?website ?version ?githubStars
-WHERE {
+function escapeSparqlString(value: string) {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function buildTechnologyPattern(category?: string) {
+  if (category && category !== "all") {
+    return `
+  ?tech a ex:${category} .
+  BIND(ex:${category} AS ?type)
+  OPTIONAL { ?tech rdfs:label ?label }
+  OPTIONAL { ?tech ex:description ?description }
+  OPTIONAL { ?tech ex:website ?website }
+  OPTIONAL { ?tech ex:version ?version }
+  OPTIONAL { ?tech ex:githubStars ?githubStars }
+  BIND("${category}" AS ?typeLabel)
+`;
+  }
+
+  return `
   ?tech a ?type .
   ?type rdfs:subClassOf* ex:Technology .
   OPTIONAL { ?tech rdfs:label ?label }
@@ -19,6 +31,17 @@ WHERE {
   OPTIONAL { ?tech ex:githubStars ?githubStars }
   OPTIONAL { ?type rdfs:label ?typeLabel }
   FILTER(?type != ex:Technology)
+`;
+}
+
+/**
+ * Get all technologies with their type and label
+ */
+export const getAllTechnologiesQuery = () => `
+${PREFIX}
+SELECT DISTINCT ?tech ?label ?type ?typeLabel ?description ?website ?version ?githubStars
+WHERE {
+${buildTechnologyPattern()}
 }
 ORDER BY ?typeLabel ?label
 `;
@@ -27,19 +50,32 @@ ORDER BY ?typeLabel ?label
  * Search technologies by keyword (in label or description)
  */
 export const searchTechnologiesQuery = (keyword: string) => {
-  const escaped = keyword.replace(/"/g, '\\"');
+  const escaped = escapeSparqlString(keyword);
   return `
 ${PREFIX}
 SELECT DISTINCT ?tech ?label ?type ?typeLabel ?description ?website ?version
 WHERE {
-  ?tech a ?type .
-  ?type rdfs:subClassOf* ex:Technology .
-  OPTIONAL { ?tech rdfs:label ?label }
-  OPTIONAL { ?tech ex:description ?description }
-  OPTIONAL { ?tech ex:website ?website }
-  OPTIONAL { ?tech ex:version ?version }
-  OPTIONAL { ?type rdfs:label ?typeLabel }
-  FILTER(?type != ex:Technology)
+${buildTechnologyPattern()}
+  FILTER(
+    CONTAINS(LCASE(STR(?label)), LCASE("${escaped}")) ||
+    CONTAINS(LCASE(STR(?description)), LCASE("${escaped}")) ||
+    CONTAINS(LCASE(STR(?typeLabel)), LCASE("${escaped}"))
+  )
+}
+ORDER BY ?typeLabel ?label
+`;
+};
+
+/**
+ * Search technologies by keyword and optional ontology category.
+ */
+export const searchTechnologiesByCategoryQuery = (keyword: string, category?: string) => {
+  const escaped = escapeSparqlString(keyword);
+  return `
+${PREFIX}
+SELECT DISTINCT ?tech ?label ?type ?typeLabel ?description ?website ?version ?githubStars
+WHERE {
+${buildTechnologyPattern(category)}
   FILTER(
     CONTAINS(LCASE(STR(?label)), LCASE("${escaped}")) ||
     CONTAINS(LCASE(STR(?description)), LCASE("${escaped}")) ||
@@ -57,13 +93,7 @@ export const getTechByCategoryQuery = (category: string) => `
 ${PREFIX}
 SELECT DISTINCT ?tech ?label ?type ?typeLabel ?description ?website ?version ?githubStars
 WHERE {
-  ?tech a ex:${category} .
-  BIND(ex:${category} AS ?type)
-  OPTIONAL { ?tech rdfs:label ?label }
-  OPTIONAL { ?tech ex:description ?description }
-  OPTIONAL { ?tech ex:website ?website }
-  OPTIONAL { ?tech ex:version ?version }
-  OPTIONAL { ?tech ex:githubStars ?githubStars }
+${buildTechnologyPattern(category)}
   BIND("${category}" AS ?typeLabel)
 }
 ORDER BY ?label

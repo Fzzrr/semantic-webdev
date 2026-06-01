@@ -11,6 +11,7 @@
   "dependencies": {
     "n3": "^2.0.3",
     "next": "14.2.5",
+    "next-auth": "^4.24.14",
     "react": "^18",
     "react-dom": "^18"
   },

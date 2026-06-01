@@ -14,21 +14,30 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
 
 interface TechDetail extends Technology {
-  relations: Record<string, { name: string; label: string }[]>;
+  relations: Record<string, { name: string; label: string; website?: string }[]>;
 }
 
 const RELATION_LABELS: Record<string, { label: string; emoji: string }> = {
-  isFrameworkOf: { label: "Framework of", emoji: "layers" },
-  isORMFor: { label: "Supports Database", emoji: "database" },
-  isBuiltOn: { label: "Built on", emoji: "terminal" },
-  usesLanguage: { label: "Uses Language", emoji: "code" },
-  compatibleWith: { label: "Compatible with", emoji: "swap_horiz" },
-  alternativeTo: { label: "Alternative to", emoji: "compare_arrows" },
-  connectsTo: { label: "Connects to", emoji: "hub" },
-  integratesWith: { label: "Integrates with", emoji: "extension" },
-  testedWith: { label: "Tested with", emoji: "check_circle" },
-  deployedOn: { label: "Deployed on", emoji: "cloud" },
-  managedBy: { label: "Managed by", emoji: "settings" },
+  isFrameworkOf:       { label: "Framework of",       emoji: "layers" },
+  isORMFor:            { label: "Supports Database",   emoji: "database" },
+  isBuiltOn:           { label: "Built on",            emoji: "terminal" },
+  implementsSpec:      { label: "Implements Spec",     emoji: "rule_settings" },
+  usesLanguage:        { label: "Uses Language",       emoji: "code" },
+  compatibleWith:      { label: "Compatible with",     emoji: "swap_horiz" },
+  alternativeTo:       { label: "Alternative to",      emoji: "compare_arrows" },
+  connectsTo:          { label: "Connects to",         emoji: "hub" },
+  integratesWith:      { label: "Integrates with",     emoji: "extension" },
+  testedWith:          { label: "Tested with",         emoji: "check_circle" },
+  deployedOn:          { label: "Deployed on",         emoji: "cloud" },
+  managedBy:           { label: "Managed by",          emoji: "settings" },
+  hostedBy:            { label: "Hosted on",           emoji: "cloud_upload" },
+  monitoredBy:         { label: "Monitored by",        emoji: "monitor_heart" },
+  ciWith:              { label: "CI/CD with",          emoji: "loop" },
+  usesBroker:          { label: "Uses message broker", emoji: "message" },
+  searchedWith:        { label: "Search via",          emoji: "search" },
+  storedWith:          { label: "Storage",             emoji: "storage" },
+  designedWith:        { label: "Designed with",       emoji: "design_services" },
+  versionControlledBy: { label: "Version control",     emoji: "source_control" },
 };
 
 function sortTechnologies(items: Technology[], sortBy: string) {
@@ -49,8 +58,7 @@ export default function Home() {
   const [items, setItems] = useState<Technology[]>([]);
   const [filtered, setFiltered] = useState<Technology[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching] = useState(false);
   const [category, setCategory] = useState("all");
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
@@ -67,13 +75,11 @@ export default function Home() {
   const [sortBy, setSortBy] = useState("relevance");
 
   // Load initial data
-  const loadData = useCallback(async (cat: string, query: string) => {
+  const loadData = useCallback(async (cat: string) => {
     setIsLoading(true);
-    setIsSearching(Boolean(query.trim()));
     try {
       const params = new URLSearchParams();
       if (cat !== "all") params.set("category", cat);
-      if (query.trim()) params.set("q", query.trim());
 
       const url = params.toString() ? `/api/sparql?${params.toString()}` : "/api/sparql";
       const res = await fetch(url);
@@ -89,15 +95,14 @@ export default function Home() {
       setIsConnected(false);
     } finally {
       setIsLoading(false);
-      setIsSearching(false);
     }
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
-    loadData(category, searchQuery);
+    loadData(category);
     return () => controller.abort();
-  }, [category, loadData, searchQuery]);
+  }, [category, loadData]);
 
   useEffect(() => {
     fetch("/api/sparql?stats=true", { cache: "no-store" })
@@ -115,12 +120,7 @@ export default function Home() {
   useEffect(() => {
     const filteredItems = items.filter((tech) => {
       const matchesCategory = category === "all" || tech.type === category || tech.typeLabel === category;
-      const normalizedQuery = searchQuery.trim().toLowerCase();
-      const matchesQuery = !normalizedQuery || [tech.label, tech.description, tech.type, tech.typeLabel]
-        .filter(Boolean)
-        .some((value) => value?.toLowerCase().includes(normalizedQuery));
-
-      return matchesCategory && matchesQuery;
+      return matchesCategory;
     });
 
     const result = sortTechnologies(filteredItems, sortBy);
@@ -133,7 +133,7 @@ export default function Home() {
 
       return result[0] || null;
     });
-  }, [items, category, searchQuery, sortBy]);
+  }, [items, category, sortBy]);
 
   useEffect(() => {
     if (!selectedTech) {
@@ -165,9 +165,7 @@ export default function Home() {
   }, [selectedTech]);
 
   // Handle Search input callback
-  const handleSearch = useCallback((q: string) => {
-    setSearchQuery(q);
-  }, []);
+  const handleSearch = useCallback((_q: string) => {}, []);
 
   const handleCategoryChange = (cat: string) => {
     setCategory(cat);
@@ -192,19 +190,7 @@ export default function Home() {
         
         {/* Left SideNavBar: Shared Component Filter */}
         <aside className="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-64 py-6 bg-[#1b1b1b] border-r border-[#333333] custom-scrollbar overflow-y-auto">
-          <div className="px-6 mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-[#2563eb]/20 border border-[#2563eb]/30 flex items-center justify-center font-headline font-bold text-[#b4c5ff]">
-                TD
-              </div>
-              <div>
-                <p className="text-sm font-headline font-bold text-[#e5e2e1]">Tech Registry</p>
-                <p className="text-[10px] font-mono text-[#838383]">v1.4.2-stable</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-4 space-y-1">
+<div className="px-4 space-y-1">
             <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Kategori Utama</p>
             {CATEGORIES.map((cat) => {
               const isActive = category === cat.value;
@@ -320,11 +306,11 @@ export default function Home() {
             </div>
 
             {/* Search and Sorting Bar */}
-            <div className="bg-transparent p-4 mb-10 flex flex-col md:flex-row gap-4 items-center">
-              <div className="flex-1 w-full">
+            <div className="bg-transparent p-4 mb-10 grid grid-cols-1 xl:grid-cols-12 gap-4 items-center">
+              <div className="xl:col-span-8 w-full">
                 <SearchBar onSearch={handleSearch} isLoading={isSearching} />
               </div>
-              <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="xl:col-span-4 flex items-center gap-3 w-full xl:justify-start xl:pl-6">
                 <div className="relative group w-full md:w-48">
                   <select
                     value={sortBy}
@@ -484,7 +470,7 @@ export default function Home() {
                                     prop: entry.prop,
                                     target: {
                                       ...entry.target,
-                                      website: items.find((i) => i.name === entry.target.name)?.website,
+                                      website: entry.target.website || items.find((i) => i.name === entry.target.name)?.website,
                                     },
                                   }))}
                                   size={220}

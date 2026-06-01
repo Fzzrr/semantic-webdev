@@ -1,6 +1,7 @@
 "use client";
 // components/SearchBar.tsx
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import TechLogo from "@/components/TechLogo";
 
 interface SearchBarProps {
@@ -9,6 +10,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ onSearch, isLoading }: SearchBarProps) {
+  const router = useRouter();
   const [value, setValue] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -116,6 +118,7 @@ export default function SearchBar({ onSearch, isLoading }: SearchBarProps) {
                 setValue(s.label);
                 onSearch(s.label);
                 setShowSuggestions(false);
+                router.push(`/tech/${encodeURIComponent(s.name)}`);
               }}
               className="w-full text-left px-3 py-2 hover:bg-[#2a2a2a] transition-colors flex items-start gap-3"
             >

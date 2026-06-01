@@ -11,7 +11,7 @@
   a owl:Ontology ;
   rdfs:label "Web Development Technology Ontology" ;
   rdfs:comment "Comprehensive semantic directory of web development technologies — frameworks, libraries, ORMs, databases, runtimes, languages, build tools, testing tools, state management, CSS frameworks, authentication, deployment, and more." ;
-  owl:versionInfo "2.0" .
+  owl:versionInfo "2.1" .
 
 # ============================================================
 # CLASSES
@@ -111,6 +111,16 @@ ex:Animation a rdfs:Class ;
   rdfs:label "Animation Library" ;
   rdfs:comment "A library for UI animations and transitions." .
 
+ex:SemanticWebSpec a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Semantic Web Specification" ;
+  rdfs:comment "A standard or specification used to represent, query, and validate linked data." .
+
+ex:Triplestore a rdfs:Class ;
+  rdfs:subClassOf ex:Database ;
+  rdfs:label "Triplestore" ;
+  rdfs:comment "A specialized graph database for storing and querying RDF triples." .
+
 # ============================================================
 # OBJECT PROPERTIES
 # ============================================================
@@ -169,6 +179,11 @@ ex:managedBy a rdf:Property ;
   rdfs:label "managedBy" ;
   rdfs:domain ex:Technology ;
   rdfs:range ex:PackageManager .
+
+ex:implementsSpec a rdf:Property ;
+  rdfs:label "implementsSpec" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:SemanticWebSpec .
 
 # DATA PROPERTIES
 ex:description a rdf:Property ;
@@ -553,13 +568,6 @@ ex:Knex a ex:ORM ;
   ex:alternativeTo ex:Drizzle ;
   ex:githubStars "~19k" .
 
-ex:Mongoose a ex:ORM ;
-  rdfs:label "Mongoose" ;
-  ex:description "An elegant MongoDB object modeling for Node.js with schema validation." ;
-  ex:website "https://mongoosejs.com"^^xsd:anyURI ;
-  ex:isORMFor ex:MongoDB ;
-  ex:usesLanguage ex:JavaScript .
-
 # ============================================================
 # FRONTEND LIBRARIES
 # ============================================================
@@ -667,6 +675,8 @@ ex:NextJS a ex:Framework ;
   ex:compatibleWith ex:Prisma ;
   ex:compatibleWith ex:TailwindCSS ;
   ex:compatibleWith ex:Drizzle ;
+  ex:compatibleWith ex:SPARQL ;
+  ex:connectsTo ex:Fuseki ;
   ex:deployedOn ex:Vercel ;
   ex:testedWith ex:Jest ;
   ex:testedWith ex:Playwright ;
@@ -1181,6 +1191,8 @@ ex:Axios a ex:Library ;
   ex:description "A promise-based HTTP client for the browser and Node.js with interceptors support." ;
   ex:website "https://axios-http.com"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
+  ex:compatibleWith ex:SPARQL ;
+  ex:connectsTo ex:Fuseki ;
   ex:githubStars "~105k" .
 
 # ============================================================
@@ -1331,6 +1343,126 @@ ex:AutoAnimate a ex:Animation ;
   ex:compatibleWith ex:Svelte .
 
 # ============================================================
+# SEMANTIC WEB STANDARDS & GRAPH TOOLS
+# ============================================================
+
+ex:RDF a ex:SemanticWebSpec ;
+  rdfs:label "RDF" ;
+  ex:description "Resource Description Framework, the core data model of the Semantic Web based on subject-predicate-object triples." ;
+  ex:website "https://www.w3.org/RDF/"^^xsd:anyURI .
+
+ex:RDFS a ex:SemanticWebSpec ;
+  rdfs:label "RDF Schema" ;
+  ex:description "A semantic extension of RDF providing basic vocabulary for class and property hierarchies." ;
+  ex:website "https://www.w3.org/TR/rdf-schema/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:RDF .
+
+ex:OWL2 a ex:SemanticWebSpec ;
+  rdfs:label "OWL 2" ;
+  ex:description "Web Ontology Language for defining rich and machine-interpretable ontologies." ;
+  ex:website "https://www.w3.org/TR/owl2-overview/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:RDFS .
+
+ex:SPARQL a ex:SemanticWebSpec ;
+  rdfs:label "SPARQL" ;
+  ex:description "A query language and protocol for RDF graphs." ;
+  ex:website "https://www.w3.org/TR/sparql11-query/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:RDF .
+
+ex:TurtleSyntax a ex:SemanticWebSpec ;
+  rdfs:label "Turtle" ;
+  ex:description "A compact, human-readable syntax for RDF serialization, commonly used for ontology authoring." ;
+  ex:website "https://www.w3.org/TR/turtle/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:RDF .
+
+ex:JSONLD a ex:SemanticWebSpec ;
+  rdfs:label "JSON-LD" ;
+  ex:description "JSON-based serialization format for linked data and knowledge graphs." ;
+  ex:website "https://json-ld.org"^^xsd:anyURI ;
+  ex:isBuiltOn ex:RDF .
+
+ex:SHACL a ex:SemanticWebSpec ;
+  rdfs:label "SHACL" ;
+  ex:description "Shapes Constraint Language for validating RDF graphs against structural constraints." ;
+  ex:website "https://www.w3.org/TR/shacl/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:RDF .
+
+ex:ApacheJena a ex:Library ;
+  rdfs:label "Apache Jena" ;
+  ex:description "A Java framework and toolkit for building Semantic Web and linked-data applications." ;
+  ex:website "https://jena.apache.org"^^xsd:anyURI ;
+  ex:implementsSpec ex:RDF ;
+  ex:implementsSpec ex:RDFS ;
+  ex:implementsSpec ex:OWL2 ;
+  ex:implementsSpec ex:SPARQL ;
+  ex:implementsSpec ex:TurtleSyntax .
+
+ex:Fuseki a ex:Triplestore ;
+  rdfs:label "Apache Jena Fuseki" ;
+  ex:description "A SPARQL server providing RDF graph storage, query endpoints, and update operations over HTTP." ;
+  ex:website "https://jena.apache.org/documentation/fuseki2/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:ApacheJena ;
+  ex:implementsSpec ex:RDF ;
+  ex:implementsSpec ex:SPARQL ;
+  ex:implementsSpec ex:TurtleSyntax ;
+  ex:compatibleWith ex:NextJS ;
+  ex:compatibleWith ex:Axios ;
+  ex:alternativeTo ex:GraphDB ;
+  ex:alternativeTo ex:Blazegraph ;
+  ex:alternativeTo ex:Virtuoso .
+
+ex:GraphDB a ex:Triplestore ;
+  rdfs:label "GraphDB" ;
+  ex:description "A graph database and triplestore for RDF and SPARQL with reasoning support." ;
+  ex:website "https://graphdb.ontotext.com"^^xsd:anyURI ;
+  ex:implementsSpec ex:RDF ;
+  ex:implementsSpec ex:SPARQL ;
+  ex:alternativeTo ex:Fuseki .
+
+ex:Blazegraph a ex:Triplestore ;
+  rdfs:label "Blazegraph" ;
+  ex:description "A high-performance graph database supporting RDF and SPARQL workloads." ;
+  ex:website "https://blazegraph.com"^^xsd:anyURI ;
+  ex:implementsSpec ex:RDF ;
+  ex:implementsSpec ex:SPARQL ;
+  ex:alternativeTo ex:Fuseki .
+
+ex:Virtuoso a ex:Triplestore ;
+  rdfs:label "OpenLink Virtuoso" ;
+  ex:description "A multi-model database with strong support for RDF data management and SPARQL querying." ;
+  ex:website "https://virtuoso.openlinksw.com"^^xsd:anyURI ;
+  ex:implementsSpec ex:RDF ;
+  ex:implementsSpec ex:SPARQL ;
+  ex:alternativeTo ex:Fuseki .
+
+ex:Comunica a ex:Library ;
+  rdfs:label "Comunica" ;
+  ex:description "A modular SPARQL query engine for JavaScript that can query local and remote linked data sources." ;
+  ex:website "https://comunica.dev"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:compatibleWith ex:SPARQL ;
+  ex:connectsTo ex:Fuseki .
+
+ex:N3JS a ex:Library ;
+  rdfs:label "N3.js" ;
+  ex:description "An RDF library for JavaScript to parse, serialize, and manipulate triples/quads." ;
+  ex:website "https://github.com/rdfjs/N3.js"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:implementsSpec ex:RDF ;
+  ex:implementsSpec ex:TurtleSyntax ;
+  ex:compatibleWith ex:NodeJS .
+
+ex:RDFJS a ex:Library ;
+  rdfs:label "RDF/JS" ;
+  ex:description "A JavaScript specification and ecosystem for interoperable RDF data interfaces." ;
+  ex:website "https://rdf.js.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:implementsSpec ex:RDF ;
+  ex:compatibleWith ex:N3JS ;
+  ex:compatibleWith ex:Comunica .
+
+# ============================================================
 # ADDITIONAL LIBRARIES
 # ============================================================
 
@@ -1379,12 +1511,6 @@ ex:ReactRouter a ex:Library ;
   ex:website "https://reactrouter.com"^^xsd:anyURI ;
   ex:isBuiltOn ex:React ;
   ex:githubStars "~52k" .
-
-ex:Zustand a ex:StateManagement ;
-  rdfs:label "Zustand" ;
-  ex:description "A small, fast, and scalable state management solution using simplified flux principles." ;
-  ex:website "https://zustand-demo.pmnd.rs"^^xsd:anyURI ;
-  ex:compatibleWith ex:React .
 
 ex:i18next a ex:Library ;
   rdfs:label "i18next" ;
@@ -1466,3 +1592,985 @@ ex:Uploadthing a ex:Library ;
   ex:website "https://uploadthing.com"^^xsd:anyURI ;
   ex:compatibleWith ex:NextJS ;
   ex:usesLanguage ex:TypeScript .
+
+# ============================================================
+# NEW CLASSES (v3.0)
+# ============================================================
+
+ex:CloudProvider a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Cloud Provider" ;
+  rdfs:comment "A cloud computing platform offering hosting, compute, and managed services." .
+
+ex:CITool a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "CI/CD Tool" ;
+  rdfs:comment "A tool for continuous integration and continuous deployment pipelines." .
+
+ex:VersionControl a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Version Control" ;
+  rdfs:comment "A system for tracking changes to source code over time." .
+
+ex:ContainerTool a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Container Tool" ;
+  rdfs:comment "A tool for containerizing, orchestrating, or managing application containers." .
+
+ex:MonitoringTool a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Monitoring Tool" ;
+  rdfs:comment "A tool for application observability, error tracking, and performance monitoring." .
+
+ex:MessageBroker a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Message Broker" ;
+  rdfs:comment "A middleware system for asynchronous message passing between services." .
+
+ex:SearchTool a rdfs:Class ;
+  rdfs:subClassOf ex:Library ;
+  rdfs:label "Search Engine" ;
+  rdfs:comment "A tool or service for full-text search and discovery in applications." .
+
+ex:StorageService a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Storage Service" ;
+  rdfs:comment "A service for storing and serving files, blobs, or objects in the cloud." .
+
+ex:ValidationLib a rdfs:Class ;
+  rdfs:subClassOf ex:Library ;
+  rdfs:label "Validation Library" ;
+  rdfs:comment "A library for validating and parsing structured data against schemas." .
+
+ex:DesignTool a rdfs:Class ;
+  rdfs:subClassOf ex:Technology ;
+  rdfs:label "Design Tool" ;
+  rdfs:comment "A tool used for UI/UX design, prototyping, and design collaboration." .
+
+ex:MobileFramework a rdfs:Class ;
+  rdfs:subClassOf ex:Framework ;
+  rdfs:label "Mobile Framework" ;
+  rdfs:comment "A framework for building mobile or cross-platform applications." .
+
+ex:DesktopFramework a rdfs:Class ;
+  rdfs:subClassOf ex:Framework ;
+  rdfs:label "Desktop Framework" ;
+  rdfs:comment "A framework for building cross-platform desktop apps using web technologies." .
+
+# ============================================================
+# NEW OBJECT PROPERTIES (v3.0)
+# ============================================================
+
+ex:hostedBy a rdf:Property ;
+  rdfs:label "hostedBy" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:CloudProvider .
+
+ex:monitoredBy a rdf:Property ;
+  rdfs:label "monitoredBy" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:MonitoringTool .
+
+ex:ciWith a rdf:Property ;
+  rdfs:label "ciWith" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:CITool .
+
+ex:usesBroker a rdf:Property ;
+  rdfs:label "usesBroker" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:MessageBroker .
+
+ex:searchedWith a rdf:Property ;
+  rdfs:label "searchedWith" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:SearchTool .
+
+ex:storedWith a rdf:Property ;
+  rdfs:label "storedWith" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:StorageService .
+
+ex:designedWith a rdf:Property ;
+  rdfs:label "designedWith" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:DesignTool .
+
+ex:versionControlledBy a rdf:Property ;
+  rdfs:label "versionControlledBy" ;
+  rdfs:domain ex:Technology ;
+  rdfs:range ex:VersionControl .
+
+# ============================================================
+# NEW DATA PROPERTIES (v3.0)
+# ============================================================
+
+ex:npmPackage a rdf:Property ;
+  rdfs:label "npmPackage" ;
+  rdfs:range xsd:string .
+
+# ============================================================
+# LANGUAGES (additions)
+# ============================================================
+
+ex:Java a ex:Language ;
+  rdfs:label "Java" ;
+  ex:description "A class-based, object-oriented language widely used in enterprise backends and Android development." ;
+  ex:website "https://www.java.com"^^xsd:anyURI ;
+  ex:firstRelease "1995" ;
+  ex:creator "Sun Microsystems/Oracle" .
+
+ex:CSharp a ex:Language ;
+  rdfs:label "C#" ;
+  ex:description "A modern, type-safe object-oriented language by Microsoft for the .NET platform." ;
+  ex:website "https://dotnet.microsoft.com/languages/csharp"^^xsd:anyURI ;
+  ex:firstRelease "2000" ;
+  ex:creator "Microsoft" .
+
+ex:Elixir a ex:Language ;
+  rdfs:label "Elixir" ;
+  ex:description "A dynamic, functional language on the Erlang VM renowned for concurrency and fault-tolerance." ;
+  ex:website "https://elixir-lang.org"^^xsd:anyURI ;
+  ex:firstRelease "2011" ;
+  ex:creator "José Valim" .
+
+ex:Swift a ex:Language ;
+  rdfs:label "Swift" ;
+  ex:description "Apple's powerful, intuitive language for iOS, macOS, and server-side development via Vapor." ;
+  ex:website "https://www.swift.org"^^xsd:anyURI ;
+  ex:firstRelease "2014" ;
+  ex:creator "Apple" .
+
+ex:Scala a ex:Language ;
+  rdfs:label "Scala" ;
+  ex:description "A strong statically typed language combining OOP and functional programming on the JVM." ;
+  ex:website "https://www.scala-lang.org"^^xsd:anyURI ;
+  ex:firstRelease "2004" ;
+  ex:creator "EPFL" .
+
+ex:HTML a ex:Language ;
+  rdfs:label "HTML" ;
+  ex:description "The standard markup language for structuring web pages and web applications." ;
+  ex:website "https://developer.mozilla.org/en-US/docs/Web/HTML"^^xsd:anyURI ;
+  ex:firstRelease "1993" ;
+  ex:creator "Tim Berners-Lee / W3C" .
+
+ex:CSS a ex:Language ;
+  rdfs:label "CSS" ;
+  ex:description "A style sheet language for describing presentation of documents written in HTML or XML." ;
+  ex:website "https://developer.mozilla.org/en-US/docs/Web/CSS"^^xsd:anyURI ;
+  ex:firstRelease "1996" ;
+  ex:creator "W3C" .
+
+# ============================================================
+# CLOUD PROVIDERS
+# ============================================================
+
+ex:AWS a ex:CloudProvider ;
+  rdfs:label "Amazon Web Services" ;
+  ex:description "The world's most comprehensive cloud platform with 200+ services: compute, storage, AI/ML, databases, and serverless." ;
+  ex:website "https://aws.amazon.com"^^xsd:anyURI ;
+  ex:creator "Amazon" ;
+  ex:firstRelease "2006" ;
+  ex:compatibleWith ex:Docker ;
+  ex:compatibleWith ex:Kubernetes ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:compatibleWith ex:Python .
+
+ex:Azure a ex:CloudProvider ;
+  rdfs:label "Microsoft Azure" ;
+  ex:description "Microsoft's enterprise cloud platform with 200+ services for compute, analytics, storage, and AI." ;
+  ex:website "https://azure.microsoft.com"^^xsd:anyURI ;
+  ex:creator "Microsoft" ;
+  ex:firstRelease "2010" ;
+  ex:alternativeTo ex:AWS ;
+  ex:compatibleWith ex:Docker ;
+  ex:compatibleWith ex:Kubernetes .
+
+ex:GCP a ex:CloudProvider ;
+  rdfs:label "Google Cloud Platform" ;
+  ex:description "Google's suite of cloud services running on the same global infrastructure as Google Search and YouTube." ;
+  ex:website "https://cloud.google.com"^^xsd:anyURI ;
+  ex:creator "Google" ;
+  ex:firstRelease "2008" ;
+  ex:alternativeTo ex:AWS ;
+  ex:compatibleWith ex:Kubernetes .
+
+ex:DigitalOcean a ex:CloudProvider ;
+  rdfs:label "DigitalOcean" ;
+  ex:description "A developer-friendly cloud platform providing scalable VMs, managed databases, and Kubernetes." ;
+  ex:website "https://www.digitalocean.com"^^xsd:anyURI ;
+  ex:firstRelease "2011" ;
+  ex:alternativeTo ex:AWS .
+
+ex:FlyIO a ex:CloudProvider ;
+  rdfs:label "Fly.io" ;
+  ex:description "A platform running full-stack apps globally with Firecracker micro-VMs, close to users at the edge." ;
+  ex:website "https://fly.io"^^xsd:anyURI ;
+  ex:alternativeTo ex:Railway ;
+  ex:compatibleWith ex:Docker .
+
+ex:HerokuCloud a ex:CloudProvider ;
+  rdfs:label "Heroku" ;
+  ex:description "A cloud PaaS supporting Ruby, Node.js, Python, Java, PHP, and Go. Pioneer of git-based deployments." ;
+  ex:website "https://www.heroku.com"^^xsd:anyURI ;
+  ex:creator "Salesforce" ;
+  ex:firstRelease "2007" ;
+  ex:alternativeTo ex:Railway .
+
+# ============================================================
+# CI/CD TOOLS
+# ============================================================
+
+ex:GitHubActions a ex:CITool ;
+  rdfs:label "GitHub Actions" ;
+  ex:description "CI/CD workflows built into GitHub. Automate builds, tests, and deployments on push, PR, or schedule." ;
+  ex:website "https://github.com/features/actions"^^xsd:anyURI ;
+  ex:creator "Microsoft / GitHub" ;
+  ex:firstRelease "2018" ;
+  ex:integratesWith ex:Docker ;
+  ex:integratesWith ex:Vercel ;
+  ex:integratesWith ex:Netlify ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:compatibleWith ex:Python ;
+  ex:compatibleWith ex:Go .
+
+ex:CircleCI a ex:CITool ;
+  rdfs:label "CircleCI" ;
+  ex:description "A cloud CI/CD platform with Docker-native pipelines, orbs, and parallelism for fast feedback." ;
+  ex:website "https://circleci.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:GitHubActions .
+
+ex:JenkinsCICD a ex:CITool ;
+  rdfs:label "Jenkins" ;
+  ex:description "An open-source automation server for building, testing, and deploying software with 1800+ plugins." ;
+  ex:website "https://www.jenkins.io"^^xsd:anyURI ;
+  ex:creator "CloudBees" ;
+  ex:firstRelease "2011" ;
+  ex:license "MIT" ;
+  ex:alternativeTo ex:GitHubActions .
+
+ex:GitLabCI a ex:CITool ;
+  rdfs:label "GitLab CI/CD" ;
+  ex:description "Built-in CI/CD in GitLab automating builds, tests, and deployments from YAML pipeline definitions." ;
+  ex:website "https://docs.gitlab.com/ee/ci/"^^xsd:anyURI ;
+  ex:alternativeTo ex:GitHubActions ;
+  ex:integratesWith ex:Docker ;
+  ex:integratesWith ex:Kubernetes .
+
+ex:TravisCI a ex:CITool ;
+  rdfs:label "Travis CI" ;
+  ex:description "A hosted CI service for testing software projects on GitHub and Bitbucket, popular in open-source." ;
+  ex:website "https://www.travis-ci.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:GitHubActions .
+
+ex:Bitrise a ex:CITool ;
+  rdfs:label "Bitrise" ;
+  ex:description "A mobile-first CI/CD platform for iOS, Android, Flutter, and React Native builds and releases." ;
+  ex:website "https://www.bitrise.io"^^xsd:anyURI ;
+  ex:compatibleWith ex:Flutter ;
+  ex:alternativeTo ex:GitHubActions .
+
+# ============================================================
+# VERSION CONTROL
+# ============================================================
+
+ex:Git a ex:VersionControl ;
+  rdfs:label "Git" ;
+  ex:description "A distributed version control system for tracking changes in source code. The industry standard VCS." ;
+  ex:website "https://git-scm.com"^^xsd:anyURI ;
+  ex:firstRelease "2005" ;
+  ex:creator "Linus Torvalds" ;
+  ex:license "LGPL-2.1" .
+
+ex:GitHub a ex:VersionControl ;
+  rdfs:label "GitHub" ;
+  ex:description "The world's largest Git repository host with code review, Issues, Actions, and package registry." ;
+  ex:website "https://github.com"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Git ;
+  ex:creator "Microsoft" ;
+  ex:firstRelease "2008" ;
+  ex:integratesWith ex:GitHubActions .
+
+ex:GitLabVCS a ex:VersionControl ;
+  rdfs:label "GitLab" ;
+  ex:description "An open-source DevOps platform combining Git hosting, CI/CD, issue tracking, and container registry." ;
+  ex:website "https://gitlab.com"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Git ;
+  ex:alternativeTo ex:GitHub ;
+  ex:firstRelease "2011" ;
+  ex:integratesWith ex:GitLabCI .
+
+ex:Bitbucket a ex:VersionControl ;
+  rdfs:label "Bitbucket" ;
+  ex:description "Atlassian's Git platform with built-in CI/CD Pipelines, Jira integration, and code review." ;
+  ex:website "https://bitbucket.org"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Git ;
+  ex:creator "Atlassian" ;
+  ex:alternativeTo ex:GitHub .
+
+# ============================================================
+# CONTAINER TOOLS
+# ============================================================
+
+ex:DockerCompose a ex:ContainerTool ;
+  rdfs:label "Docker Compose" ;
+  ex:description "A tool for defining and running multi-container Docker applications with a single YAML config." ;
+  ex:website "https://docs.docker.com/compose/"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Docker ;
+  ex:creator "Docker Inc." ;
+  ex:compatibleWith ex:PostgreSQL ;
+  ex:compatibleWith ex:Redis ;
+  ex:compatibleWith ex:MongoDB .
+
+ex:Kubernetes a ex:ContainerTool ;
+  rdfs:label "Kubernetes" ;
+  ex:description "An open-source container orchestration system for automated deployment, scaling, and management of containers." ;
+  ex:website "https://kubernetes.io"^^xsd:anyURI ;
+  ex:creator "Google / CNCF" ;
+  ex:firstRelease "2014" ;
+  ex:githubStars "~108k" ;
+  ex:compatibleWith ex:Docker ;
+  ex:license "Apache-2.0" ;
+  ex:hostedBy ex:AWS ;
+  ex:hostedBy ex:Azure ;
+  ex:hostedBy ex:GCP .
+
+ex:Helm a ex:ContainerTool ;
+  rdfs:label "Helm" ;
+  ex:description "The Kubernetes package manager — define, install, and upgrade complex Kubernetes applications as charts." ;
+  ex:website "https://helm.sh"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Kubernetes ;
+  ex:githubStars "~26k" ;
+  ex:license "Apache-2.0" .
+
+ex:Podman a ex:ContainerTool ;
+  rdfs:label "Podman" ;
+  ex:description "A daemonless, rootless OCI container engine by Red Hat with Docker-compatible CLI and images." ;
+  ex:website "https://podman.io"^^xsd:anyURI ;
+  ex:alternativeTo ex:Docker ;
+  ex:creator "Red Hat" .
+
+# ============================================================
+# MONITORING TOOLS
+# ============================================================
+
+ex:Sentry a ex:MonitoringTool ;
+  rdfs:label "Sentry" ;
+  ex:description "An application monitoring platform for error tracking, performance tracing, and session replay." ;
+  ex:website "https://sentry.io"^^xsd:anyURI ;
+  ex:compatibleWith ex:NextJS ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:NuxtJS ;
+  ex:compatibleWith ex:SvelteKit ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:githubStars "~37k" ;
+  ex:firstRelease "2010" ;
+  ex:license "BSL-1.1" .
+
+ex:Datadog a ex:MonitoringTool ;
+  rdfs:label "Datadog" ;
+  ex:description "A SaaS monitoring and analytics platform for cloud-scale infrastructure, APM, logs, and security." ;
+  ex:website "https://www.datadoghq.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:Sentry .
+
+ex:Grafana a ex:MonitoringTool ;
+  rdfs:label "Grafana" ;
+  ex:description "An open-source observability platform for visualizing metrics, logs, and traces from any data source." ;
+  ex:website "https://grafana.com"^^xsd:anyURI ;
+  ex:compatibleWith ex:Prometheus ;
+  ex:license "AGPL-3.0" ;
+  ex:githubStars "~62k" .
+
+ex:Prometheus a ex:MonitoringTool ;
+  rdfs:label "Prometheus" ;
+  ex:description "An open-source systems monitoring toolkit with dimensional time-series data and a powerful query language." ;
+  ex:website "https://prometheus.io"^^xsd:anyURI ;
+  ex:creator "CNCF" ;
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~54k" ;
+  ex:integratesWith ex:Grafana ;
+  ex:integratesWith ex:Kubernetes .
+
+ex:NewRelic a ex:MonitoringTool ;
+  rdfs:label "New Relic" ;
+  ex:description "A full-stack observability platform for APM, infrastructure, browser, and log monitoring." ;
+  ex:website "https://newrelic.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:Datadog .
+
+ex:LogRocket a ex:MonitoringTool ;
+  rdfs:label "LogRocket" ;
+  ex:description "A frontend monitoring solution with session replay, error tracking, and performance analysis for React apps." ;
+  ex:website "https://logrocket.com"^^xsd:anyURI ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:NextJS ;
+  ex:alternativeTo ex:Sentry .
+
+ex:OpenTelemetry a ex:MonitoringTool ;
+  rdfs:label "OpenTelemetry" ;
+  ex:description "A CNCF framework providing APIs and SDKs for collecting distributed traces, metrics, and logs." ;
+  ex:website "https://opentelemetry.io"^^xsd:anyURI ;
+  ex:creator "CNCF" ;
+  ex:compatibleWith ex:Grafana ;
+  ex:compatibleWith ex:Prometheus ;
+  ex:compatibleWith ex:Datadog ;
+  ex:license "Apache-2.0" .
+
+# ============================================================
+# MESSAGE BROKERS
+# ============================================================
+
+ex:ApacheKafka a ex:MessageBroker ;
+  rdfs:label "Apache Kafka" ;
+  ex:description "A distributed event streaming platform for high-throughput, fault-tolerant pipelines and real-time data processing." ;
+  ex:website "https://kafka.apache.org"^^xsd:anyURI ;
+  ex:creator "Apache / LinkedIn" ;
+  ex:firstRelease "2011" ;
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~27k" .
+
+ex:RabbitMQ a ex:MessageBroker ;
+  rdfs:label "RabbitMQ" ;
+  ex:description "An open-source AMQP message broker supporting multiple messaging protocols and queue patterns." ;
+  ex:website "https://www.rabbitmq.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:ApacheKafka ;
+  ex:firstRelease "2007" ;
+  ex:license "MPL-2.0" .
+
+ex:NATS a ex:MessageBroker ;
+  rdfs:label "NATS" ;
+  ex:description "A simple, secure, and high-performance messaging system for cloud-native and edge distributed systems." ;
+  ex:website "https://nats.io"^^xsd:anyURI ;
+  ex:alternativeTo ex:RabbitMQ ;
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~15k" .
+
+ex:BullMQ a ex:MessageBroker ;
+  rdfs:label "BullMQ" ;
+  ex:description "A Node.js job queue library backed by Redis for reliable background job processing and scheduling." ;
+  ex:website "https://docs.bullmq.io"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Redis ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:compatibleWith ex:NestJS ;
+  ex:alternativeTo ex:RabbitMQ ;
+  ex:npmPackage "bullmq" .
+
+ex:Inngest a ex:MessageBroker ;
+  rdfs:label "Inngest" ;
+  ex:description "An event-driven workflow platform for durable functions, background jobs, and scheduled tasks." ;
+  ex:website "https://www.inngest.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:NextJS ;
+  ex:compatibleWith ex:Express ;
+  ex:alternativeTo ex:BullMQ .
+
+# ============================================================
+# SEARCH TOOLS
+# ============================================================
+
+ex:Algolia a ex:SearchTool ;
+  rdfs:label "Algolia" ;
+  ex:description "A hosted search and discovery API with instant, typo-tolerant results for any content type." ;
+  ex:website "https://www.algolia.com"^^xsd:anyURI ;
+  ex:compatibleWith ex:NextJS ;
+  ex:compatibleWith ex:React ;
+  ex:npmPackage "algoliasearch" .
+
+ex:MeiliSearch a ex:SearchTool ;
+  rdfs:label "Meilisearch" ;
+  ex:description "An open-source, blazing-fast search engine built in Rust for delivering delightful search experiences." ;
+  ex:website "https://www.meilisearch.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:Algolia ;
+  ex:license "MIT" ;
+  ex:githubStars "~46k" .
+
+ex:Typesense a ex:SearchTool ;
+  rdfs:label "Typesense" ;
+  ex:description "An open-source, typo-tolerant search engine designed for instant, relevant search with minimal config." ;
+  ex:website "https://typesense.org"^^xsd:anyURI ;
+  ex:alternativeTo ex:Algolia ;
+  ex:license "GPL-3.0" ;
+  ex:githubStars "~20k" .
+
+ex:FuseJS a ex:SearchTool ;
+  rdfs:label "Fuse.js" ;
+  ex:description "A lightweight, zero-dependency fuzzy-search JavaScript library for client-side search scenarios." ;
+  ex:website "https://www.fusejs.io"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:compatibleWith ex:React ;
+  ex:githubStars "~17k" ;
+  ex:npmPackage "fuse.js" .
+
+# ============================================================
+# STORAGE SERVICES
+# ============================================================
+
+ex:AWSS3 a ex:StorageService ;
+  rdfs:label "AWS S3" ;
+  ex:description "Amazon's industry-standard object storage with 11-nines durability. The S3 API is the de-facto standard." ;
+  ex:website "https://aws.amazon.com/s3"^^xsd:anyURI ;
+  ex:creator "Amazon" ;
+  ex:firstRelease "2006" ;
+  ex:hostedBy ex:AWS .
+
+ex:CloudflareR2 a ex:StorageService ;
+  rdfs:label "Cloudflare R2" ;
+  ex:description "S3-compatible object storage with zero egress fees, globally distributed on Cloudflare's network." ;
+  ex:website "https://www.cloudflare.com/products/r2"^^xsd:anyURI ;
+  ex:alternativeTo ex:AWSS3 ;
+  ex:compatibleWith ex:NextJS .
+
+ex:VercelBlob a ex:StorageService ;
+  rdfs:label "Vercel Blob" ;
+  ex:description "Simple blob storage for media files in Next.js and Vercel-hosted projects with global CDN delivery." ;
+  ex:website "https://vercel.com/docs/storage/vercel-blob"^^xsd:anyURI ;
+  ex:creator "Vercel" ;
+  ex:compatibleWith ex:NextJS .
+
+ex:MinIO a ex:StorageService ;
+  rdfs:label "MinIO" ;
+  ex:description "A high-performance, S3-compatible object storage for on-premise and private cloud deployments." ;
+  ex:website "https://min.io"^^xsd:anyURI ;
+  ex:alternativeTo ex:AWSS3 ;
+  ex:license "AGPL-3.0" ;
+  ex:githubStars "~47k" .
+
+ex:SupabaseStorage a ex:StorageService ;
+  rdfs:label "Supabase Storage" ;
+  ex:description "S3-compatible file storage built into Supabase with RLS policies and on-the-fly image transformations." ;
+  ex:website "https://supabase.com/docs/guides/storage"^^xsd:anyURI ;
+  ex:isBuiltOn ex:Supabase ;
+  ex:compatibleWith ex:NextJS ;
+  ex:alternativeTo ex:AWSS3 .
+
+# ============================================================
+# VALIDATION LIBRARIES
+# ============================================================
+
+ex:Yup a ex:ValidationLib ;
+  rdfs:label "Yup" ;
+  ex:description "A JavaScript schema builder for value parsing and validation, commonly paired with Formik forms." ;
+  ex:website "https://github.com/jquense/yup"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:Zod ;
+  ex:githubStars "~22k" ;
+  ex:npmPackage "yup" .
+
+ex:Joi a ex:ValidationLib ;
+  rdfs:label "Joi" ;
+  ex:description "The most powerful JavaScript schema validation library, extensively used in Node.js backend validation." ;
+  ex:website "https://joi.dev"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:Zod ;
+  ex:compatibleWith ex:Express ;
+  ex:npmPackage "joi" .
+
+ex:ArkType a ex:ValidationLib ;
+  rdfs:label "ArkType" ;
+  ex:description "TypeScript's 1:1 validator with runtime speed up to 100x faster than Zod and full static type inference." ;
+  ex:website "https://arktype.io"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:Zod ;
+  ex:npmPackage "arktype" .
+
+ex:TypeBox a ex:ValidationLib ;
+  rdfs:label "TypeBox" ;
+  ex:description "A JSON Schema type builder for TypeScript with static inference and fast runtime validation via Ajv." ;
+  ex:website "https://github.com/sinclairzx81/typebox"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:Zod ;
+  ex:compatibleWith ex:Fastify ;
+  ex:npmPackage "@sinclair/typebox" .
+
+# ============================================================
+# DESIGN TOOLS
+# ============================================================
+
+ex:Figma a ex:DesignTool ;
+  rdfs:label "Figma" ;
+  ex:description "A collaborative browser-based UI/UX design tool for creating prototypes, components, and design systems." ;
+  ex:website "https://www.figma.com"^^xsd:anyURI ;
+  ex:firstRelease "2016" ;
+  ex:creator "Adobe" ;
+  ex:integratesWith ex:React ;
+  ex:integratesWith ex:TailwindCSS .
+
+ex:Penpot a ex:DesignTool ;
+  rdfs:label "Penpot" ;
+  ex:description "An open-source, web-standards-based design and prototyping tool, fully self-hostable." ;
+  ex:website "https://penpot.app"^^xsd:anyURI ;
+  ex:alternativeTo ex:Figma ;
+  ex:license "MPL-2.0" ;
+  ex:githubStars "~30k" .
+
+ex:FramerDesign a ex:DesignTool ;
+  rdfs:label "Framer" ;
+  ex:description "A no-code design and publishing tool for building interactive websites directly from design components." ;
+  ex:website "https://www.framer.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:Figma ;
+  ex:integratesWith ex:React .
+
+# ============================================================
+# MOBILE & DESKTOP FRAMEWORKS
+# ============================================================
+
+ex:ReactNative a ex:MobileFramework ;
+  rdfs:label "React Native" ;
+  ex:description "A framework for building native Android and iOS apps using React components and JavaScript/TypeScript." ;
+  ex:website "https://reactnative.dev"^^xsd:anyURI ;
+  ex:isBuiltOn ex:React ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:creator "Meta" ;
+  ex:firstRelease "2015" ;
+  ex:githubStars "~118k" ;
+  ex:license "MIT" .
+
+ex:Expo a ex:MobileFramework ;
+  rdfs:label "Expo" ;
+  ex:description "An open-source platform for building universal React Native apps for Android, iOS, and the web." ;
+  ex:website "https://expo.dev"^^xsd:anyURI ;
+  ex:isBuiltOn ex:ReactNative ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:githubStars "~33k" ;
+  ex:npmPackage "expo" .
+
+ex:Flutter a ex:MobileFramework ;
+  rdfs:label "Flutter" ;
+  ex:description "Google's UI toolkit for building natively compiled apps for mobile, web, and desktop from a single Dart codebase." ;
+  ex:website "https://flutter.dev"^^xsd:anyURI ;
+  ex:usesLanguage ex:Dart ;
+  ex:creator "Google" ;
+  ex:firstRelease "2018" ;
+  ex:githubStars "~165k" ;
+  ex:alternativeTo ex:ReactNative .
+
+ex:Capacitor a ex:MobileFramework ;
+  rdfs:label "Capacitor" ;
+  ex:description "A cross-platform native runtime by Ionic for building web-native apps targeting iOS, Android, and web." ;
+  ex:website "https://capacitorjs.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:ReactNative ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:Vue .
+
+ex:Tauri a ex:DesktopFramework ;
+  rdfs:label "Tauri" ;
+  ex:description "A framework for building secure, lightweight desktop apps using web frontend tech with a Rust backend." ;
+  ex:website "https://tauri.app"^^xsd:anyURI ;
+  ex:usesLanguage ex:Rust ;
+  ex:alternativeTo ex:Electron ;
+  ex:githubStars "~82k" ;
+  ex:license "MIT" ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:Vue ;
+  ex:compatibleWith ex:Svelte .
+
+ex:Electron a ex:DesktopFramework ;
+  rdfs:label "Electron" ;
+  ex:description "A framework for building cross-platform desktop apps with web technologies — used by VS Code and Slack." ;
+  ex:website "https://www.electronjs.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:isBuiltOn ex:NodeJS ;
+  ex:creator "GitHub / Microsoft" ;
+  ex:firstRelease "2013" ;
+  ex:githubStars "~114k" ;
+  ex:license "MIT" .
+
+# ============================================================
+# MORE BACKEND FRAMEWORKS
+# ============================================================
+
+ex:SpringBoot a ex:Framework ;
+  rdfs:label "Spring Boot" ;
+  ex:description "An opinionated Java framework for creating stand-alone, production-grade Spring applications." ;
+  ex:website "https://spring.io/projects/spring-boot"^^xsd:anyURI ;
+  ex:usesLanguage ex:Java ;
+  ex:firstRelease "2014" ;
+  ex:githubStars "~74k" ;
+  ex:license "Apache-2.0" ;
+  ex:alternativeTo ex:NestJS .
+
+ex:PhoenixFramework a ex:Framework ;
+  rdfs:label "Phoenix Framework" ;
+  ex:description "A productive, reliable Elixir web framework featuring LiveView for real-time server-rendered UIs." ;
+  ex:website "https://www.phoenixframework.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:Elixir ;
+  ex:githubStars "~20k" ;
+  ex:license "MIT" ;
+  ex:alternativeTo ex:NestJS .
+
+ex:Ktor a ex:Framework ;
+  rdfs:label "Ktor" ;
+  ex:description "An asynchronous Kotlin web framework by JetBrains for building APIs and microservices." ;
+  ex:website "https://ktor.io"^^xsd:anyURI ;
+  ex:usesLanguage ex:Kotlin ;
+  ex:creator "JetBrains" ;
+  ex:githubStars "~12k" ;
+  ex:license "Apache-2.0" .
+
+ex:GinGo a ex:Framework ;
+  rdfs:label "Gin" ;
+  ex:description "A high-performance HTTP web framework for Go with a Martini-like API. 40x faster than httprouter." ;
+  ex:website "https://gin-gonic.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:Go ;
+  ex:githubStars "~78k" ;
+  ex:license "MIT" ;
+  ex:alternativeTo ex:Express .
+
+ex:FiberGo a ex:Framework ;
+  rdfs:label "Fiber (Go)" ;
+  ex:description "An Express-inspired web framework for Go built on top of Fasthttp, the fastest Go HTTP engine." ;
+  ex:website "https://gofiber.io"^^xsd:anyURI ;
+  ex:usesLanguage ex:Go ;
+  ex:alternativeTo ex:GinGo ;
+  ex:githubStars "~33k" ;
+  ex:license "MIT" .
+
+ex:DotNET a ex:Framework ;
+  rdfs:label "ASP.NET Core" ;
+  ex:description "Microsoft's cross-platform, high-performance framework for building web APIs and apps in C#." ;
+  ex:website "https://dotnet.microsoft.com/apps/aspnet"^^xsd:anyURI ;
+  ex:usesLanguage ex:CSharp ;
+  ex:creator "Microsoft" ;
+  ex:firstRelease "2016" ;
+  ex:githubStars "~34k" ;
+  ex:license "MIT" ;
+  ex:alternativeTo ex:NestJS .
+
+ex:Vapor a ex:Framework ;
+  rdfs:label "Vapor" ;
+  ex:description "A server-side Swift web framework for building APIs and web apps on Apple's Swift ecosystem." ;
+  ex:website "https://vapor.codes"^^xsd:anyURI ;
+  ex:usesLanguage ex:Swift ;
+  ex:githubStars "~24k" ;
+  ex:license "MIT" ;
+  ex:alternativeTo ex:Express .
+
+# ============================================================
+# ADDITIONAL LIBRARIES
+# ============================================================
+
+ex:Lodash a ex:Library ;
+  rdfs:label "Lodash" ;
+  ex:description "A modern JavaScript utility library with modularity, performance, and functional programming helpers." ;
+  ex:website "https://lodash.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:githubStars "~59k" ;
+  ex:npmPackage "lodash" .
+
+ex:DateFns a ex:Library ;
+  rdfs:label "date-fns" ;
+  ex:description "A modern JavaScript date utility library with 200+ pure, immutable, and tree-shakeable functions." ;
+  ex:website "https://date-fns.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:githubStars "~34k" ;
+  ex:npmPackage "date-fns" .
+
+ex:DayJS a ex:Library ;
+  rdfs:label "Day.js" ;
+  ex:description "A 2kB immutable date library with a Moment.js-compatible API for parsing and formatting dates." ;
+  ex:website "https://day.js.org"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:DateFns ;
+  ex:githubStars "~46k" ;
+  ex:npmPackage "dayjs" .
+
+ex:Immer a ex:Library ;
+  rdfs:label "Immer" ;
+  ex:description "Create the next immutable state by mutating the current one. Integrates with Redux Toolkit and Zustand." ;
+  ex:website "https://immerjs.github.io/immer"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:Redux ;
+  ex:compatibleWith ex:Zustand ;
+  ex:githubStars "~27k" ;
+  ex:npmPackage "immer" .
+
+ex:RxJS a ex:Library ;
+  rdfs:label "RxJS" ;
+  ex:description "A library for reactive programming using Observables to compose async and event-based programs." ;
+  ex:website "https://rxjs.dev"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:Angular ;
+  ex:githubStars "~30k" ;
+  ex:npmPackage "rxjs" .
+
+ex:MSW a ex:TestingTool ;
+  rdfs:label "Mock Service Worker" ;
+  ex:description "An API mocking library using Service Workers to intercept real HTTP requests for testing." ;
+  ex:website "https://mswjs.io"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:NextJS ;
+  ex:githubStars "~16k" ;
+  ex:npmPackage "msw" .
+
+ex:CVA a ex:Library ;
+  rdfs:label "Class Variance Authority" ;
+  ex:description "A utility for building type-safe, variant-based UI component styles with Tailwind CSS." ;
+  ex:website "https://cva.style"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:TailwindCSS ;
+  ex:compatibleWith ex:React ;
+  ex:npmPackage "class-variance-authority" .
+
+ex:Clsx a ex:Library ;
+  rdfs:label "clsx" ;
+  ex:description "A tiny utility for constructing className strings conditionally. Essential companion to Tailwind CSS." ;
+  ex:website "https://github.com/lukeed/clsx"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:TailwindCSS ;
+  ex:githubStars "~9k" ;
+  ex:npmPackage "clsx" .
+
+ex:Sharp a ex:Library ;
+  rdfs:label "Sharp" ;
+  ex:description "A high-performance Node.js image processing library supporting resize, convert, and optimize operations." ;
+  ex:website "https://sharp.pixelplumbing.com"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:compatibleWith ex:NextJS ;
+  ex:githubStars "~29k" ;
+  ex:npmPackage "sharp" .
+
+ex:Dotenv a ex:Library ;
+  rdfs:label "dotenv" ;
+  ex:description "A zero-dependency module that loads environment variables from a .env file into process.env." ;
+  ex:website "https://github.com/motdotla/dotenv"^^xsd:anyURI ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:compatibleWith ex:NodeJS ;
+  ex:githubStars "~19k" ;
+  ex:npmPackage "dotenv" .
+
+ex:Formik a ex:Library ;
+  rdfs:label "Formik" ;
+  ex:description "The world's most popular React and React Native form library for managing form state and validation." ;
+  ex:website "https://formik.org"^^xsd:anyURI ;
+  ex:isBuiltOn ex:React ;
+  ex:compatibleWith ex:Yup ;
+  ex:githubStars "~33k" ;
+  ex:npmPackage "formik" .
+
+ex:TanStackVirtualizer a ex:Library ;
+  rdfs:label "TanStack Virtual" ;
+  ex:description "A headless virtualizer for any list, grid, or table — renders only visible rows for performance." ;
+  ex:website "https://tanstack.com/virtual"^^xsd:anyURI ;
+  ex:compatibleWith ex:React ;
+  ex:compatibleWith ex:Vue ;
+  ex:npmPackage "@tanstack/react-virtual" .
+
+# ============================================================
+# MORE CSS / STYLE TOOLS
+# ============================================================
+
+ex:PandaCSS a ex:CSSFramework ;
+  rdfs:label "Panda CSS" ;
+  ex:description "A CSS-in-JS tool generating atomic CSS at build time with type-safe, framework-agnostic style functions." ;
+  ex:website "https://panda-css.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:TailwindCSS ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:compatibleWith ex:React .
+
+ex:StyleX a ex:CSSFramework ;
+  rdfs:label "StyleX" ;
+  ex:description "Meta's styling system that generates atomic CSS at compile time with zero runtime overhead." ;
+  ex:website "https://stylexjs.com"^^xsd:anyURI ;
+  ex:creator "Meta" ;
+  ex:alternativeTo ex:TailwindCSS ;
+  ex:compatibleWith ex:React ;
+  ex:license "MIT" .
+
+ex:VanillaExtract a ex:CSSFramework ;
+  rdfs:label "Vanilla Extract" ;
+  ex:description "Zero-runtime stylesheets in TypeScript. Write type-safe, locally scoped CSS with static extraction." ;
+  ex:website "https://vanilla-extract.style"^^xsd:anyURI ;
+  ex:usesLanguage ex:TypeScript ;
+  ex:alternativeTo ex:TailwindCSS ;
+  ex:compatibleWith ex:React .
+
+ex:OpenProps a ex:CSSFramework ;
+  rdfs:label "Open Props" ;
+  ex:description "Supercharged CSS variables (custom properties) for a design-token-based styling approach." ;
+  ex:website "https://open-props.style"^^xsd:anyURI ;
+  ex:usesLanguage ex:CSS ;
+  ex:alternativeTo ex:TailwindCSS .
+
+# ============================================================
+# ADDITIONAL API TOOLS
+# ============================================================
+
+ex:OpenAPI a ex:APITool ;
+  rdfs:label "OpenAPI / Swagger" ;
+  ex:description "A specification for describing RESTful APIs enabling documentation, code generation, and client SDKs." ;
+  ex:website "https://swagger.io/specification/"^^xsd:anyURI ;
+  ex:compatibleWith ex:Express ;
+  ex:compatibleWith ex:Fastify ;
+  ex:compatibleWith ex:NestJS ;
+  ex:compatibleWith ex:FastAPI .
+
+ex:gRPC a ex:APITool ;
+  rdfs:label "gRPC" ;
+  ex:description "A high-performance, open-source RPC framework using Protocol Buffers and HTTP/2, by Google." ;
+  ex:website "https://grpc.io"^^xsd:anyURI ;
+  ex:creator "Google" ;
+  ex:alternativeTo ex:tRPC ;
+  ex:usesLanguage ex:Go ;
+  ex:compatibleWith ex:Python ;
+  ex:license "Apache-2.0" .
+
+ex:Hapi a ex:APITool ;
+  rdfs:label "Hapi.js" ;
+  ex:description "A rich framework for building applications and services in Node.js with a configuration-over-code approach." ;
+  ex:website "https://hapi.dev"^^xsd:anyURI ;
+  ex:isBuiltOn ex:NodeJS ;
+  ex:usesLanguage ex:JavaScript ;
+  ex:alternativeTo ex:Express .
+
+# ============================================================
+# ADDITIONAL DATABASES
+# ============================================================
+
+ex:ClickHouse a ex:Database ;
+  rdfs:label "ClickHouse" ;
+  ex:description "An open-source column-oriented OLAP database for high-performance analytics and real-time queries." ;
+  ex:website "https://clickhouse.com"^^xsd:anyURI ;
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~36k" .
+
+ex:Fauna a ex:Database ;
+  rdfs:label "Fauna" ;
+  ex:description "A distributed, serverless document-relational database with GraphQL API and ACID transactions." ;
+  ex:website "https://fauna.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:MongoDB ;
+  ex:compatibleWith ex:GraphQL .
+
+ex:ArangoDB a ex:Database ;
+  rdfs:label "ArangoDB" ;
+  ex:description "A native multi-model database supporting document, graph, and key-value models in a single engine." ;
+  ex:website "https://arangodb.com"^^xsd:anyURI ;
+  ex:alternativeTo ex:MongoDB ;
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~13k" .
+
+ex:Pinecone a ex:Database ;
+  rdfs:label "Pinecone" ;
+  ex:description "A managed vector database purpose-built for machine learning and AI applications with similarity search." ;
+  ex:website "https://www.pinecone.io"^^xsd:anyURI .
+
+ex:Weaviate a ex:Database ;
+  rdfs:label "Weaviate" ;
+  ex:description "An open-source vector database with built-in ML model integrations for semantic search and RAG." ;
+  ex:website "https://weaviate.io"^^xsd:anyURI ;
+  ex:license "BSD-3-Clause" ;
+  ex:githubStars "~10k" ;
+  ex:alternativeTo ex:Pinecone .
+
+ex:LibSQL a ex:Database ;
+  rdfs:label "libSQL" ;
+  ex:description "An open-source fork of SQLite extended with features like replication, encryption, and HTTP access." ;
+  ex:website "https://github.com/tursodatabase/libsql"^^xsd:anyURI ;
+  ex:isBuiltOn ex:SQLite ;
+  ex:creator "Turso" ;
+  ex:compatibleWith ex:Drizzle ;
+  ex:license "MIT" .

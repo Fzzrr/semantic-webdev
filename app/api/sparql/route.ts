@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         const data = await querySPARQL(getStatsQuery());
         statsResults = data.results.bindings.length
           ? data.results.bindings.map((binding) => ({
-              type: localName(binding.type?.value || binding.typeLabel?.value || "Technology"),
+              type: localName(binding.type?.value || "Technology"),
               typeLabel: binding.typeLabel?.value || localName(binding.type?.value || "Technology"),
               count: Number(binding.count?.value || 0),
             }))

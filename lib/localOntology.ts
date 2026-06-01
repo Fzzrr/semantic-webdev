@@ -10,7 +10,7 @@ const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
 const RDFS_SUBCLASS = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 const RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
 
-type LocalRelationMap = Record<string, { name: string; label: string }[]>;
+type LocalRelationMap = Record<string, { name: string; label: string; website?: string }[]>;
 
 interface LocalTechDetail extends Technology {
   relations: LocalRelationMap;
@@ -114,6 +114,10 @@ async function loadLocalOntology(): Promise<LocalOntologyIndex> {
     const website = literalValues.get(subject)?.[`${EX}website`]?.[0] || "";
     const version = literalValues.get(subject)?.[`${EX}version`]?.[0] || "";
     const githubStars = literalValues.get(subject)?.[`${EX}githubStars`]?.[0] || "";
+    const license = literalValues.get(subject)?.[`${EX}license`]?.[0] || "";
+    const firstRelease = literalValues.get(subject)?.[`${EX}firstRelease`]?.[0] || "";
+    const creator = literalValues.get(subject)?.[`${EX}creator`]?.[0] || "";
+    const npmPackage = literalValues.get(subject)?.[`${EX}npmPackage`]?.[0] || "";
 
     const relations: LocalRelationMap = {};
     const subjectResources = resourceValues.get(subject) || {};
@@ -124,9 +128,10 @@ async function loadLocalOntology(): Promise<LocalOntologyIndex> {
       for (const target of Array.from(targets)) {
         const targetName = localName(target);
         const targetLabel = literalValues.get(target)?.[RDFS_LABEL]?.[0] || targetName;
+        const targetWebsite = literalValues.get(target)?.[`${EX}website`]?.[0] || "";
         if (!relations[prop]) relations[prop] = [];
         if (!relations[prop].some((item) => item.name === targetName)) {
-          relations[prop].push({ name: targetName, label: targetLabel });
+          relations[prop].push({ name: targetName, label: targetLabel, website: targetWebsite });
         }
       }
     }
@@ -141,6 +146,10 @@ async function loadLocalOntology(): Promise<LocalOntologyIndex> {
       website,
       version,
       githubStars,
+      license,
+      firstRelease,
+      creator,
+      npmPackage,
       relations,
     };
 
@@ -193,8 +202,43 @@ export async function getLocalTechDetail(name: string) {
   return index.technologiesByName.get(name) || null;
 }
 
+export async function getLocalAllRelations() {
+  const index = await getLocalOntologyIndex();
+  const triples: Array<{
+    subject: string;
+    subjectLabel: string;
+    subjectType: string;
+    predicate: string;
+    object: string;
+    objectLabel: string;
+    objectType: string;
+  }> = [];
+
+  for (const tech of index.technologies) {
+    const detail = index.technologiesByName.get(tech.name);
+    if (!detail) continue;
+    for (const [predicate, targets] of Object.entries(detail.relations)) {
+      for (const target of targets) {
+        const targetDetail = index.technologiesByName.get(target.name);
+        triples.push({
+          subject: tech.name,
+          subjectLabel: tech.label,
+          subjectType: tech.type,
+          predicate,
+          object: target.name,
+          objectLabel: target.label,
+          objectType: targetDetail?.type || "Technology",
+        });
+      }
+    }
+  }
+
+  return triples;
+}
+
 export async function getLocalStats() {
-  const items = await getLocalTechnologies();
+  const index = await getLocalOntologyIndex();
+  const items = index.technologies;
   const counts: Record<string, number> = {};
 
   for (const item of items) {
@@ -202,6 +246,13 @@ export async function getLocalStats() {
   }
 
   return Object.entries(counts)
-    .map(([type, count]) => ({ type, typeLabel: type, count }))
+    .map(([type, count]) => {
+      const typeUri = `${EX}${type}`;
+      return {
+        type,
+        typeLabel: index.classLabels.get(typeUri) || type,
+        count,
+      };
+    })
     .sort((a, b) => b.count - a.count);
 }

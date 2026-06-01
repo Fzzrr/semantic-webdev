@@ -32,7 +32,11 @@ export async function GET(
         website: b.website?.value || "",
         version: b.version?.value || "",
         githubStars: b.githubStars?.value || "",
-        relations: {} as Record<string, { name: string; label: string }[]>,
+        license: b.license?.value || "",
+        firstRelease: b.firstRelease?.value || "",
+        creator: b.creator?.value || "",
+        npmPackage: b.npmPackage?.value || "",
+        relations: {} as Record<string, { name: string; label: string; website?: string }[]>,
       };
 
       try {
@@ -41,12 +45,13 @@ export async function GET(
           const prop = localName(r.property?.value || "");
           const relName = localName(r.relatedTech?.value || "");
           const relLabel = r.relatedLabel?.value || relName;
+          const relWebsite = r.relatedWebsite?.value || "";
 
           if (!prop || prop === "type") continue;
           if (!tech.relations[prop]) tech.relations[prop] = [];
 
           if (!tech.relations[prop].some((x) => x.name === relName)) {
-            tech.relations[prop].push({ name: relName, label: relLabel });
+            tech.relations[prop].push({ name: relName, label: relLabel, website: relWebsite });
           }
         }
       } catch {

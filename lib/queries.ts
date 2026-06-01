@@ -12,12 +12,13 @@ function buildTechnologyPattern(category?: string) {
     return `
   ?tech a ex:${category} .
   BIND(ex:${category} AS ?type)
+  OPTIONAL { ex:${category} rdfs:label ?explicitTypeLabel }
   OPTIONAL { ?tech rdfs:label ?label }
   OPTIONAL { ?tech ex:description ?description }
   OPTIONAL { ?tech ex:website ?website }
   OPTIONAL { ?tech ex:version ?version }
   OPTIONAL { ?tech ex:githubStars ?githubStars }
-  BIND("${category}" AS ?typeLabel)
+  BIND(COALESCE(?explicitTypeLabel, "${category}") AS ?typeLabel)
 `;
   }
 
@@ -94,7 +95,6 @@ ${PREFIX}
 SELECT DISTINCT ?tech ?label ?type ?typeLabel ?description ?website ?version ?githubStars
 WHERE {
 ${buildTechnologyPattern(category)}
-  BIND("${category}" AS ?typeLabel)
 }
 ORDER BY ?label
 `;
@@ -104,7 +104,7 @@ ORDER BY ?label
  */
 export const getTechDetailQuery = (name: string) => `
 ${PREFIX}
-SELECT DISTINCT ?label ?type ?typeLabel ?description ?website ?version ?githubStars
+SELECT DISTINCT ?label ?type ?typeLabel ?description ?website ?version ?githubStars ?license ?firstRelease ?creator ?npmPackage
 WHERE {
   ex:${name} a ?type .
   ?type rdfs:subClassOf* ex:Technology .
@@ -113,6 +113,10 @@ WHERE {
   OPTIONAL { ex:${name} ex:website ?website }
   OPTIONAL { ex:${name} ex:version ?version }
   OPTIONAL { ex:${name} ex:githubStars ?githubStars }
+  OPTIONAL { ex:${name} ex:license ?license }
+  OPTIONAL { ex:${name} ex:firstRelease ?firstRelease }
+  OPTIONAL { ex:${name} ex:creator ?creator }
+  OPTIONAL { ex:${name} ex:npmPackage ?npmPackage }
   OPTIONAL { ?type rdfs:label ?typeLabel }
   FILTER(?type != ex:Technology)
 }
@@ -123,13 +127,14 @@ WHERE {
  */
 export const getTechRelationsQuery = (name: string) => `
 ${PREFIX}
-SELECT DISTINCT ?property ?relatedTech ?relatedLabel
+SELECT DISTINCT ?property ?relatedTech ?relatedLabel ?relatedWebsite
 WHERE {
   {
     ex:${name} ?property ?relatedTech .
     ?relatedTech a ?t .
     ?t rdfs:subClassOf* ex:Technology .
     OPTIONAL { ?relatedTech rdfs:label ?relatedLabel }
+    OPTIONAL { ?relatedTech ex:website ?relatedWebsite }
     FILTER(?property != rdf:type)
   }
   UNION
@@ -138,6 +143,7 @@ WHERE {
     ?relatedTech a ?t .
     ?t rdfs:subClassOf* ex:Technology .
     OPTIONAL { ?relatedTech rdfs:label ?relatedLabel }
+    OPTIONAL { ?relatedTech ex:website ?relatedWebsite }
     FILTER(?property != rdf:type)
   }
 }
@@ -176,13 +182,13 @@ ORDER BY ?label
  */
 export const getStatsQuery = () => `
 ${PREFIX}
-SELECT ?typeLabel (COUNT(?tech) AS ?count)
+SELECT ?type ?typeLabel (COUNT(?tech) AS ?count)
 WHERE {
   ?tech a ?type .
   ?type rdfs:subClassOf* ex:Technology .
   FILTER(?type != ex:Technology)
   OPTIONAL { ?type rdfs:label ?typeLabel }
 }
-GROUP BY ?typeLabel
+GROUP BY ?type ?typeLabel
 ORDER BY DESC(?count)
 `;

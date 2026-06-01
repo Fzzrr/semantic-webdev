@@ -421,7 +421,7 @@ export default function Home() {
                               href={selectedTechDetail?.website || selectedTech.website || "#"}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="font-mono text-xs text-[#b4c5ff] hover:underline break-all inline-flex items-center gap-1"
+                              className="font-mono text-xs text-[#b4c5ff] no-underline  break-all inline-flex items-center gap-1 "
                             >
                               <span className="material-symbols-outlined text-xs">link</span>
                               {(selectedTechDetail?.website || selectedTech.website || "").replace(/^https?:\/\/(www\.)?/, "")}

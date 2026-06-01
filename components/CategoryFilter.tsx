@@ -17,6 +17,8 @@ const CATEGORY_ICONS: Record<string, string> = {
   Language: "code",
   Runtime: "terminal",
   CSSFramework: "css",
+  SemanticWebSpec: "schema",
+  Triplestore: "account_tree",
 };
 
 export default function CategoryFilter({ active, onChange, counts }: CategoryFilterProps) {

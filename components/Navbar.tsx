@@ -6,9 +6,10 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/",       label: "Explorer" },
-    { href: "/sparql", label: "SPARQL" },
-    { href: "/docs",   label: "Docs" },
+    { href: "/",          label: "Explorer" },
+    { href: "/relations", label: "Peta Relasi" },
+    { href: "/sparql",    label: "SPARQL" },
+    { href: "/docs",      label: "Docs" },
   ];
 
   return (

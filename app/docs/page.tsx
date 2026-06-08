@@ -46,7 +46,7 @@ export default function DocsPage() {
     <div className="min-h-screen bg-[#131313] tech-grid-bg text-[#e5e2e1]">
       <Navbar />
 
-      <div className="pt-16 max-w-[1440px] mx-auto px-8 flex gap-10 py-10">
+      <div className="pt-16 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex gap-10 py-10">
         {/* Sidebar nav */}
         <aside className="hidden lg:block w-52 flex-shrink-0">
           <div className="sticky top-24">

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { querySPARQL } from "@/lib/sparql";
 import { runLocalSparql } from "@/lib/localSparql";
 
-// Comunica + n3 butuh runtime Node (bukan Edge).
+// Comunica + n3 butuh runtime Node (bukan Edge). Selalu dinamis (tak di-prerender).
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const { query } = await req.json();

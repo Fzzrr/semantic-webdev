@@ -8,6 +8,7 @@ import SkeletonCard from "@/components/SkeletonCard";
 import StatusBanner from "@/components/StatusBanner";
 import TechLogo from "@/components/TechLogo";
 import RelationGraph from "@/components/RelationGraph";
+import FilterTab from "@/components/FilterTab";
 import type { Technology } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -50,6 +51,9 @@ export default function Home() {
 
   // Sorting state
   const [sortBy, setSortBy] = useState("relevance");
+
+  // Mobile: buka/tutup drawer filter kategori
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Load initial data
   const loadData = useCallback(async (cat: string) => {
@@ -146,6 +150,7 @@ export default function Home() {
 
   const handleCategoryChange = (cat: string) => {
     setCategory(cat);
+    setFiltersOpen(false); // tutup drawer setelah pilih (mobile)
   };
 
   const router = useRouter();
@@ -164,9 +169,23 @@ export default function Home() {
       <Navbar />
 
       <div className="flex pt-16 min-h-screen">
-        
-        {/* Left SideNavBar: Shared Component Filter */}
-        <aside className="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-64 py-6 bg-[#1b1b1b] border-r border-[#333333] custom-scrollbar overflow-y-auto">
+
+        {/* Mobile: pull-tab penarik filter (menempel di tepi kiri) */}
+        {!filtersOpen && <FilterTab onClick={() => setFiltersOpen(true)} />}
+
+        {/* Backdrop drawer (mobile) — fade */}
+        <div
+          className={`md:hidden fixed inset-0 top-16 z-30 bg-black/60 transition-opacity duration-300 ${
+            filtersOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+          onClick={() => setFiltersOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Left SideNavBar: Shared Component Filter — slide */}
+        <aside className={`flex flex-col fixed left-0 top-16 bottom-0 w-64 py-6 bg-[#1b1b1b] border-r border-[#333333] custom-scrollbar overflow-y-auto z-40 transition-transform duration-300 ease-out ${
+          filtersOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}>
 <div className="px-4 space-y-1">
             <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Categories</p>
             {CATEGORIES.map((cat) => {
@@ -211,9 +230,9 @@ export default function Home() {
         </aside>
 
         {/* Main Content Area (Canvas) */}
-        <main className="flex-1 lg:ml-64 p-8 min-h-screen">
+        <main className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8 min-h-screen">
           <div className="max-w-[1200px] mx-auto">
-            
+
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
               <div>
@@ -223,7 +242,7 @@ export default function Home() {
                     Semantic Web
                   </span>
                 </div>
-                <h1 className="font-headline text-5xl font-bold leading-tight mb-3">
+                <h1 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-3">
                   <span className="text-[#e5e2e1]">Web Dev </span>
                   <span className="bg-gradient-to-r from-[#b4c5ff] via-[#7c9fff] to-[#4f7bff] bg-clip-text text-transparent">
                     Knowledge Graph

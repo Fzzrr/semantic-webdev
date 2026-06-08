@@ -27,12 +27,17 @@ async function getStore(): Promise<Store> {
   return storePromise;
 }
 
-// Satu engine bisa dipakai ulang antar request.
-const engine = new QueryEngine();
+// Engine dibuat lazy (sekali, saat query pertama dijalankan) agar Comunica TIDAK
+// dievaluasi saat build/import — ini mencegah error "Failed to collect page data".
+let engine: QueryEngine | null = null;
+function getEngine(): QueryEngine {
+  if (!engine) engine = new QueryEngine();
+  return engine;
+}
 
 export async function runLocalSparql(query: string): Promise<LocalSparqlResult> {
   const store = await getStore();
-  const result = await engine.query(query, { sources: [store] });
+  const result = await getEngine().query(query, { sources: [store] });
 
   if (result.resultType === "bindings") {
     const stream = await result.execute();

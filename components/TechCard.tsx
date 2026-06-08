@@ -49,12 +49,12 @@ export default function TechCard({
             <div className="flex justify-between items-center mb-2">
               <h4 className="font-headline text-lg font-bold text-[#e5e2e1] group-hover:text-[#b4c5ff] transition-colors">{label}</h4>
               <span className="bg-[#353535] text-[#b4c5ff] font-mono text-[10px] px-2 py-0.5 rounded border border-[#333333]">
-                {githubStars ? `${githubStars} Stars` : "Terverifikasi"}
+                {githubStars ? `${githubStars} Stars` : "Verified"}
               </span>
             </div>
 
             <p className="text-[#c3c6d7] text-xs font-body mb-4 leading-relaxed line-clamp-3 flex-1">
-              {description || "Tidak ada deskripsi yang tersedia untuk teknologi ini."}
+              {description || "No description available for this technology."}
             </p>
           </div>
 

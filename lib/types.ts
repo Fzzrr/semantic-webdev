@@ -58,7 +58,6 @@ export const CATEGORIES = [
   { value: "DesignTool", label: "Design Tool" },
   { value: "SemanticWebSpec", label: "Semantic Web Specification" },
   { value: "Triplestore", label: "Triplestore" },
-  { value: "Technology", label: "Technology" },
 ] as const;
 
 export type CategoryValue = (typeof CATEGORIES)[number]["value"];

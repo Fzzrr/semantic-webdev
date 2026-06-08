@@ -150,34 +150,6 @@ WHERE {
 `;
 
 /**
- * Get all ORMs for a specific database
- */
-export const getORMsForDatabaseQuery = (dbName: string) => `
-${PREFIX}
-SELECT ?orm ?label
-WHERE {
-  ?orm a ex:ORM ;
-       ex:isORMFor ex:${dbName} .
-  OPTIONAL { ?orm rdfs:label ?label }
-}
-ORDER BY ?label
-`;
-
-/**
- * Get all frameworks using a specific library
- */
-export const getFrameworksForLibraryQuery = (libName: string) => `
-${PREFIX}
-SELECT ?framework ?label
-WHERE {
-  ?framework a ex:Framework ;
-             ex:isFrameworkOf ex:${libName} .
-  OPTIONAL { ?framework rdfs:label ?label }
-}
-ORDER BY ?label
-`;
-
-/**
  * Count stats per category
  */
 export const getStatsQuery = () => `

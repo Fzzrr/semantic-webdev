@@ -222,6 +222,8 @@ ex:JavaScript a ex:Language ;
   rdfs:label "JavaScript" ;
   ex:description "The language of the web. Runs in browsers and on servers via Node.js." ;
   ex:website "https://developer.mozilla.org/en-US/docs/Web/JavaScript"^^xsd:anyURI ;
+  ex:version "ES2024" ;
+  ex:license "ECMA-262 (open standard)" ;
   ex:firstRelease "1995" ;
   ex:creator "Brendan Eich" .
 
@@ -229,6 +231,7 @@ ex:TypeScript a ex:Language ;
   rdfs:label "TypeScript" ;
   ex:description "A strongly typed superset of JavaScript that compiles to plain JS. Developed by Microsoft." ;
   ex:website "https://www.typescriptlang.org"^^xsd:anyURI ;
+  ex:license "Apache-2.0" ;
   ex:isBuiltOn ex:JavaScript ;
   ex:version "5.4" ;
   ex:firstRelease "2012" ;
@@ -240,27 +243,38 @@ ex:PHP a ex:Language ;
   ex:description "A widely-used server-side scripting language designed for web development." ;
   ex:website "https://www.php.net"^^xsd:anyURI ;
   ex:version "8.3" ;
-  ex:firstRelease "1994" .
+  ex:license "PHP License v3.01" ;
+  ex:githubStars "~38k" ;
+  ex:firstRelease "1994" ;
+  ex:creator "Rasmus Lerdorf" .
 
 ex:Python a ex:Language ;
   rdfs:label "Python" ;
   ex:description "A general-purpose, high-level language known for readability and simplicity." ;
   ex:website "https://www.python.org"^^xsd:anyURI ;
   ex:version "3.12" ;
-  ex:firstRelease "1991" .
+  ex:license "PSF License" ;
+  ex:githubStars "~63k" ;
+  ex:firstRelease "1991" ;
+  ex:creator "Guido van Rossum" .
 
 ex:Rust a ex:Language ;
   rdfs:label "Rust" ;
   ex:description "A systems language focused on safety, speed, and concurrency. Used in tooling (Vite, SWC)." ;
   ex:website "https://www.rust-lang.org"^^xsd:anyURI ;
   ex:version "1.78" ;
-  ex:firstRelease "2010" .
+  ex:license "MIT / Apache-2.0" ;
+  ex:githubStars "~96k" ;
+  ex:firstRelease "2010" ;
+  ex:creator "Graydon Hoare / Mozilla" .
 
 ex:Go a ex:Language ;
   rdfs:label "Go" ;
   ex:description "A statically typed, compiled language by Google. Popular for backend microservices." ;
   ex:website "https://go.dev"^^xsd:anyURI ;
   ex:version "1.22" ;
+  ex:license "BSD-3-Clause" ;
+  ex:githubStars "~123k" ;
   ex:firstRelease "2009" ;
   ex:creator "Google" .
 
@@ -269,12 +283,18 @@ ex:Ruby a ex:Language ;
   ex:description "A dynamic, open-source language focused on simplicity and developer happiness." ;
   ex:website "https://www.ruby-lang.org"^^xsd:anyURI ;
   ex:version "3.3" ;
-  ex:firstRelease "1995" .
+  ex:license "Ruby License / BSD-2-Clause" ;
+  ex:githubStars "~21k" ;
+  ex:firstRelease "1995" ;
+  ex:creator "Yukihiro Matsumoto" .
 
 ex:Kotlin a ex:Language ;
   rdfs:label "Kotlin" ;
   ex:description "A modern statically typed language running on JVM. Used in Android and backend (Ktor)." ;
   ex:website "https://kotlinlang.org"^^xsd:anyURI ;
+  ex:version "2.0" ;
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~49k" ;
   ex:firstRelease "2011" ;
   ex:creator "JetBrains" .
 
@@ -282,6 +302,10 @@ ex:Dart a ex:Language ;
   rdfs:label "Dart" ;
   ex:description "A client-optimized language by Google, primary language of Flutter." ;
   ex:website "https://dart.dev"^^xsd:anyURI ;
+  ex:version "3.4" ;
+  ex:license "BSD-3-Clause" ;
+  ex:githubStars "~28k" ;
+  ex:firstRelease "2011" ;
   ex:creator "Google" .
 
 # ============================================================
@@ -294,9 +318,10 @@ ex:NodeJS a ex:Runtime ;
   ex:website "https://nodejs.org"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
   ex:version "20 LTS" ;
+  ex:license "MIT" ;
   ex:githubStars "~104k" ;
   ex:firstRelease "2009" ;
-  ex:creator "Ryan Dahl" .
+  ex:creator "Ryan Dahl / OpenJS Foundation" .
 
 ex:Bun a ex:Runtime ;
   rdfs:label "Bun" ;
@@ -305,7 +330,10 @@ ex:Bun a ex:Runtime ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:NodeJS ;
   ex:version "1.1" ;
-  ex:githubStars "~72k" .
+  ex:license "MIT" ;
+  ex:githubStars "~72k" ;
+  ex:firstRelease "2022" ;
+  ex:creator "Jarred Sumner / Oven" .
 
 ex:Deno a ex:Runtime ;
   rdfs:label "Deno" ;
@@ -314,27 +342,40 @@ ex:Deno a ex:Runtime ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:NodeJS ;
   ex:version "1.44" ;
+  ex:license "MIT" ;
   ex:githubStars "~93k" ;
+  ex:firstRelease "2018" ;
   ex:creator "Ryan Dahl" .
 
 ex:npm a ex:PackageManager ;
   rdfs:label "npm" ;
   ex:description "The default package manager for Node.js and the world's largest software registry." ;
   ex:website "https://www.npmjs.com"^^xsd:anyURI ;
-  ex:isBuiltOn ex:NodeJS .
+  ex:isBuiltOn ex:NodeJS ;
+  ex:license "Artistic-2.0" ;
+  ex:firstRelease "2010" ;
+  ex:creator "Isaac Z. Schlueter" .
 
 ex:Yarn a ex:PackageManager ;
   rdfs:label "Yarn" ;
   ex:description "A fast, reliable, and secure dependency management tool for JavaScript." ;
   ex:website "https://yarnpkg.com"^^xsd:anyURI ;
-  ex:alternativeTo ex:npm .
+  ex:alternativeTo ex:npm ;
+  ex:license "BSD-2-Clause" ;
+  ex:githubStars "~41k" ;
+  ex:firstRelease "2016" ;
+  ex:creator "Meta" .
 
 ex:Pnpm a ex:PackageManager ;
   rdfs:label "pnpm" ;
   ex:description "A fast, disk-space-efficient package manager using a content-addressable store." ;
   ex:website "https://pnpm.io"^^xsd:anyURI ;
   ex:alternativeTo ex:npm ;
-  ex:githubStars "~29k" .
+  ex:version "9" ;
+  ex:license "MIT" ;
+  ex:githubStars "~29k" ;
+  ex:firstRelease "2017" ;
+  ex:creator "Zoltan Kochan" .
 
 # ============================================================
 # DATABASES
@@ -346,41 +387,61 @@ ex:PostgreSQL a ex:Database ;
   ex:website "https://www.postgresql.org"^^xsd:anyURI ;
   ex:version "16" ;
   ex:license "PostgreSQL License" ;
-  ex:firstRelease "1996" .
+  ex:githubStars "~16k" ;
+  ex:firstRelease "1996" ;
+  ex:creator "PostgreSQL Global Development Group" .
 
 ex:MySQL a ex:Database ;
   rdfs:label "MySQL" ;
   ex:description "The world's most popular open-source relational database, now owned by Oracle." ;
   ex:website "https://www.mysql.com"^^xsd:anyURI ;
   ex:alternativeTo ex:PostgreSQL ;
-  ex:version "8.3" .
+  ex:version "8.3" ;
+  ex:license "GPL-2.0 / Commercial" ;
+  ex:githubStars "~11k" ;
+  ex:firstRelease "1995" ;
+  ex:creator "Oracle (MySQL AB)" .
 
 ex:MongoDB a ex:Database ;
   rdfs:label "MongoDB" ;
   ex:description "A document-oriented NoSQL database for flexible, JSON-like BSON storage." ;
   ex:website "https://www.mongodb.com"^^xsd:anyURI ;
   ex:version "7.0" ;
-  ex:githubStars "~26k" .
+  ex:license "SSPL-1.0" ;
+  ex:githubStars "~26k" ;
+  ex:firstRelease "2009" ;
+  ex:creator "MongoDB Inc." .
 
 ex:SQLite a ex:Database ;
   rdfs:label "SQLite" ;
   ex:description "A lightweight, serverless, self-contained SQL database engine embedded in applications." ;
   ex:website "https://www.sqlite.org"^^xsd:anyURI ;
-  ex:license "Public Domain" .
+  ex:version "3.46" ;
+  ex:license "Public Domain" ;
+  ex:firstRelease "2000" ;
+  ex:creator "D. Richard Hipp" .
 
 ex:Redis a ex:Database ;
   rdfs:label "Redis" ;
   ex:description "An in-memory data structure store used as database, cache, and message broker." ;
   ex:website "https://redis.io"^^xsd:anyURI ;
   ex:githubStars "~65k" ;
-  ex:version "7.2" .
+  ex:version "7.2" ;
+  ex:license "RSALv2 / SSPLv1" ;
+  ex:firstRelease "2009" ;
+  ex:creator "Salvatore Sanfilippo" .
 
 ex:MariaDB a ex:Database ;
   rdfs:label "MariaDB" ;
   ex:description "A community-developed fork of MySQL with performance improvements and new features." ;
   ex:website "https://mariadb.org"^^xsd:anyURI ;
   ex:alternativeTo ex:MySQL ;
-  ex:isBuiltOn ex:MySQL .
+  ex:isBuiltOn ex:MySQL ;
+  ex:version "11.4" ;
+  ex:license "GPL-2.0" ;
+  ex:githubStars "~5k" ;
+  ex:firstRelease "2009" ;
+  ex:creator "MariaDB Foundation" .
 
 ex:CockroachDB a ex:Database ;
   rdfs:label "CockroachDB" ;
@@ -417,14 +478,19 @@ ex:Supabase a ex:Database ;
   ex:website "https://supabase.com"^^xsd:anyURI ;
   ex:isBuiltOn ex:PostgreSQL ;
   ex:compatibleWith ex:Prisma ;
-  ex:githubStars "~71k" .
+  ex:githubStars "~71k" ;
+  ex:license "Apache-2.0" ;
+  ex:firstRelease "2020" ;
+  ex:creator "Supabase Inc." .
 
 ex:Firebase a ex:Database ;
   rdfs:label "Firebase" ;
   ex:description "Google's app platform offering realtime NoSQL database, auth, hosting, and cloud functions." ;
   ex:website "https://firebase.google.com"^^xsd:anyURI ;
   ex:creator "Google" ;
-  ex:alternativeTo ex:Supabase .
+  ex:alternativeTo ex:Supabase ;
+  ex:license "Proprietary" ;
+  ex:firstRelease "2011" .
 
 ex:DynamoDB a ex:Database ;
   rdfs:label "DynamoDB" ;
@@ -444,7 +510,11 @@ ex:ElasticSearch a ex:Database ;
   rdfs:label "Elasticsearch" ;
   ex:description "A distributed, RESTful search and analytics engine built on Apache Lucene." ;
   ex:website "https://www.elastic.co"^^xsd:anyURI ;
-  ex:githubStars "~69k" .
+  ex:githubStars "~69k" ;
+  ex:version "8.14" ;
+  ex:license "Elastic License 2.0 / SSPL" ;
+  ex:firstRelease "2010" ;
+  ex:creator "Elastic NV" .
 
 ex:Upstash a ex:Database ;
   rdfs:label "Upstash" ;
@@ -484,7 +554,11 @@ ex:Prisma a ex:ORM ;
   ex:compatibleWith ex:NuxtJS ;
   ex:compatibleWith ex:Remix ;
   ex:version "5.14" ;
-  ex:githubStars "~39k" .
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~39k" ;
+  ex:firstRelease "2019" ;
+  ex:creator "Prisma" ;
+  ex:npmPackage "prisma" .
 
 ex:Drizzle a ex:ORM ;
   rdfs:label "Drizzle ORM" ;
@@ -499,7 +573,11 @@ ex:Drizzle a ex:ORM ;
   ex:compatibleWith ex:NextJS ;
   ex:alternativeTo ex:Prisma ;
   ex:version "0.31" ;
-  ex:githubStars "~23k" .
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~23k" ;
+  ex:firstRelease "2022" ;
+  ex:creator "Drizzle Team" ;
+  ex:npmPackage "drizzle-orm" .
 
 ex:TypeORM a ex:ORM ;
   rdfs:label "TypeORM" ;
@@ -511,7 +589,10 @@ ex:TypeORM a ex:ORM ;
   ex:isORMFor ex:MongoDB ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:Prisma ;
-  ex:githubStars "~33k" .
+  ex:license "MIT" ;
+  ex:githubStars "~33k" ;
+  ex:firstRelease "2016" ;
+  ex:npmPackage "typeorm" .
 
 ex:Sequelize a ex:ORM ;
   rdfs:label "Sequelize" ;
@@ -524,7 +605,10 @@ ex:Sequelize a ex:ORM ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:Prisma ;
   ex:version "6" ;
-  ex:githubStars "~29k" .
+  ex:license "MIT" ;
+  ex:githubStars "~29k" ;
+  ex:firstRelease "2010" ;
+  ex:npmPackage "sequelize" .
 
 ex:MikroORM a ex:ORM ;
   rdfs:label "MikroORM" ;
@@ -544,7 +628,10 @@ ex:Mongoose a ex:ORM ;
   ex:website "https://mongoosejs.com"^^xsd:anyURI ;
   ex:isORMFor ex:MongoDB ;
   ex:usesLanguage ex:JavaScript ;
-  ex:githubStars "~26k" .
+  ex:license "MIT" ;
+  ex:githubStars "~26k" ;
+  ex:firstRelease "2010" ;
+  ex:npmPackage "mongoose" .
 
 ex:Kysely a ex:ORM ;
   rdfs:label "Kysely" ;
@@ -555,7 +642,10 @@ ex:Kysely a ex:ORM ;
   ex:isORMFor ex:SQLite ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:Drizzle ;
-  ex:githubStars "~10k" .
+  ex:license "MIT" ;
+  ex:githubStars "~10k" ;
+  ex:firstRelease "2021" ;
+  ex:npmPackage "kysely" .
 
 ex:Knex a ex:ORM ;
   rdfs:label "Knex.js" ;
@@ -566,7 +656,10 @@ ex:Knex a ex:ORM ;
   ex:isORMFor ex:SQLite ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:Drizzle ;
-  ex:githubStars "~19k" .
+  ex:license "MIT" ;
+  ex:githubStars "~19k" ;
+  ex:firstRelease "2013" ;
+  ex:npmPackage "knex" .
 
 # ============================================================
 # FRONTEND LIBRARIES
@@ -579,9 +672,11 @@ ex:React a ex:Library ;
   ex:usesLanguage ex:JavaScript ;
   ex:usesLanguage ex:TypeScript ;
   ex:version "18" ;
+  ex:license "MIT" ;
   ex:githubStars "~225k" ;
   ex:creator "Meta" ;
-  ex:firstRelease "2013" .
+  ex:firstRelease "2013" ;
+  ex:npmPackage "react" .
 
 ex:Vue a ex:Library ;
   rdfs:label "Vue.js" ;
@@ -590,8 +685,11 @@ ex:Vue a ex:Library ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:React ;
   ex:version "3.4" ;
+  ex:license "MIT" ;
   ex:githubStars "~207k" ;
-  ex:firstRelease "2014" .
+  ex:firstRelease "2014" ;
+  ex:creator "Evan You" ;
+  ex:npmPackage "vue" .
 
 ex:Svelte a ex:Library ;
   rdfs:label "Svelte" ;
@@ -600,7 +698,11 @@ ex:Svelte a ex:Library ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:React ;
   ex:version "4" ;
-  ex:githubStars "~77k" .
+  ex:license "MIT" ;
+  ex:githubStars "~77k" ;
+  ex:firstRelease "2016" ;
+  ex:creator "Rich Harris" ;
+  ex:npmPackage "svelte" .
 
 ex:Solid a ex:Library ;
   rdfs:label "SolidJS" ;
@@ -608,7 +710,12 @@ ex:Solid a ex:Library ;
   ex:website "https://www.solidjs.com"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:React ;
-  ex:githubStars "~31k" .
+  ex:version "1.8" ;
+  ex:license "MIT" ;
+  ex:githubStars "~31k" ;
+  ex:firstRelease "2021" ;
+  ex:creator "Ryan Carniato" ;
+  ex:npmPackage "solid-js" .
 
 ex:Preact a ex:Library ;
   rdfs:label "Preact" ;
@@ -616,7 +723,12 @@ ex:Preact a ex:Library ;
   ex:website "https://preactjs.com"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:React ;
-  ex:githubStars "~36k" .
+  ex:version "10" ;
+  ex:license "MIT" ;
+  ex:githubStars "~36k" ;
+  ex:firstRelease "2015" ;
+  ex:creator "Jason Miller" ;
+  ex:npmPackage "preact" .
 
 ex:Angular a ex:Framework ;
   rdfs:label "Angular" ;
@@ -625,8 +737,11 @@ ex:Angular a ex:Framework ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:React ;
   ex:version "17" ;
+  ex:license "MIT" ;
   ex:githubStars "~95k" ;
-  ex:creator "Google" .
+  ex:creator "Google" ;
+  ex:firstRelease "2016" ;
+  ex:npmPackage "@angular/core" .
 
 ex:Lit a ex:Library ;
   rdfs:label "Lit" ;
@@ -634,7 +749,11 @@ ex:Lit a ex:Library ;
   ex:website "https://lit.dev"^^xsd:anyURI ;
   ex:usesLanguage ex:TypeScript ;
   ex:creator "Google" ;
-  ex:githubStars "~17k" .
+  ex:version "3" ;
+  ex:license "BSD-3-Clause" ;
+  ex:githubStars "~17k" ;
+  ex:firstRelease "2017" ;
+  ex:npmPackage "lit" .
 
 ex:Alpine a ex:Library ;
   rdfs:label "Alpine.js" ;
@@ -642,14 +761,24 @@ ex:Alpine a ex:Library ;
   ex:website "https://alpinejs.dev"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:Vue ;
-  ex:githubStars "~27k" .
+  ex:version "3" ;
+  ex:license "MIT" ;
+  ex:githubStars "~27k" ;
+  ex:firstRelease "2019" ;
+  ex:creator "Caleb Porzio" ;
+  ex:npmPackage "alpinejs" .
 
 ex:HTMX a ex:Library ;
   rdfs:label "HTMX" ;
   ex:description "A library that allows HTML to make AJAX, CSS transitions, WebSockets, and Server-Sent Events." ;
   ex:website "https://htmx.org"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
-  ex:githubStars "~37k" .
+  ex:version "2.0" ;
+  ex:license "BSD-2-Clause" ;
+  ex:githubStars "~37k" ;
+  ex:firstRelease "2020" ;
+  ex:creator "Carson Gross" ;
+  ex:npmPackage "htmx.org" .
 
 ex:Qwik a ex:Framework ;
   rdfs:label "Qwik" ;
@@ -657,7 +786,12 @@ ex:Qwik a ex:Framework ;
   ex:website "https://qwik.dev"^^xsd:anyURI ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:React ;
-  ex:githubStars "~20k" .
+  ex:version "1.5" ;
+  ex:license "MIT" ;
+  ex:githubStars "~20k" ;
+  ex:firstRelease "2021" ;
+  ex:creator "Builder.io" ;
+  ex:npmPackage "@builder.io/qwik" .
 
 # ============================================================
 # FULL-STACK FRAMEWORKS
@@ -680,8 +814,10 @@ ex:NextJS a ex:Framework ;
   ex:deployedOn ex:Vercel ;
   ex:testedWith ex:Jest ;
   ex:testedWith ex:Playwright ;
+  ex:license "MIT" ;
   ex:firstRelease "2016" ;
-  ex:creator "Vercel" .
+  ex:creator "Vercel" ;
+  ex:npmPackage "next" .
 
 ex:NuxtJS a ex:Framework ;
   rdfs:label "Nuxt.js" ;
@@ -691,7 +827,11 @@ ex:NuxtJS a ex:Framework ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:NextJS ;
   ex:version "3" ;
-  ex:githubStars "~53k" .
+  ex:license "MIT" ;
+  ex:githubStars "~53k" ;
+  ex:firstRelease "2016" ;
+  ex:creator "Nuxt Team" ;
+  ex:npmPackage "nuxt" .
 
 ex:Remix a ex:Framework ;
   rdfs:label "Remix" ;
@@ -700,7 +840,12 @@ ex:Remix a ex:Framework ;
   ex:isFrameworkOf ex:React ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:NextJS ;
-  ex:githubStars "~29k" .
+  ex:version "2" ;
+  ex:license "MIT" ;
+  ex:githubStars "~29k" ;
+  ex:firstRelease "2021" ;
+  ex:creator "Shopify" ;
+  ex:npmPackage "@remix-run/react" .
 
 ex:Astro a ex:Framework ;
   rdfs:label "Astro" ;
@@ -712,7 +857,11 @@ ex:Astro a ex:Framework ;
   ex:compatibleWith ex:Svelte ;
   ex:compatibleWith ex:TailwindCSS ;
   ex:version "4" ;
-  ex:githubStars "~44k" .
+  ex:license "MIT" ;
+  ex:githubStars "~44k" ;
+  ex:firstRelease "2021" ;
+  ex:creator "Astro Technology" ;
+  ex:npmPackage "astro" .
 
 ex:SvelteKit a ex:Framework ;
   rdfs:label "SvelteKit" ;
@@ -721,7 +870,11 @@ ex:SvelteKit a ex:Framework ;
   ex:isFrameworkOf ex:Svelte ;
   ex:usesLanguage ex:TypeScript ;
   ex:alternativeTo ex:NextJS ;
-  ex:githubStars "~18k" .
+  ex:version "2" ;
+  ex:license "MIT" ;
+  ex:githubStars "~18k" ;
+  ex:firstRelease "2020" ;
+  ex:npmPackage "@sveltejs/kit" .
 
 ex:Analog a ex:Framework ;
   rdfs:label "Analog" ;
@@ -745,8 +898,10 @@ ex:Laravel a ex:Framework ;
   ex:website "https://laravel.com"^^xsd:anyURI ;
   ex:usesLanguage ex:PHP ;
   ex:version "11" ;
+  ex:license "MIT" ;
   ex:githubStars "~78k" ;
-  ex:firstRelease "2011" .
+  ex:firstRelease "2011" ;
+  ex:creator "Taylor Otwell" .
 
 ex:Django a ex:Framework ;
   rdfs:label "Django" ;
@@ -754,8 +909,10 @@ ex:Django a ex:Framework ;
   ex:website "https://www.djangoproject.com"^^xsd:anyURI ;
   ex:usesLanguage ex:Python ;
   ex:version "5.0" ;
+  ex:license "BSD-3-Clause" ;
   ex:githubStars "~79k" ;
-  ex:firstRelease "2005" .
+  ex:firstRelease "2005" ;
+  ex:creator "Django Software Foundation" .
 
 ex:FastAPI a ex:Framework ;
   rdfs:label "FastAPI" ;
@@ -763,7 +920,11 @@ ex:FastAPI a ex:Framework ;
   ex:website "https://fastapi.tiangolo.com"^^xsd:anyURI ;
   ex:usesLanguage ex:Python ;
   ex:alternativeTo ex:Django ;
-  ex:githubStars "~75k" .
+  ex:version "0.111" ;
+  ex:license "MIT" ;
+  ex:githubStars "~75k" ;
+  ex:firstRelease "2018" ;
+  ex:creator "Sebastián Ramírez" .
 
 ex:Flask a ex:Framework ;
   rdfs:label "Flask" ;
@@ -771,7 +932,11 @@ ex:Flask a ex:Framework ;
   ex:website "https://flask.palletsprojects.com"^^xsd:anyURI ;
   ex:usesLanguage ex:Python ;
   ex:alternativeTo ex:Django ;
-  ex:githubStars "~67k" .
+  ex:version "3" ;
+  ex:license "BSD-3-Clause" ;
+  ex:githubStars "~67k" ;
+  ex:firstRelease "2010" ;
+  ex:creator "Armin Ronacher" .
 
 ex:Rails a ex:Framework ;
   rdfs:label "Ruby on Rails" ;
@@ -779,7 +944,10 @@ ex:Rails a ex:Framework ;
   ex:website "https://rubyonrails.org"^^xsd:anyURI ;
   ex:usesLanguage ex:Ruby ;
   ex:version "7.1" ;
-  ex:githubStars "~55k" .
+  ex:license "MIT" ;
+  ex:githubStars "~55k" ;
+  ex:firstRelease "2004" ;
+  ex:creator "David Heinemeier Hansson" .
 
 ex:Express a ex:Library ;
   rdfs:label "Express.js" ;
@@ -787,7 +955,12 @@ ex:Express a ex:Library ;
   ex:website "https://expressjs.com"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
   ex:isBuiltOn ex:NodeJS ;
-  ex:githubStars "~64k" .
+  ex:version "4" ;
+  ex:license "MIT" ;
+  ex:githubStars "~64k" ;
+  ex:firstRelease "2010" ;
+  ex:creator "TJ Holowaychuk" ;
+  ex:npmPackage "express" .
 
 ex:Fastify a ex:Framework ;
   rdfs:label "Fastify" ;
@@ -796,7 +969,11 @@ ex:Fastify a ex:Framework ;
   ex:usesLanguage ex:JavaScript ;
   ex:isBuiltOn ex:NodeJS ;
   ex:alternativeTo ex:Express ;
-  ex:githubStars "~32k" .
+  ex:version "4" ;
+  ex:license "MIT" ;
+  ex:githubStars "~32k" ;
+  ex:firstRelease "2016" ;
+  ex:npmPackage "fastify" .
 
 ex:Hono a ex:Framework ;
   rdfs:label "Hono" ;
@@ -806,7 +983,12 @@ ex:Hono a ex:Framework ;
   ex:compatibleWith ex:Bun ;
   ex:compatibleWith ex:Deno ;
   ex:alternativeTo ex:Express ;
-  ex:githubStars "~18k" .
+  ex:version "4" ;
+  ex:license "MIT" ;
+  ex:githubStars "~18k" ;
+  ex:firstRelease "2021" ;
+  ex:creator "Yusuke Wada" ;
+  ex:npmPackage "hono" .
 
 ex:Elysia a ex:Framework ;
   rdfs:label "Elysia" ;
@@ -815,7 +997,10 @@ ex:Elysia a ex:Framework ;
   ex:usesLanguage ex:TypeScript ;
   ex:isBuiltOn ex:Bun ;
   ex:alternativeTo ex:Express ;
-  ex:githubStars "~10k" .
+  ex:license "MIT" ;
+  ex:githubStars "~10k" ;
+  ex:firstRelease "2022" ;
+  ex:npmPackage "elysia" .
 
 ex:NestJS a ex:Framework ;
   rdfs:label "NestJS" ;
@@ -827,7 +1012,11 @@ ex:NestJS a ex:Framework ;
   ex:compatibleWith ex:Prisma ;
   ex:compatibleWith ex:TypeORM ;
   ex:version "10" ;
-  ex:githubStars "~67k" .
+  ex:license "MIT" ;
+  ex:githubStars "~67k" ;
+  ex:firstRelease "2017" ;
+  ex:creator "Kamil Myśliwiec" ;
+  ex:npmPackage "@nestjs/core" .
 
 ex:Adonis a ex:Framework ;
   rdfs:label "AdonisJS" ;
@@ -846,6 +1035,10 @@ ex:TailwindCSS a ex:CSSFramework ;
   ex:description "A utility-first CSS framework for rapidly building custom user interfaces without leaving HTML." ;
   ex:website "https://tailwindcss.com"^^xsd:anyURI ;
   ex:version "3.4" ;
+  ex:license "MIT" ;
+  ex:firstRelease "2017" ;
+  ex:creator "Tailwind Labs" ;
+  ex:npmPackage "tailwindcss" ;
   ex:githubStars "~81k" ;
   ex:compatibleWith ex:NextJS ;
   ex:compatibleWith ex:NuxtJS ;
@@ -857,7 +1050,11 @@ ex:Bootstrap a ex:CSSFramework ;
   ex:description "The most popular HTML, CSS, and JS framework for developing responsive, mobile-first projects." ;
   ex:website "https://getbootstrap.com"^^xsd:anyURI ;
   ex:version "5.3" ;
+  ex:license "MIT" ;
   ex:githubStars "~168k" ;
+  ex:firstRelease "2011" ;
+  ex:creator "Mark Otto / Twitter" ;
+  ex:npmPackage "bootstrap" ;
   ex:alternativeTo ex:TailwindCSS .
 
 ex:Bulma a ex:CSSFramework ;
@@ -881,7 +1078,10 @@ ex:ShadcnUI a ex:UIComponentLib ;
   ex:isBuiltOn ex:TailwindCSS ;
   ex:compatibleWith ex:React ;
   ex:compatibleWith ex:NextJS ;
-  ex:githubStars "~68k" .
+  ex:githubStars "~68k" ;
+  ex:license "MIT" ;
+  ex:firstRelease "2023" ;
+  ex:creator "shadcn" .
 
 ex:RadixUI a ex:UIComponentLib ;
   rdfs:label "Radix UI" ;
@@ -903,16 +1103,24 @@ ex:MaterialUI a ex:UIComponentLib ;
   ex:description "A comprehensive React component library implementing Google's Material Design." ;
   ex:website "https://mui.com"^^xsd:anyURI ;
   ex:isBuiltOn ex:React ;
+  ex:version "5" ;
+  ex:license "MIT" ;
   ex:githubStars "~92k" ;
-  ex:creator "Google" .
+  ex:firstRelease "2014" ;
+  ex:creator "MUI (based on Google Material Design)" ;
+  ex:npmPackage "@mui/material" .
 
 ex:AntDesign a ex:UIComponentLib ;
   rdfs:label "Ant Design" ;
   ex:description "An enterprise-class React UI design system with a set of high-quality components." ;
   ex:website "https://ant.design"^^xsd:anyURI ;
   ex:isBuiltOn ex:React ;
+  ex:version "5" ;
+  ex:license "MIT" ;
   ex:githubStars "~91k" ;
-  ex:creator "Alibaba" .
+  ex:firstRelease "2015" ;
+  ex:creator "Alibaba (Ant Group)" ;
+  ex:npmPackage "antd" .
 
 ex:ChakraUI a ex:UIComponentLib ;
   rdfs:label "Chakra UI" ;
@@ -952,7 +1160,11 @@ ex:Redux a ex:StateManagement ;
   ex:website "https://redux.js.org"^^xsd:anyURI ;
   ex:compatibleWith ex:React ;
   ex:usesLanguage ex:JavaScript ;
-  ex:githubStars "~60k" .
+  ex:license "MIT" ;
+  ex:githubStars "~60k" ;
+  ex:firstRelease "2015" ;
+  ex:creator "Dan Abramov & Andrew Clark" ;
+  ex:npmPackage "redux" .
 
 ex:ReduxToolkit a ex:StateManagement ;
   rdfs:label "Redux Toolkit" ;
@@ -967,7 +1179,11 @@ ex:Zustand a ex:StateManagement ;
   ex:website "https://zustand-demo.pmnd.rs"^^xsd:anyURI ;
   ex:compatibleWith ex:React ;
   ex:alternativeTo ex:Redux ;
-  ex:githubStars "~45k" .
+  ex:license "MIT" ;
+  ex:githubStars "~45k" ;
+  ex:firstRelease "2019" ;
+  ex:creator "Poimandres" ;
+  ex:npmPackage "zustand" .
 
 ex:Jotai a ex:StateManagement ;
   rdfs:label "Jotai" ;
@@ -1023,7 +1239,11 @@ ex:Vite a ex:BuildTool ;
   ex:compatibleWith ex:Vue ;
   ex:compatibleWith ex:Svelte ;
   ex:version "5" ;
-  ex:githubStars "~67k" .
+  ex:license "MIT" ;
+  ex:githubStars "~67k" ;
+  ex:firstRelease "2020" ;
+  ex:creator "Evan You" ;
+  ex:npmPackage "vite" .
 
 ex:Webpack a ex:BuildTool ;
   rdfs:label "Webpack" ;
@@ -1031,7 +1251,12 @@ ex:Webpack a ex:BuildTool ;
   ex:website "https://webpack.js.org"^^xsd:anyURI ;
   ex:usesLanguage ex:JavaScript ;
   ex:alternativeTo ex:Vite ;
-  ex:githubStars "~64k" .
+  ex:version "5" ;
+  ex:license "MIT" ;
+  ex:githubStars "~64k" ;
+  ex:firstRelease "2012" ;
+  ex:creator "Tobias Koppers" ;
+  ex:npmPackage "webpack" .
 
 ex:Rollup a ex:BuildTool ;
   rdfs:label "Rollup" ;
@@ -1096,7 +1321,11 @@ ex:Jest a ex:TestingTool ;
   ex:compatibleWith ex:React ;
   ex:usesLanguage ex:JavaScript ;
   ex:creator "Meta" ;
-  ex:githubStars "~44k" .
+  ex:version "29" ;
+  ex:license "MIT" ;
+  ex:githubStars "~44k" ;
+  ex:firstRelease "2014" ;
+  ex:npmPackage "jest" .
 
 ex:Vitest a ex:TestingTool ;
   rdfs:label "Vitest" ;
@@ -1104,7 +1333,11 @@ ex:Vitest a ex:TestingTool ;
   ex:website "https://vitest.dev"^^xsd:anyURI ;
   ex:isBuiltOn ex:Vite ;
   ex:alternativeTo ex:Jest ;
-  ex:githubStars "~12k" .
+  ex:version "1.6" ;
+  ex:license "MIT" ;
+  ex:githubStars "~12k" ;
+  ex:firstRelease "2021" ;
+  ex:npmPackage "vitest" .
 
 ex:Playwright a ex:TestingTool ;
   rdfs:label "Playwright" ;
@@ -1112,14 +1345,21 @@ ex:Playwright a ex:TestingTool ;
   ex:website "https://playwright.dev"^^xsd:anyURI ;
   ex:creator "Microsoft" ;
   ex:compatibleWith ex:NextJS ;
-  ex:githubStars "~64k" .
+  ex:license "Apache-2.0" ;
+  ex:githubStars "~64k" ;
+  ex:firstRelease "2020" ;
+  ex:npmPackage "@playwright/test" .
 
 ex:Cypress a ex:TestingTool ;
   rdfs:label "Cypress" ;
   ex:description "A fast, easy and reliable testing tool for anything that runs in a browser." ;
   ex:website "https://www.cypress.io"^^xsd:anyURI ;
   ex:alternativeTo ex:Playwright ;
-  ex:githubStars "~46k" .
+  ex:license "MIT" ;
+  ex:githubStars "~46k" ;
+  ex:firstRelease "2017" ;
+  ex:creator "Cypress.io" ;
+  ex:npmPackage "cypress" .
 
 ex:TestingLibrary a ex:TestingTool ;
   rdfs:label "Testing Library" ;
@@ -1349,43 +1589,69 @@ ex:AutoAnimate a ex:Animation ;
 ex:RDF a ex:SemanticWebSpec ;
   rdfs:label "RDF" ;
   ex:description "Resource Description Framework, the core data model of the Semantic Web based on subject-predicate-object triples." ;
-  ex:website "https://www.w3.org/RDF/"^^xsd:anyURI .
+  ex:website "https://www.w3.org/RDF/"^^xsd:anyURI ;
+  ex:version "1.1" ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "1999" ;
+  ex:creator "W3C" .
 
 ex:RDFS a ex:SemanticWebSpec ;
   rdfs:label "RDF Schema" ;
   ex:description "A semantic extension of RDF providing basic vocabulary for class and property hierarchies." ;
   ex:website "https://www.w3.org/TR/rdf-schema/"^^xsd:anyURI ;
-  ex:isBuiltOn ex:RDF .
+  ex:isBuiltOn ex:RDF ;
+  ex:version "1.1" ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "2004" ;
+  ex:creator "W3C" .
 
 ex:OWL2 a ex:SemanticWebSpec ;
   rdfs:label "OWL 2" ;
   ex:description "Web Ontology Language for defining rich and machine-interpretable ontologies." ;
   ex:website "https://www.w3.org/TR/owl2-overview/"^^xsd:anyURI ;
-  ex:isBuiltOn ex:RDFS .
+  ex:isBuiltOn ex:RDFS ;
+  ex:version "2" ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "2009" ;
+  ex:creator "W3C" .
 
 ex:SPARQL a ex:SemanticWebSpec ;
   rdfs:label "SPARQL" ;
   ex:description "A query language and protocol for RDF graphs." ;
   ex:website "https://www.w3.org/TR/sparql11-query/"^^xsd:anyURI ;
-  ex:isBuiltOn ex:RDF .
+  ex:isBuiltOn ex:RDF ;
+  ex:version "1.1" ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "2008" ;
+  ex:creator "W3C" .
 
 ex:TurtleSyntax a ex:SemanticWebSpec ;
   rdfs:label "Turtle" ;
   ex:description "A compact, human-readable syntax for RDF serialization, commonly used for ontology authoring." ;
   ex:website "https://www.w3.org/TR/turtle/"^^xsd:anyURI ;
-  ex:isBuiltOn ex:RDF .
+  ex:isBuiltOn ex:RDF ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "2014" ;
+  ex:creator "W3C" .
 
 ex:JSONLD a ex:SemanticWebSpec ;
   rdfs:label "JSON-LD" ;
   ex:description "JSON-based serialization format for linked data and knowledge graphs." ;
   ex:website "https://json-ld.org"^^xsd:anyURI ;
-  ex:isBuiltOn ex:RDF .
+  ex:isBuiltOn ex:RDF ;
+  ex:version "1.1" ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "2014" ;
+  ex:creator "W3C" .
 
 ex:SHACL a ex:SemanticWebSpec ;
   rdfs:label "SHACL" ;
   ex:description "Shapes Constraint Language for validating RDF graphs against structural constraints." ;
   ex:website "https://www.w3.org/TR/shacl/"^^xsd:anyURI ;
-  ex:isBuiltOn ex:RDF .
+  ex:isBuiltOn ex:RDF ;
+  ex:license "W3C Recommendation" ;
+  ex:firstRelease "2017" ;
+  ex:creator "W3C" .
 
 ex:ApacheJena a ex:Library ;
   rdfs:label "Apache Jena" ;
@@ -1395,7 +1661,12 @@ ex:ApacheJena a ex:Library ;
   ex:implementsSpec ex:RDFS ;
   ex:implementsSpec ex:OWL2 ;
   ex:implementsSpec ex:SPARQL ;
-  ex:implementsSpec ex:TurtleSyntax .
+  ex:implementsSpec ex:TurtleSyntax ;
+  ex:usesLanguage ex:Java ;
+  ex:version "5.0" ;
+  ex:license "Apache-2.0" ;
+  ex:firstRelease "2000" ;
+  ex:creator "Apache Software Foundation" .
 
 ex:Fuseki a ex:Triplestore ;
   rdfs:label "Apache Jena Fuseki" ;
@@ -1409,7 +1680,12 @@ ex:Fuseki a ex:Triplestore ;
   ex:compatibleWith ex:Axios ;
   ex:alternativeTo ex:GraphDB ;
   ex:alternativeTo ex:Blazegraph ;
-  ex:alternativeTo ex:Virtuoso .
+  ex:alternativeTo ex:Virtuoso ;
+  ex:usesLanguage ex:Java ;
+  ex:version "4.10" ;
+  ex:license "Apache-2.0" ;
+  ex:firstRelease "2011" ;
+  ex:creator "Apache Software Foundation" .
 
 ex:GraphDB a ex:Triplestore ;
   rdfs:label "GraphDB" ;

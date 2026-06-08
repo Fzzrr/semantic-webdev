@@ -52,7 +52,7 @@ export default function Home() {
   // Sorting state
   const [sortBy, setSortBy] = useState("relevance");
 
-  // Mobile: buka/tutup drawer filter kategori
+  // Mobile: open/close the category filter drawer
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Load initial data
@@ -150,7 +150,7 @@ export default function Home() {
 
   const handleCategoryChange = (cat: string) => {
     setCategory(cat);
-    setFiltersOpen(false); // tutup drawer setelah pilih (mobile)
+    setFiltersOpen(false); // close the drawer after selecting (mobile)
   };
 
   const router = useRouter();
@@ -170,7 +170,7 @@ export default function Home() {
 
       <div className="flex pt-16 min-h-screen">
 
-        {/* Mobile: pull-tab penarik filter (menempel di tepi kiri) */}
+        {/* Mobile: filter pull-tab (pinned to the left edge) */}
         {!filtersOpen && <FilterTab onClick={() => setFiltersOpen(true)} />}
 
         {/* Backdrop drawer (mobile) — fade */}

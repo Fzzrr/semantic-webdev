@@ -1,57 +1,57 @@
-# Panduan Deploy (Vercel)
+# Deployment Guide (Vercel)
 
-Aplikasi ini cukup di-deploy ke **Vercel saja**. Query SPARQL dijalankan oleh
-**engine bawaan (Comunica)** di server, langsung atas `ontology/webdev.ttl` — **tidak
-perlu meng-host Apache Jena Fuseki**. Semua fitur tetap utuh (Explorer, detail,
-relation map, dan tab **Query Editor** di `/sparql`).
+This app can simply be deployed to **Vercel alone**. SPARQL queries are executed by the
+**built-in engine (Comunica)** on the server, directly over `ontology/webdev.ttl` — **there is no
+need to host Apache Jena Fuseki**. All features remain intact (Explorer, detail pages,
+relation map, and the **Query Editor** tab at `/sparql`).
 
-## Arsitektur produksi
+## Production architecture
 
 ```
 Browser ──▶ Next.js (Vercel)
-              ├─ /api/sparql, /api/tech, /api/relations  ─▶ parser lokal (n3) atas webdev.ttl
-              └─ /api/sparql/run (Query Editor)          ─▶ engine SPARQL bawaan (Comunica) atas webdev.ttl
+              ├─ /api/sparql, /api/tech, /api/relations  ─▶ local parser (n3) over webdev.ttl
+              └─ /api/sparql/run (Query Editor)          ─▶ built-in SPARQL engine (Comunica) over webdev.ttl
 ```
 
-- Tidak ada server eksternal. Tidak ada env var wajib.
-- Fuseki **opsional**: bila `FUSEKI_ENDPOINT` di-set, `/api/sparql/run` memakai Fuseki
-  (dan otomatis fallback ke engine bawaan jika Fuseki tak terjangkau).
+- No external server. No required env vars.
+- Fuseki is **optional**: when `FUSEKI_ENDPOINT` is set, `/api/sparql/run` uses Fuseki
+  (and automatically falls back to the built-in engine if Fuseki is unreachable).
 
 ---
 
-## Langkah 1 — Push ke GitHub
+## Step 1 — Push to GitHub
 
 ```bash
 git add .
-git commit -m "feat: SPARQL engine bawaan (Comunica) untuk deploy tanpa Fuseki"
-git push origin main      # atau branch yang kamu pakai
+git commit -m "feat: built-in SPARQL engine (Comunica) for deploying without Fuseki"
+git push origin main      # or whichever branch you use
 ```
 
-## Langkah 2 — Deploy ke Vercel
+## Step 2 — Deploy to Vercel
 
-1. Buka [vercel.com](https://vercel.com) → **Add New** → **Project**.
-2. Impor repo ini (Vercel auto-detect Next.js — tidak perlu ubah build settings).
-3. **Tidak ada Environment Variable yang wajib di-set.** Langsung **Deploy**.
-4. Selesai → dapat domain `https://<app>.vercel.app`.
+1. Open [vercel.com](https://vercel.com) → **Add New** → **Project**.
+2. Import this repo (Vercel auto-detects Next.js — no need to change build settings).
+3. **No Environment Variable is required.** Just hit **Deploy**.
+4. Done → you get a `https://<app>.vercel.app` domain.
 
-## Langkah 3 — Verifikasi
+## Step 3 — Verify
 
-1. Buka `https://<app>.vercel.app/` → daftar teknologi tampil.
-2. `/sparql` → tab **Query Editor** → klik **Jalankan** pada contoh query → muncul hasil
-   (bukti engine SPARQL bawaan bekerja, tanpa Fuseki).
-3. `/relations` dan `/tech/<nama>` tampil normal.
+1. Open `https://<app>.vercel.app/` → the technology list appears.
+2. `/sparql` → **Query Editor** tab → click **Run** on the example query → results appear
+   (proof the built-in SPARQL engine works, without Fuseki).
+3. `/relations` and `/tech/<name>` render normally.
 
 ---
 
-## Opsional — memakai Apache Jena Fuseki
+## Optional — using Apache Jena Fuseki
 
-Engine bawaan sudah cukup untuk semua fitur. Pakai Fuseki hanya jika butuh triplestore
-penuh (mis. SPARQL Update atau dataset sangat besar):
+The built-in engine is enough for all features. Use Fuseki only if you need a full
+triplestore (e.g. SPARQL Update or a very large dataset):
 
-- **Lokal**: jalankan `setup-fuseki.bat`, lalu set `FUSEKI_ENDPOINT=http://localhost:3030/webdev/sparql` di `.env.local`.
-- **Production**: host Fuseki sendiri, lalu set env `FUSEKI_ENDPOINT=https://<host>/webdev/sparql` di Vercel.
+- **Local**: run `setup-fuseki.bat`, then set `FUSEKI_ENDPOINT=http://localhost:3030/webdev/sparql` in `.env.local`.
+- **Production**: host Fuseki yourself, then set the `FUSEKI_ENDPOINT=https://<host>/webdev/sparql` env on Vercel.
 
-## Operasional
+## Operations
 
-- **Update data ontologi**: ubah `ontology/webdev.ttl` → `git push`. Vercel redeploy otomatis;
-  engine bawaan langsung memakai data terbaru.
+- **Update ontology data**: edit `ontology/webdev.ttl` → `git push`. Vercel redeploys automatically;
+  the built-in engine immediately uses the latest data.

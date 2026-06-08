@@ -56,7 +56,7 @@ export default function TechDetailPage() {
   const [tech, setTech] = useState<TechDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // Mobile: buka/tutup drawer filter kategori
+  // Mobile: open/close the category filter drawer
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function TechDetailPage() {
         if (data.error) setError(data.error);
         else setTech(data);
       })
-      .catch(() => setError("Gagal memuat data teknologi."))
+      .catch(() => setError("Failed to load technology data."))
       .finally(() => setIsLoading(false));
   }, [name]);
 
@@ -85,7 +85,7 @@ export default function TechDetailPage() {
 
       <div className="flex pt-16 min-h-screen">
 
-        {/* Mobile: pull-tab penarik filter (menempel di tepi kiri) */}
+        {/* Mobile: filter pull-tab (pinned to the left edge) */}
         {!filtersOpen && <FilterTab onClick={() => setFiltersOpen(true)} />}
 
         {/* Backdrop drawer (mobile) — fade */}
@@ -102,7 +102,7 @@ export default function TechDetailPage() {
           filtersOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}>
           <div className="px-4 mb-4">
-            <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Kategori</p>
+            <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Categories</p>
           </div>
           <div className="px-4 space-y-1">
             {CATEGORIES.map((cat) => {
@@ -134,7 +134,7 @@ export default function TechDetailPage() {
               className="flex items-center gap-1.5 text-[#838383] hover:text-[#b4c5ff] text-xs font-mono mb-8 transition-colors group"
             >
               <span className="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
-              Kembali ke Explorer
+              Back to Explorer
             </button>
 
             {/* Loading */}
@@ -153,10 +153,10 @@ export default function TechDetailPage() {
             {error && (
               <div className="bg-[#1b1b1b] border border-[#333333] rounded-2xl p-12 text-center">
                 <span className="material-symbols-outlined text-5xl text-[#838383] block mb-4">search_off</span>
-                <p className="text-[#e5e2e1] font-headline font-bold text-lg mb-2">Teknologi tidak ditemukan</p>
+                <p className="text-[#e5e2e1] font-headline font-bold text-lg mb-2">Technology not found</p>
                 <p className="text-[#838383] text-xs mb-6">{error}</p>
                 <Link href="/" className="bg-[#2563eb] text-white px-5 py-2.5 rounded-lg font-mono text-xs hover:opacity-90 transition-opacity">
-                  Kembali ke Explorer
+                  Back to Explorer
                 </Link>
               </div>
             )}
@@ -185,7 +185,7 @@ export default function TechDetailPage() {
                       </div>
 
                       <p className="text-sm text-[#838383] leading-relaxed mb-4 max-w-2xl">
-                        {tech.description || "Belum ada deskripsi untuk teknologi ini."}
+                        {tech.description || "No description available for this technology yet."}
                       </p>
 
                       <div className="flex flex-wrap gap-2">
@@ -197,7 +197,7 @@ export default function TechDetailPage() {
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2563eb] hover:bg-blue-600 text-white text-xs font-bold rounded-lg transition-colors"
                           >
                             <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                            Kunjungi Website
+                            Visit Website
                           </a>
                         )}
                         <Link
@@ -205,7 +205,7 @@ export default function TechDetailPage() {
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2a2a2a] hover:bg-[#333333] text-[#c3c6d7] text-xs font-bold rounded-lg border border-[#333333] transition-colors"
                         >
                           <span className="material-symbols-outlined text-[14px]">terminal</span>
-                          Buka SPARQL Lab
+                          Open SPARQL Lab
                         </Link>
                       </div>
                     </div>
@@ -216,9 +216,9 @@ export default function TechDetailPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
                     { icon: "star", label: "GitHub Stars", value: tech.githubStars || "—" },
-                    { icon: "balance", label: "Lisensi", value: tech.license || "—" },
-                    { icon: "calendar_today", label: "Rilis Pertama", value: tech.firstRelease || "—" },
-                    { icon: "person", label: "Pembuat", value: tech.creator || "—" },
+                    { icon: "balance", label: "License", value: tech.license || "—" },
+                    { icon: "calendar_today", label: "First Release", value: tech.firstRelease || "—" },
+                    { icon: "person", label: "Creator", value: tech.creator || "—" },
                   ].map(({ icon, label, value }) => (
                     <div key={label} className="bg-[#1b1b1b] border border-[#2a2a2a] rounded-xl p-4">
                       <div className="flex items-center gap-1.5 mb-2">
@@ -235,11 +235,11 @@ export default function TechDetailPage() {
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[#b4c5ff] text-[20px]">hub</span>
-                      <h2 className="font-headline text-lg font-bold text-[#e5e2e1]">Teknologi Terkait</h2>
+                      <h2 className="font-headline text-lg font-bold text-[#e5e2e1]">Related Technologies</h2>
                     </div>
                     {totalRelations > 0 && (
                       <span className="text-[10px] font-mono text-[#555555] bg-[#2a2a2a] px-2.5 py-1 rounded-full border border-[#333333]">
-                        {totalRelations} relasi
+                        {totalRelations} relations
                       </span>
                     )}
                   </div>
@@ -247,7 +247,7 @@ export default function TechDetailPage() {
                   {groupedRelations.length === 0 ? (
                     <div className="text-center py-12 text-[#555555]">
                       <span className="material-symbols-outlined text-4xl block mb-3">device_hub</span>
-                      <p className="text-sm">Belum ada relasi yang terdaftar di ontologi untuk teknologi ini.</p>
+                      <p className="text-sm">No relations recorded in the ontology for this technology yet.</p>
                     </div>
                   ) : (
                     <div className="space-y-6">
@@ -290,7 +290,7 @@ export default function TechDetailPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">terminal</span>
-                      <h2 className="font-headline text-base font-bold text-[#e5e2e1]">Query Teknologi Ini</h2>
+                      <h2 className="font-headline text-base font-bold text-[#e5e2e1]">Query This Technology</h2>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
@@ -311,8 +311,8 @@ export default function TechDetailPage() {
                       <span className="text-yellow-300">*</span>{"\n"}
                       <span className="text-pink-400">WHERE</span>{" {"}{"\n"}
                       {"  "}<span className="text-cyan-400">ex:{tech.name}</span>{" "}
-                      <span className="text-[#838383]">?relasi</span>{" "}
-                      <span className="text-[#838383]">?nilai</span>{" ."}{"\n"}
+                      <span className="text-[#838383]">?relation</span>{" "}
+                      <span className="text-[#838383]">?value</span>{" ."}{"\n"}
                       {"}"}
                     </pre>
                   </div>
@@ -326,7 +326,7 @@ export default function TechDetailPage() {
                       className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[#b4c5ff] hover:underline"
                     >
                       <span className="material-symbols-outlined text-[13px]">open_in_new</span>
-                      Jalankan di SPARQL Lab
+                      Run in SPARQL Lab
                     </Link>
                   </div>
                 </section>

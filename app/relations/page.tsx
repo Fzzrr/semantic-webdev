@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { CATEGORIES } from "@/lib/types";
 
@@ -21,19 +22,84 @@ interface NodeData {
   type: string;
 }
 
+interface PositionedNode extends NodeData {
+  x: number;
+  y: number;
+}
+
+interface Connection {
+  // source -> target follow the semantic direction (subject -> object)
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  label: string;
+  key: string;
+  // ids of both endpoints, used for hover highlighting
+  a: string;
+  b: string;
+  // true when this edge links two satellites (only drawn on hover)
+  inter: boolean;
+}
+
+// Human-friendly labels for each ontology predicate (no raw RDF terms)
+const PREDICATE_LABELS: Record<string, string> = {
+  isFrameworkOf: "framework of",
+  isORMFor: "ORM for",
+  isBuiltOn: "built on",
+  implementsSpec: "implements",
+  usesLanguage: "uses language",
+  compatibleWith: "compatible with",
+  alternativeTo: "alternative to",
+  alternatives: "alternative to",
+  connectsTo: "connects to",
+  integratesWith: "integrates with",
+  testedWith: "tested with",
+  deployedOn: "deployed on",
+  managedBy: "managed by",
+  hostedBy: "hosted on",
+  monitoredBy: "monitored by",
+  ciWith: "CI/CD with",
+  usesBroker: "uses broker",
+  searchedWith: "searched with",
+  storedWith: "stored with",
+  designedWith: "designed with",
+  versionControlledBy: "version controlled by",
+  databases: "supports",
+};
+
+function formatPredicate(prop: string): string {
+  if (PREDICATE_LABELS[prop]) return PREDICATE_LABELS[prop];
+  // Fallback: split camelCase / snake_case into readable words
+  return prop
+    .replace(/([A-Z])/g, " $1")
+    .replace(/[_-]/g, " ")
+    .toLowerCase()
+    .trim();
+}
+
 export default function RelationsMapPage() {
+  const router = useRouter();
   const [relations, setRelations] = useState<RelationTriple[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Selected/centered node in the graph
   const [focusNodeId, setFocusNodeId] = useState<string>("NextJS");
-  
+
+  // Hovered satellite id (for highlighting its edge + showing the predicate)
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  // Active sidebar category filter (drives the focus dropdown + node emphasis)
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+
   // Graph view states
   const [scale, setScale] = useState<number>(1);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  
+  // Track whether the pointer actually moved, so a drag doesn't fire a click
+  const movedRef = useRef(false);
+
   // Fetch relations on load
   useEffect(() => {
     fetch("/api/relations")
@@ -52,18 +118,22 @@ export default function RelationsMapPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Center coordinate of container
+  // Center coordinate of the (square) graph canvas
   const size = 600;
   const cx = size / 2;
   const cy = size / 2;
 
-  // Find all related connections for the focused node
-  const getGraphData = () => {
-    if (relations.length === 0) return { centerNode: null, satellites: [], connections: [] };
+  // Build the graph for the focused node
+  const { centerNode, satellites, connections, nodeD } = useMemo<{
+    centerNode: NodeData | null;
+    satellites: PositionedNode[];
+    connections: Connection[];
+    nodeD: number;
+  }>(() => {
+    if (relations.length === 0) return { centerNode: null, satellites: [], connections: [], nodeD: 80 };
 
-    // Get center node data
     const centerTriple = relations.find((r) => r.subject === focusNodeId || r.object === focusNodeId);
-    if (!centerTriple) return { centerNode: null, satellites: [], connections: [] };
+    if (!centerTriple) return { centerNode: null, satellites: [], connections: [], nodeD: 80 };
 
     const centerNode: NodeData = {
       id: focusNodeId,
@@ -71,7 +141,7 @@ export default function RelationsMapPage() {
       type: centerTriple.subject === focusNodeId ? centerTriple.subjectType : centerTriple.objectType,
     };
 
-    // Find first-degree neighbors
+    // First-degree neighbors
     const neighbors = new Map<string, NodeData>();
     relations.forEach((rel) => {
       if (rel.subject === focusNodeId && rel.object !== focusNodeId) {
@@ -81,87 +151,202 @@ export default function RelationsMapPage() {
       }
     });
 
-    const satellites = Array.from(neighbors.values());
+    const satList = Array.from(neighbors.values());
+    const count = satList.length;
 
-    // Calculate layout coordinates for satellites
-    const radius = 180;
-    const positionedSatellites = satellites.map((sat, i) => {
-      const angle = (i / satellites.length) * Math.PI * 2 - Math.PI / 2;
-      const x = cx + radius * Math.cos(angle);
-      const y = cy + radius * Math.sin(angle);
-      return { ...sat, x, y };
+    // Node diameter shrinks as the graph gets busier so labels stop colliding
+    const nodeD = count > 24 ? 54 : count > 14 ? 66 : 80;
+    const half = nodeD / 2;
+    const centerR = 64; // radius of the center node (w-32)
+
+    // Distribute satellites across concentric rings. Each ring holds as many
+    // nodes as its circumference allows, so nothing overlaps even at 35+ nodes.
+    const arcSpacing = nodeD + 14; // min center-to-center distance along a ring
+    const ringGap = nodeD + 24; // radial distance between rings
+    const firstR = centerR + half + (count <= 8 ? 56 : 28);
+
+    const ringSizes: number[] = [];
+    let remaining = count;
+    let r = firstR;
+    while (remaining > 0) {
+      const cap = Math.max(1, Math.floor((2 * Math.PI * r) / arcSpacing));
+      const take = Math.min(cap, remaining);
+      ringSizes.push(take);
+      remaining -= take;
+      r += ringGap;
+    }
+
+    const positionedSatellites: PositionedNode[] = [];
+    let idx = 0;
+    ringSizes.forEach((take, ring) => {
+      const ringR = firstR + ring * ringGap;
+      // Offset alternating rings by half a step so spokes don't align radially
+      const angleOffset = ring % 2 === 0 ? 0 : Math.PI / take;
+      for (let k = 0; k < take; k++) {
+        const sat = satList[idx++];
+        const angle = (k / take) * Math.PI * 2 - Math.PI / 2 + angleOffset;
+        positionedSatellites.push({
+          ...sat,
+          x: cx + ringR * Math.cos(angle),
+          y: cy + ringR * Math.sin(angle),
+        });
+      }
     });
 
-    // Determine connection lines
-    const connections: Array<{ x1: number; y1: number; x2: number; y2: number; label: string; key: string }> = [];
+    const connections: Connection[] = [];
 
-    // Connections from center to satellites
+    // Center <-> satellite edges (oriented along the semantic subject -> object direction)
     positionedSatellites.forEach((sat) => {
-      // Find matching predicate relation
       const directRel = relations.find(
         (r) => (r.subject === focusNodeId && r.object === sat.id) || (r.subject === sat.id && r.object === focusNodeId)
       );
+      const centerIsSubject = directRel ? directRel.subject === focusNodeId : true;
+      // Trim both ends to the node rims so spokes fan out cleanly instead of
+      // piling up at the exact center point.
+      const ang = Math.atan2(sat.y - cy, sat.x - cx);
+      const centerPt = { x: cx + Math.cos(ang) * (centerR + 6), y: cy + Math.sin(ang) * (centerR + 6) };
+      const satPt = { x: sat.x - Math.cos(ang) * (half + 6), y: sat.y - Math.sin(ang) * (half + 6) };
       connections.push({
-        x1: cx,
-        y1: cy,
-        x2: sat.x,
-        y2: sat.y,
-        label: directRel ? directRel.predicate : "relatesTo",
+        x1: centerIsSubject ? centerPt.x : satPt.x,
+        y1: centerIsSubject ? centerPt.y : satPt.y,
+        x2: centerIsSubject ? satPt.x : centerPt.x,
+        y2: centerIsSubject ? satPt.y : centerPt.y,
+        label: directRel ? formatPredicate(directRel.predicate) : "related to",
         key: `center-${sat.id}`,
+        a: focusNodeId,
+        b: sat.id,
+        inter: false,
       });
     });
 
-    // Connections between satellites themselves (if any exist in our triples data)
+    // Edges between satellites that are themselves related (drawn only on hover)
     for (let i = 0; i < positionedSatellites.length; i++) {
       for (let j = i + 1; j < positionedSatellites.length; j++) {
         const satA = positionedSatellites[i];
         const satB = positionedSatellites[j];
-
         const innerRel = relations.find(
           (r) => (r.subject === satA.id && r.object === satB.id) || (r.subject === satB.id && r.object === satA.id)
         );
-
         if (innerRel) {
+          const aIsSubject = innerRel.subject === satA.id;
+          const src = aIsSubject ? satA : satB;
+          const dst = aIsSubject ? satB : satA;
+          // Trim both ends to the satellite rims as well.
+          const ang = Math.atan2(dst.y - src.y, dst.x - src.x);
           connections.push({
-            x1: satA.x,
-            y1: satA.y,
-            x2: satB.x,
-            y2: satB.y,
-            label: innerRel.predicate,
+            x1: src.x + Math.cos(ang) * (half + 6),
+            y1: src.y + Math.sin(ang) * (half + 6),
+            x2: dst.x - Math.cos(ang) * (half + 6),
+            y2: dst.y - Math.sin(ang) * (half + 6),
+            label: formatPredicate(innerRel.predicate),
             key: `inter-${satA.id}-${satB.id}`,
+            a: satA.id,
+            b: satB.id,
+            inter: true,
           });
         }
       }
     }
 
-    return { centerNode, satellites: positionedSatellites, connections };
-  };
+    return { centerNode, satellites: positionedSatellites, connections, nodeD };
+  }, [relations, focusNodeId, cx, cy]);
 
-  const { centerNode, satellites, connections } = getGraphData();
+  // Scale needed for the whole graph to fit inside the 600px canvas
+  const fitScale = useMemo(() => {
+    if (satellites.length === 0) return 1;
+    const maxR = Math.max(...satellites.map((s) => Math.hypot(s.x - cx, s.y - cy)));
+    return Math.min(1, Math.max(0.5, 290 / (maxR + nodeD / 2)));
+  }, [satellites, nodeD, cx, cy]);
 
-  // Mouse Handlers for Dragging / Panning
+  // Re-fit whenever the focus node changes
+  useEffect(() => {
+    setScale(fitScale);
+    setPan({ x: 0, y: 0 });
+  }, [focusNodeId, fitScale]);
+
+  // All selectable nodes, sorted by label
+  const allNodes = useMemo(() => {
+    const nodesMap = new Map<string, string>();
+    relations.forEach((r) => {
+      nodesMap.set(r.subject, r.subjectLabel);
+      nodesMap.set(r.object, r.objectLabel);
+    });
+    return Array.from(nodesMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  }, [relations]);
+
+  // Lookup: node id -> its category/type
+  const nodeTypeById = useMemo(() => {
+    const m = new Map<string, string>();
+    relations.forEach((r) => {
+      m.set(r.subject, r.subjectType);
+      m.set(r.object, r.objectType);
+    });
+    return m;
+  }, [relations]);
+
+  // How many nodes exist per category (drives sidebar badges + disabled state)
+  const categoryCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    nodeTypeById.forEach((type) => {
+      c[type] = (c[type] || 0) + 1;
+    });
+    return c;
+  }, [nodeTypeById]);
+
+  // Nodes shown in the focus dropdown, narrowed by the active category
+  const visibleNodes = useMemo(() => {
+    if (activeCategory === "all") return allNodes;
+    return allNodes.filter(([id]) => nodeTypeById.get(id) === activeCategory);
+  }, [allNodes, activeCategory, nodeTypeById]);
+
+  // Mouse handlers for dragging / panning
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    movedRef.current = false;
     dragStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    setPan({
-      x: e.clientX - dragStart.current.x,
-      y: e.clientY - dragStart.current.y,
-    });
+    movedRef.current = true;
+    setPan({ x: e.clientX - dragStart.current.x, y: e.clientY - dragStart.current.y });
   };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
+
+  // Wheel zoom (zoom toward the cursor feel by keeping pan, clamped 0.5–2.5)
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.12 : -0.12;
+    setScale((s) => Math.min(2.5, Math.max(0.4, +(s + delta).toFixed(2))));
+  };
+
+  const focusOn = (id: string) => {
+    setFocusNodeId(id);
+    setHoveredId(null);
+    // If we focus a node outside the active category filter, clear the filter
+    setActiveCategory((cur) => (cur !== "all" && nodeTypeById.get(id) !== cur ? "all" : cur));
+    // scale + pan are re-fitted by the effect above
+  };
+
+  // Sidebar category click: filter the graph context to that category and
+  // jump focus to the first matching technology (stays on this page).
+  const selectCategory = (cat: string) => {
+    if (cat === "all") {
+      setActiveCategory("all");
+      return;
+    }
+    const first = allNodes.find(([id]) => nodeTypeById.get(id) === cat);
+    if (!first) return; // no nodes of this category — ignore the click
+    setActiveCategory(cat);
+    focusOn(first[0]);
   };
 
   // Zoom control helpers
-  const zoomIn = () => setScale((s) => Math.min(2, s + 0.1));
-  const zoomOut = () => setScale((s) => Math.max(0.5, s - 0.1));
+  const zoomIn = () => setScale((s) => Math.min(2.5, +(s + 0.1).toFixed(2)));
+  const zoomOut = () => setScale((s) => Math.max(0.4, +(s - 0.1).toFixed(2)));
   const zoomReset = () => {
-    setScale(1);
+    setScale(fitScale);
     setPan({ x: 0, y: 0 });
   };
 
@@ -198,96 +383,116 @@ export default function RelationsMapPage() {
     }
   };
 
+  // Solid hex per category, used for the SVG stroke of an edge
+  const getEdgeColor = (type: string) => {
+    const t = type.toLowerCase();
+    if (t === "framework") return "#38bdf8";
+    if (t === "database" || t === "triplestore") return "#f97316";
+    if (t === "language" || t === "runtime") return "#2563eb";
+    if (t === "apitool" || t === "semanticwebspec") return "#14b8a6";
+    if (["buildtool", "packagemanager", "linter", "monorepo"].includes(t)) return "#10b981";
+    if (t === "testingtool") return "#eab308";
+    if (t === "deploymenttool") return "#f43f5e";
+    if (t === "orm") return "#f59e0b";
+    if (t === "cssframework") return "#06b6d4";
+    return "#a78bfa";
+  };
+
   return (
     <div className="min-h-screen bg-[#131313] tech-grid-bg text-[#e5e2e1] font-body selection:bg-primary selection:text-on-primary">
       <Navbar />
 
       <div className="flex pt-16 min-h-screen">
-        
         {/* SideNavBar */}
         <aside className="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-64 bg-[#1b1b1b] border-r border-[#333333] py-6 overflow-y-auto">
-          <div className="px-6 mb-8">
-            <Link href="/" className="hover:opacity-90">
-              <h2 className="text-sm font-mono text-[#838383] uppercase tracking-widest mb-1">Tech Registry</h2>
-            </Link>
-            <p className="text-[10px] font-mono text-[#838383]">v1.4.2-stable</p>
+          <div className="px-5 mb-2">
+            <p className="text-[10px] font-mono text-[#5f5f5f] uppercase tracking-widest">Filter by category</p>
           </div>
           <div className="flex flex-col gap-1 px-2">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.value}
-                href={`/?category=${cat.value}`}
-                className="flex items-center gap-3 text-left w-full pl-4 py-3 rounded-lg text-[#c3c6d7] hover:bg-[#2a2a2a] hover:text-[#e5e2e1] duration-150 ease-in-out font-body text-xs"
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {cat.value === "Language" ? "code" : 
-                   cat.value === "Framework" ? "architecture" : 
-                   cat.value === "Library" ? "library_books" : 
-                   cat.value === "Database" ? "database" : "terminal"}
-                </span>
-                <span>{cat.label}</span>
-              </Link>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const count = cat.value === "all" ? nodeTypeById.size : categoryCounts[cat.value] || 0;
+              const isActive = activeCategory === cat.value;
+              const isEmpty = count === 0;
+              return (
+                <button
+                  key={cat.value}
+                  type="button"
+                  disabled={isEmpty}
+                  onClick={() => selectCategory(cat.value)}
+                  title={isEmpty ? `${cat.label} (no relations)` : `Focus on ${cat.label}`}
+                  className={`flex items-center gap-3 text-left w-full pl-4 pr-3 py-3 rounded-lg duration-150 ease-in-out font-body text-xs border-l-2 ${
+                    isActive
+                      ? "bg-[#2a2a2a] text-[#b4c5ff] border-[#b4c5ff]"
+                      : isEmpty
+                      ? "text-[#5a5a5a] border-transparent cursor-not-allowed"
+                      : "text-[#c3c6d7] border-transparent hover:bg-[#2a2a2a] hover:text-[#e5e2e1]"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {cat.value === "all" ? "hub" :
+                     cat.value === "Language" ? "code" :
+                     cat.value === "Framework" ? "architecture" :
+                     cat.value === "Library" ? "library_books" :
+                     cat.value === "Database" ? "database" : "terminal"}
+                  </span>
+                  <span className="flex-1 truncate">{cat.label}</span>
+                  {!isEmpty && (
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isActive ? "bg-[#b4c5ff]/15 text-[#b4c5ff]" : "bg-[#333333] text-[#838383]"}`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
           <div className="mt-auto px-4 pt-6 border-t border-[#333333] flex flex-col gap-1">
-            <Link 
+            <Link
               href="/"
               className="w-full bg-[#2a2a2a] text-center text-[#e5e2e1] py-2 rounded mb-4 font-mono text-xs hover:bg-[#2563eb] hover:text-[#eeefff] transition-all block"
             >
               Back to Explorer
             </Link>
-            <a className="flex items-center gap-3 text-[#c3c6d7] pl-4 py-2 hover:text-[#b4c5ff] text-xs" href="#">
-              <span className="material-symbols-outlined text-[16px]">settings</span>
-              <span>Settings</span>
-            </a>
-            <a className="flex items-center gap-3 text-[#c3c6d7] pl-4 py-2 hover:text-[#b4c5ff] text-xs" href="#">
-              <span className="material-symbols-outlined text-[16px]">sensors</span>
-              <span>API Status</span>
-            </a>
           </div>
         </aside>
 
         {/* Main Graph Content */}
         <main className="flex-1 lg:ml-64 p-8 min-h-screen">
           <div className="max-w-[1200px] mx-auto w-full">
-            
             {/* Title Info */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
-                <h1 className="font-headline text-3xl font-bold text-[#e5e2e1] mb-2">Peta Relasi Semantik</h1>
+                <h1 className="font-headline text-3xl font-bold text-[#e5e2e1] mb-2">Semantic Relation Map</h1>
                 <p className="text-sm text-[#838383]">
-                  Visualisasi graf ontologi dari relasi antar teknologi. Klik pada node satelit untuk memindahkan fokus.
+                  An ontology graph of how technologies relate. Click a satellite node to shift focus, or click the
+                  center node to open its detail page.
                 </p>
+                {activeCategory !== "all" && (
+                  <button
+                    onClick={() => setActiveCategory("all")}
+                    className="mt-3 inline-flex items-center gap-1.5 bg-[#b4c5ff]/10 border border-[#b4c5ff]/30 text-[#b4c5ff] text-[11px] font-mono rounded-full pl-3 pr-2 py-1 hover:bg-[#b4c5ff]/20 transition-colors"
+                  >
+                    <span>Filter: {CATEGORIES.find((c) => c.value === activeCategory)?.label ?? activeCategory}</span>
+                    {/* clear filter */}
+                    <span className="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                )}
               </div>
 
               {/* Focus Node Selector */}
               {!isLoading && relations.length > 0 && (
                 <div className="flex items-center gap-3 bg-[#1b1b1b] border border-[#333333] px-4 py-2.5 rounded-xl shadow-md">
                   <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">center_focus_weak</span>
-                  <label className="text-[11px] text-[#838383] font-mono uppercase tracking-wider whitespace-nowrap">Pilih Fokus:</label>
+                  <label className="text-[11px] text-[#838383] font-mono uppercase tracking-wider whitespace-nowrap">Focus on:</label>
                   <select
                     value={focusNodeId}
-                    onChange={(e) => {
-                      setFocusNodeId(e.target.value);
-                      setScale(1);
-                      setPan({ x: 0, y: 0 });
-                    }}
+                    onChange={(e) => focusOn(e.target.value)}
                     className="bg-[#131313] border border-[#333333] text-[#e5e2e1] text-xs font-mono rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b4c5ff] cursor-pointer"
                   >
-                    {(() => {
-                      const nodesMap = new Map<string, string>();
-                      relations.forEach((r) => {
-                        nodesMap.set(r.subject, r.subjectLabel);
-                        nodesMap.set(r.object, r.objectLabel);
-                      });
-                      return Array.from(nodesMap.entries())
-                        .sort((a, b) => a[1].localeCompare(b[1]))
-                        .map(([id, label]) => (
-                          <option key={id} value={id}>
-                            {label}
-                          </option>
-                        ));
-                    })()}
+                    {visibleNodes.map(([id, label]) => (
+                      <option key={id} value={id}>
+                        {label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}
@@ -302,36 +507,55 @@ export default function RelationsMapPage() {
             )}
 
             {!isLoading && centerNode && (
-              <div 
+              <div
                 className="relative h-[600px] bg-[#0e0e0e]/50 border border-[#333333] rounded-xl overflow-hidden cursor-grab active:cursor-grabbing select-none"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
+                onWheel={handleWheel}
               >
                 {/* Grid Dots */}
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, #333 1px, transparent 1px)", backgroundSize: "30px 30px" }}></div>
-                
+
                 {/* Control Panel (Zoom) */}
                 <div className="absolute top-6 left-6 z-30 flex flex-col gap-2">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); zoomIn(); }} 
+                  <button
+                    onClick={(e) => { e.stopPropagation(); zoomIn(); }}
+                    title="Zoom in"
                     className="w-10 h-10 bg-[#1b1b1b] border border-[#333333] hover:border-[#b4c5ff] text-[#e5e2e1] rounded-lg flex items-center justify-center font-bold text-lg transition-colors"
                   >
                     +
                   </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); zoomOut(); }} 
+                  <button
+                    onClick={(e) => { e.stopPropagation(); zoomOut(); }}
+                    title="Zoom out"
                     className="w-10 h-10 bg-[#1b1b1b] border border-[#333333] hover:border-[#b4c5ff] text-[#e5e2e1] rounded-lg flex items-center justify-center font-bold text-lg transition-colors"
                   >
                     -
                   </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); zoomReset(); }} 
+                  <button
+                    onClick={(e) => { e.stopPropagation(); zoomReset(); }}
+                    title="Reset view"
                     className="w-10 h-10 bg-[#1b1b1b] border border-[#333333] hover:border-[#b4c5ff] text-[#e5e2e1] rounded-lg flex items-center justify-center transition-colors"
                   >
                     <span className="material-symbols-outlined text-[18px]">fit_screen</span>
                   </button>
+                </div>
+
+                {/* Info chip: focus + neighbor count + zoom level */}
+                <div className="absolute top-6 right-6 z-30 flex items-center gap-3 bg-[#131313]/95 border border-[#333333] rounded-xl px-4 py-2 shadow-lg">
+                  <div className="flex flex-col leading-tight">
+                    <span className="text-[10px] font-mono text-[#838383] uppercase tracking-wider">Focus</span>
+                    <span className="text-xs font-bold text-[#e5e2e1]">{centerNode.label}</span>
+                  </div>
+                  <span className="w-px h-7 bg-[#333333]" />
+                  <div className="flex flex-col leading-tight">
+                    <span className="text-[10px] font-mono text-[#838383] uppercase tracking-wider">Relations</span>
+                    <span className="text-xs font-bold text-[#b4c5ff]">{satellites.length}</span>
+                  </div>
+                  <span className="w-px h-7 bg-[#333333]" />
+                  <span className="text-[11px] font-mono text-[#838383]">{Math.round(scale * 100)}%</span>
                 </div>
 
                 {/* Legend Box */}
@@ -341,21 +565,16 @@ export default function RelationsMapPage() {
                   satellites.forEach((sat) => activeTypes.add(sat.type.toLowerCase()));
 
                   const allMappedKeys = [
-                    "framework", "database", "triplestore", "language", "runtime", 
-                    "apitool", "semanticwebspec", "buildtool", "packagemanager", 
-                    "linter", "monorepo", "testingtool", "deploymenttool", "orm", "cssframework"
+                    "framework", "database", "triplestore", "language", "runtime",
+                    "apitool", "semanticwebspec", "buildtool", "packagemanager",
+                    "linter", "monorepo", "testingtool", "deploymenttool", "orm", "cssframework",
                   ];
 
                   const legendItems = [
                     { keys: ["framework"], label: "Frameworks", color: "bg-[#38bdf8]" },
                     { keys: ["database", "triplestore"], label: "Databases & Triplestores", color: "bg-[#f97316]" },
                     { keys: ["language", "runtime"], label: "Languages & Runtimes", color: "bg-[#2563eb]" },
-                    { 
-                      keys: ["library"], 
-                      label: "Libraries & Helpers", 
-                      color: "bg-[#a78bfa]",
-                      checkFallback: true 
-                    },
+                    { keys: ["library"], label: "Libraries & Helpers", color: "bg-[#a78bfa]", checkFallback: true },
                     { keys: ["apitool", "semanticwebspec"], label: "APIs & Specifications", color: "bg-[#14b8a6]" },
                     { keys: ["buildtool", "packagemanager", "linter", "monorepo"], label: "Build Tools & DevOps", color: "bg-[#10b981]" },
                     { keys: ["testingtool"], label: "Testing Tools", color: "bg-[#eab308]" },
@@ -364,12 +583,11 @@ export default function RelationsMapPage() {
                     { keys: ["cssframework"], label: "CSS Frameworks", color: "bg-[#06b6d4]" },
                   ];
 
-                  const visibleLegendItems = legendItems.filter(item => {
-                    const hasDirectKey = item.keys.some(k => activeTypes.has(k));
+                  const visibleLegendItems = legendItems.filter((item) => {
+                    const hasDirectKey = item.keys.some((k) => activeTypes.has(k));
                     if (hasDirectKey) return true;
                     if (item.checkFallback) {
-                      // Show library category if any active type is not in all mapped keys
-                      return Array.from(activeTypes).some(t => !allMappedKeys.includes(t));
+                      return Array.from(activeTypes).some((t) => !allMappedKeys.includes(t));
                     }
                     return false;
                   });
@@ -378,7 +596,7 @@ export default function RelationsMapPage() {
 
                   return (
                     <div className="absolute bottom-6 left-6 z-30 bg-[#131313]/95 border border-[#333333] rounded-xl p-4 w-56 shadow-lg pointer-events-auto max-h-48 overflow-y-auto custom-scrollbar">
-                      <h4 className="font-mono text-[10px] text-[#838383] uppercase tracking-wider mb-2">LEGENDA KATEGORI</h4>
+                      <h4 className="font-mono text-[10px] text-[#838383] uppercase tracking-wider mb-2">CATEGORY LEGEND</h4>
                       <div className="space-y-2">
                         {visibleLegendItems.map((item) => (
                           <div key={item.label} className="flex items-center gap-2">
@@ -391,66 +609,159 @@ export default function RelationsMapPage() {
                   );
                 })()}
 
-                {/* Graph Viewport */}
-                <div 
-                  className="absolute inset-0 origin-center transition-transform duration-75"
-                  style={{
-                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
-                    transformOrigin: "center",
-                  }}
-                >
-                  {/* SVG paths / connection lines */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                    {connections.map((c) => (
-                      <line 
-                        key={c.key}
-                        x1={c.x1} 
-                        y1={c.y1} 
-                        x2={c.x2} 
-                        y2={c.y2} 
-                        stroke="#2563eb" 
-                        strokeDasharray="4" 
-                        strokeWidth="1.5"
-                        className="opacity-40"
-                      />
-                    ))}
-                  </svg>
+                {/* Hint */}
+                <div className="absolute bottom-6 right-6 z-30 hidden md:flex items-center gap-2 bg-[#131313]/80 border border-[#333333] rounded-lg px-3 py-1.5 text-[10px] font-mono text-[#838383]">
+                  <span className="material-symbols-outlined text-[14px]">drag_pan</span>
+                  drag to pan · scroll to zoom
+                </div>
 
-                  {/* Centered Node */}
-                  <div 
-                    style={{ position: "absolute", left: cx, top: cy }}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 z-20 text-center"
+                {/* Graph Viewport — centered square canvas */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div
+                    className="relative transition-transform duration-75 pointer-events-none"
+                    style={{
+                      width: size,
+                      height: size,
+                      transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+                    }}
                   >
-                    <div 
-                      onClick={() => router.push(`/tech/${centerNode.id}`)}
-                      className={`w-32 h-32 rounded-full border-2 bg-[#131313] hover:bg-[#1b1b1b] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${getNodeColor(centerNode.type)}`}
-                    >
-                      <span className="text-xs font-bold text-[#e5e2e1] px-1">{centerNode.label}</span>
-                      <span className="text-[8px] text-[#838383] uppercase tracking-wider mt-1">{centerNode.type}</span>
-                    </div>
-                  </div>
+                    {/* SVG connection lines + arrows + edge labels */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" width={size} height={size}>
+                      <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b5bdb" />
+                        </marker>
+                        <marker id="arrow-active" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#b4c5ff" />
+                        </marker>
+                      </defs>
+                      {connections.map((c) => {
+                        const active = hoveredId !== null && (c.a === hoveredId || c.b === hoveredId);
+                        // Satellite-to-satellite edges stay hidden until one end is hovered,
+                        // which keeps the center from turning into a tangle of lines.
+                        if (c.inter && !active) return null;
+                        const dimmed = hoveredId !== null && !active;
+                        // Bias the label toward the outer (satellite) end so it
+                        // sits beside its node instead of colliding at the hub.
+                        const d1 = Math.hypot(c.x1 - cx, c.y1 - cy);
+                        const d2 = Math.hypot(c.x2 - cx, c.y2 - cy);
+                        const t = c.inter ? 0.5 : d2 >= d1 ? 0.66 : 0.34;
+                        const lx = c.x1 + (c.x2 - c.x1) * t;
+                        const ly = c.y1 + (c.y2 - c.y1) * t;
+                        const labelW = c.label.length * 6.1 + 16;
+                        return (
+                          <g key={c.key} className={dimmed ? "opacity-15" : ""}>
+                            <line
+                              x1={c.x1}
+                              y1={c.y1}
+                              x2={c.x2}
+                              y2={c.y2}
+                              stroke={active ? "#b4c5ff" : "#3b5bdb"}
+                              strokeDasharray={active ? "0" : "5 4"}
+                              strokeWidth={active ? 2 : 1.5}
+                              markerEnd={active ? "url(#arrow-active)" : "url(#arrow)"}
+                              className={active ? "opacity-90" : "opacity-30"}
+                            />
+                            {active && (
+                              <g>
+                                <rect
+                                  x={lx - labelW / 2}
+                                  y={ly - 10}
+                                  width={labelW}
+                                  height={20}
+                                  rx={10}
+                                  fill="#1b1b1b"
+                                  stroke="#b4c5ff"
+                                  strokeWidth="1"
+                                  opacity="0.97"
+                                />
+                                <text
+                                  x={lx}
+                                  y={ly}
+                                  textAnchor="middle"
+                                  dominantBaseline="central"
+                                  fontSize="10.5"
+                                  fontFamily="monospace"
+                                  fill="#e5e2e1"
+                                  className="select-none"
+                                >
+                                  {c.label}
+                                </text>
+                              </g>
+                            )}
+                          </g>
+                        );
+                      })}
+                    </svg>
 
-                  {/* Satellite Nodes */}
-                  {satellites.map((sat) => (
-                    <div 
-                      key={sat.id}
-                      style={{ position: "absolute", left: sat.x, top: sat.y }}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 z-20 text-center cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFocusNodeId(sat.id);
-                      }}
+                    {/* Centered Node */}
+                    <div
+                      style={{ position: "absolute", left: cx, top: cy }}
+                      className="-translate-x-1/2 -translate-y-1/2 z-20 text-center pointer-events-auto group"
                     >
-                      <div 
-                        className={`w-20 h-20 rounded-full border bg-[#1b1b1b] hover:scale-105 active:scale-95 flex flex-col items-center justify-center transition-all duration-200 ${getNodeColor(sat.type)}`}
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (movedRef.current) return;
+                          router.push(`/tech/${centerNode.id}`);
+                        }}
+                        title={`Open ${centerNode.label} details`}
+                        className={`w-32 h-32 rounded-full border-2 bg-[#131313] hover:bg-[#1b1b1b] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${getNodeColor(centerNode.type)}`}
                       >
-                        <span className="text-[10px] font-bold text-[#e5e2e1] px-1 truncate w-full">{sat.label}</span>
-                        <span className="text-[7px] text-[#838383] uppercase tracking-wider mt-0.5">{sat.type}</span>
+                        <span className="text-xs font-bold text-[#e5e2e1] px-1">{centerNode.label}</span>
+                        <span className="text-[8px] text-[#838383] uppercase tracking-wider mt-1">{centerNode.type}</span>
+                        <span className="material-symbols-outlined text-[14px] mt-1 opacity-0 group-hover:opacity-70 transition-opacity">open_in_new</span>
                       </div>
                     </div>
-                  ))}
 
+                    {/* Satellite Nodes — size adapts to how busy the graph is */}
+                    {satellites.map((sat) => {
+                      const dimmed = hoveredId !== null && hoveredId !== sat.id;
+                      const small = nodeD <= 54;
+                      return (
+                        <div
+                          key={sat.id}
+                          style={{ position: "absolute", left: sat.x, top: sat.y, zIndex: hoveredId === sat.id ? 25 : 20 }}
+                          className={`-translate-x-1/2 -translate-y-1/2 text-center cursor-pointer pointer-events-auto transition-opacity ${dimmed ? "opacity-40" : "opacity-100"}`}
+                          onMouseEnter={() => setHoveredId(sat.id)}
+                          onMouseLeave={() => setHoveredId(null)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (movedRef.current) return;
+                            focusOn(sat.id);
+                          }}
+                        >
+                          <div
+                            style={{ width: nodeD, height: nodeD }}
+                            className={`rounded-full border bg-[#1b1b1b] hover:scale-110 active:scale-95 flex flex-col items-center justify-center transition-all duration-200 ${getNodeColor(sat.type)}`}
+                          >
+                            <span className={`${small ? "text-[8px]" : "text-[10px]"} font-bold text-[#e5e2e1] px-1 truncate w-full leading-tight`}>{sat.label}</span>
+                            {!small && (
+                              <span className="text-[7px] text-[#838383] uppercase tracking-wider mt-0.5 truncate w-full px-1">{sat.type}</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
+
+                {/* Empty neighbors state */}
+                {satellites.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                    <p className="text-sm text-[#838383] bg-[#131313]/80 border border-[#333333] rounded-lg px-4 py-2">
+                      This node has no recorded relations yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* No data at all */}
+            {!isLoading && !centerNode && (
+              <div className="h-[600px] bg-[#0e0e0e]/40 rounded-xl border border-[#333333] flex flex-col items-center justify-center gap-3">
+                <span className="material-symbols-outlined text-[#838383] text-[40px]">hub</span>
+                <p className="text-sm text-[#838383]">No relation data available to display.</p>
               </div>
             )}
           </div>
@@ -458,7 +769,7 @@ export default function RelationsMapPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#131313] border-t border-[#333333] mt-12">
+      <footer className="bg-[#131313] border-t border-[#333333] mt-12 lg:ml-64">
         <div className="flex flex-col md:flex-row justify-between items-center py-6 px-8 max-w-[1440px] mx-auto">
           <div className="flex flex-col items-center md:items-start gap-1 mb-4 md:mb-0">
             <span className="text-xs font-mono text-[#e5e2e1]">WebDev Semantic Directory</span>
@@ -466,8 +777,7 @@ export default function RelationsMapPage() {
           </div>
           <div className="flex flex-wrap justify-center gap-4">
             <a className="font-body text-xs text-[#838383] hover:text-[#b4c5ff] underline opacity-100 hover:opacity-80 transition-all" href="#">Documentation</a>
-            <a className="font-body text-xs text-[#838383] hover:text-[#b4c5ff] underline opacity-100 hover:opacity-80 transition-all" href="#">API Reference</a>
-            <a className="font-body text-xs text-[#838383] hover:text-[#b4c5ff] underline opacity-100 hover:opacity-80 transition-all" href="#">GitHub Repository</a>
+            <a className="font-body text-xs text-[#838383] hover:text-[#b4c5ff] underline opacity-100 hover:opacity-80 transition-all" href="https://github.com/Fzzrr/semantic-webdev">GitHub Repository</a>
             <a className="font-body text-xs text-[#838383] hover:text-[#b4c5ff] underline opacity-100 hover:opacity-80 transition-all" href="#">Terms of Service</a>
             <a className="font-body text-xs text-[#838383] hover:text-[#b4c5ff] underline opacity-100 hover:opacity-80 transition-all" href="#">Privacy Policy</a>
           </div>

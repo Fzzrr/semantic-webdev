@@ -139,6 +139,10 @@ npm start
 
 Endpoint Fuseki dapat di-override lewat environment variable `FUSEKI_ENDPOINT` (default `http://localhost:3030/webdev/sparql`).
 
+## Deployment
+
+Untuk men-deploy ke production (Vercel untuk app + Render gratis untuk Fuseki), lihat panduan langkah demi langkah di [DEPLOY.md](DEPLOY.md). Ringkasnya: satu-satunya env var yang wajib di-set adalah `FUSEKI_ENDPOINT`, dan aplikasi tetap berjalan via fallback parser lokal walau Fuseki tidak tersedia.
+
 ## Halaman Aplikasi
 
 | Route | Deskripsi |

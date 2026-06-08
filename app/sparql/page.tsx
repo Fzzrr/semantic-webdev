@@ -249,7 +249,7 @@ export default function SPARQLPage() {
       <div className="pt-16">
         {/* Hero */}
         <div className="bg-[#1b1b1b] border-b border-[#333333]">
-          <div className="max-w-[1440px] mx-auto px-8 py-10">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-3">
@@ -306,7 +306,7 @@ export default function SPARQLPage() {
 
         {/* Relations Tab */}
         {activeTab === "relations" && (
-          <div className="max-w-[1440px] mx-auto px-8 py-8">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Predicate chips */}
             <div className="flex flex-wrap gap-2 mb-6">
               <button
@@ -421,10 +421,10 @@ export default function SPARQLPage() {
 
         {/* Query Editor Tab */}
         {activeTab === "editor" && (
-          <div className="max-w-[1440px] mx-auto px-8 py-8">
-            <div className="flex gap-6">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col lg:flex-row gap-6">
               {/* Sidebar: examples */}
-              <aside className="hidden lg:block w-60 flex-shrink-0">
+              <aside className="w-full lg:w-60 flex-shrink-0">
                 <p className="text-[10px] font-mono text-[#838383] uppercase tracking-widest mb-3">Contoh Query</p>
                 <div className="space-y-1">
                   {EXAMPLE_QUERIES.map((ex, i) => (

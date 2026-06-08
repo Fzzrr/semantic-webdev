@@ -17,7 +17,7 @@ export default function Navbar() {
   const isActiveHref = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  // Tutup menu mobile setiap kali pindah halaman.
+  // Close the mobile menu whenever the route changes.
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
@@ -40,7 +40,7 @@ export default function Navbar() {
         {/* Divider */}
         <div className="hidden md:block w-px h-6 bg-[#2a2a2a]" />
 
-        {/* Nav Links (desktop) — rata kiri, interaktif */}
+        {/* Nav Links (desktop) — left-aligned, interactive */}
         <nav className="hidden md:flex items-center gap-2">
           {navLinks.map(({ href, label, icon }) => {
             const isActive = isActiveHref(href);

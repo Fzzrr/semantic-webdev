@@ -260,17 +260,17 @@ export default function SPARQLPage() {
                   SPARQL <span className="text-[#b4c5ff]">Lab</span>
                 </h1>
                 <p className="text-sm text-[#838383] font-body max-w-xl">
-                  Jelajahi semua relasi dalam ontologi WebDev Semantic. Visualisasikan hubungan antar teknologi atau jalankan query SPARQL kustom.
+                  Explore all relations in the WebDev Semantic ontology. Visualize how technologies relate or run custom SPARQL queries.
                 </p>
               </div>
               <div className="hidden md:flex gap-4">
                 <div className="bg-[#131313] border border-[#333333] rounded-xl px-5 py-3 text-center">
                   <p className="text-2xl font-headline font-bold text-[#b4c5ff]">{relations.length}</p>
-                  <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider">Total Relasi</p>
+                  <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider">Total Relations</p>
                 </div>
                 <div className="bg-[#131313] border border-[#333333] rounded-xl px-5 py-3 text-center">
                   <p className="text-2xl font-headline font-bold text-[#b4c5ff]">{sortedPredicates.length}</p>
-                  <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider">Tipe Predikat</p>
+                  <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider">Predicate Types</p>
                 </div>
               </div>
             </div>
@@ -290,7 +290,7 @@ export default function SPARQLPage() {
                   {tab === "relations" ? (
                     <span className="flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-[16px]">account_tree</span>
-                      Semua Relasi
+                      All Relations
                     </span>
                   ) : (
                     <span className="flex items-center gap-1.5">
@@ -317,7 +317,7 @@ export default function SPARQLPage() {
                     : "text-[#838383] border-[#333333] hover:border-[#555555]"
                 }`}
               >
-                Semua ({relations.length})
+                All ({relations.length})
               </button>
               {sortedPredicates.map(([pred, count]) => {
                 const meta = RELATION_META[pred];
@@ -346,14 +346,14 @@ export default function SPARQLPage() {
                 <span className="material-symbols-outlined text-[#838383] text-[18px]">search</span>
                 <input
                   type="text"
-                  placeholder="Cari teknologi..."
+                  placeholder="Search technologies..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="bg-transparent outline-none text-xs font-mono text-[#e5e2e1] placeholder:text-[#838383] w-full"
                 />
               </div>
               <span className="text-xs font-mono text-[#838383]">
-                {filtered.length} relasi
+                {filtered.length} relations
               </span>
             </div>
 
@@ -361,13 +361,13 @@ export default function SPARQLPage() {
             {isLoading ? (
               <div className="flex items-center justify-center py-20 gap-3">
                 <div className="w-5 h-5 border-2 border-[#b4c5ff] border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm text-[#838383] font-mono">Memuat relasi...</span>
+                <span className="text-sm text-[#838383] font-mono">Loading relations...</span>
               </div>
             ) : (
               <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl overflow-hidden">
                 <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-mono text-[#838383] uppercase tracking-widest px-6 py-3 border-b border-[#333333] bg-[#131313]">
                   <span>Subject</span>
-                  <span className="text-center px-8">Predikat</span>
+                  <span className="text-center px-8">Predicate</span>
                   <span className="text-right">Object</span>
                 </div>
                 <div className="divide-y divide-[#222222]">
@@ -405,12 +405,12 @@ export default function SPARQLPage() {
                   ))}
                   {filtered.length > 200 && (
                     <div className="px-6 py-4 text-center text-xs font-mono text-[#838383]">
-                      Menampilkan 200 dari {filtered.length} relasi. Gunakan filter untuk mempersempit hasil.
+                      Showing 200 of {filtered.length} relations. Use the filters to narrow the results.
                     </div>
                   )}
                   {filtered.length === 0 && (
                     <div className="px-6 py-16 text-center text-sm font-mono text-[#838383]">
-                      Tidak ada relasi ditemukan.
+                      No relations found.
                     </div>
                   )}
                 </div>
@@ -425,7 +425,7 @@ export default function SPARQLPage() {
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Sidebar: examples */}
               <aside className="w-full lg:w-60 flex-shrink-0">
-                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-widest mb-3">Contoh Query</p>
+                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-widest mb-3">Example Queries</p>
                 <div className="space-y-1">
                   {EXAMPLE_QUERIES.map((ex, i) => (
                     <button
@@ -445,8 +445,8 @@ export default function SPARQLPage() {
 
                 <div className="mt-6 p-3 bg-[#1b1b1b] border border-[#333333] rounded-xl">
                   <p className="text-[9px] font-mono text-[#838383] uppercase tracking-wider mb-2">Engine</p>
-                  <p className="text-[10px] font-mono text-[#b4c5ff] break-all">SPARQL bawaan (Comunica)</p>
-                  <p className="text-[9px] text-[#838383] mt-2">Query dijalankan server-side atas ontology lokal. Fuseki opsional via FUSEKI_ENDPOINT.</p>
+                  <p className="text-[10px] font-mono text-[#b4c5ff] break-all">Built-in SPARQL (Comunica)</p>
+                  <p className="text-[9px] text-[#838383] mt-2">Queries run server-side over the local ontology. Fuseki is optional via FUSEKI_ENDPOINT.</p>
                 </div>
               </aside>
 
@@ -471,7 +471,7 @@ export default function SPARQLPage() {
                       ) : (
                         <>
                           <span className="material-symbols-outlined text-[14px]">play_arrow</span>
-                          Jalankan
+                          Run
                         </>
                       )}
                     </button>
@@ -490,7 +490,7 @@ export default function SPARQLPage() {
                   <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-[#333333] bg-[#131313]">
                       <span className="text-xs font-mono text-[#838383]">
-                        {queryResult.error ? "Error" : `${queryResult.bindings.length} baris ditemukan`}
+                        {queryResult.error ? "Error" : `${queryResult.bindings.length} rows found`}
                       </span>
                     </div>
                     {queryResult.error ? (
@@ -498,15 +498,15 @@ export default function SPARQLPage() {
                         <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
                           <span className="material-symbols-outlined text-red-400 text-lg mt-0.5">error</span>
                           <div>
-                            <p className="text-xs font-mono font-bold text-red-400 mb-1">Query gagal dijalankan</p>
+                            <p className="text-xs font-mono font-bold text-red-400 mb-1">Query failed to run</p>
                             <p className="text-xs font-mono text-[#838383] whitespace-pre-wrap">{queryResult.error}</p>
-                            <p className="text-[10px] text-[#555555] mt-2">Periksa kembali sintaks query SPARQL Anda.</p>
+                            <p className="text-[10px] text-[#555555] mt-2">Double-check your SPARQL query syntax.</p>
                           </div>
                         </div>
                       </div>
                     ) : queryResult.bindings.length === 0 ? (
                       <div className="p-8 text-center text-sm font-mono text-[#838383]">
-                        Query berhasil, tidak ada hasil.
+                        Query succeeded, no results.
                       </div>
                     ) : (
                       <div className="overflow-x-auto">
@@ -534,7 +534,7 @@ export default function SPARQLPage() {
                         </table>
                         {queryResult.bindings.length > 100 && (
                           <div className="px-4 py-3 text-center text-[10px] font-mono text-[#838383] border-t border-[#333333]">
-                            Menampilkan 100 dari {queryResult.bindings.length} baris.
+                            Showing 100 of {queryResult.bindings.length} rows.
                           </div>
                         )}
                       </div>

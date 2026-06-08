@@ -33,12 +33,12 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>`;
 
 const SECTIONS = [
-  { id: "tentang",      label: "Tentang Proyek" },
-  { id: "arsitektur",   label: "Arsitektur Ontologi" },
-  { id: "kategori",     label: "Kategori Teknologi" },
-  { id: "relasi",       label: "Predikat & Relasi" },
+  { id: "about",        label: "About the Project" },
+  { id: "architecture", label: "Ontology Architecture" },
+  { id: "categories",   label: "Technology Categories" },
+  { id: "relations",    label: "Predicates & Relations" },
   { id: "sparql",       label: "SPARQL Endpoint" },
-  { id: "contoh",       label: "Contoh Query" },
+  { id: "examples",     label: "Example Queries" },
 ];
 
 export default function DocsPage() {
@@ -50,7 +50,7 @@ export default function DocsPage() {
         {/* Sidebar nav */}
         <aside className="hidden lg:block w-52 flex-shrink-0">
           <div className="sticky top-24">
-            <p className="text-[10px] font-mono text-[#838383] uppercase tracking-widest mb-4">Daftar Isi</p>
+            <p className="text-[10px] font-mono text-[#838383] uppercase tracking-widest mb-4">Table of Contents</p>
             <nav className="space-y-1">
               {SECTIONS.map((s) => (
                 <a
@@ -82,29 +82,29 @@ export default function DocsPage() {
         {/* Main content */}
         <main className="flex-1 min-w-0 space-y-16">
 
-          {/* Tentang */}
-          <section id="tentang">
+          {/* About */}
+          <section id="about">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-lg bg-[#b4c5ff]/10 border border-[#b4c5ff]/20 flex items-center justify-center">
                 <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">info</span>
               </div>
-              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Tentang Proyek</h2>
+              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">About the Project</h2>
             </div>
             <div className="prose-custom space-y-4 text-sm text-[#c3c6d7] leading-relaxed">
               <p>
-                <strong className="text-[#e5e2e1]">WebDev Semantic Directory</strong> adalah direktori teknologi web development yang ditenagai oleh
-                Semantic Web. Proyek ini menggunakan ontologi OWL/RDF untuk merepresentasikan pengetahuan tentang ratusan
-                teknologi dan hubungan antar teknologi tersebut.
+                <strong className="text-[#e5e2e1]">WebDev Semantic Directory</strong> is a web development technology directory powered by
+                the Semantic Web. The project uses an OWL/RDF ontology to represent knowledge about hundreds of
+                technologies and the relationships between them.
               </p>
               <p>
-                Data disimpan dalam format Turtle (<code className="text-[#b4c5ff] bg-[#1b1b1b] px-1.5 py-0.5 rounded text-xs">.ttl</code>) dan
-                dapat dikueri menggunakan bahasa SPARQL melalui Apache Jena Fuseki, atau langsung dari file ontologi lokal menggunakan parser N3.js.
+                Data is stored in the Turtle format (<code className="text-[#b4c5ff] bg-[#1b1b1b] px-1.5 py-0.5 rounded text-xs">.ttl</code>) and
+                can be queried with SPARQL through Apache Jena Fuseki, or directly from the local ontology file using the N3.js parser.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
                 {[
-                  { icon: "category", label: "30+ Kategori" },
-                  { icon: "hub", label: "20 Tipe Relasi" },
-                  { icon: "devices", label: "100+ Teknologi" },
+                  { icon: "category", label: "30+ Categories" },
+                  { icon: "hub", label: "20 Relation Types" },
+                  { icon: "devices", label: "100+ Technologies" },
                   { icon: "code", label: "SPARQL Ready" },
                 ].map((item) => (
                   <div key={item.label} className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-4 flex flex-col items-center gap-2">
@@ -116,21 +116,21 @@ export default function DocsPage() {
             </div>
           </section>
 
-          {/* Arsitektur */}
-          <section id="arsitektur">
+          {/* Architecture */}
+          <section id="architecture">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-lg bg-[#b4c5ff]/10 border border-[#b4c5ff]/20 flex items-center justify-center">
                 <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">account_tree</span>
               </div>
-              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Arsitektur Ontologi</h2>
+              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Ontology Architecture</h2>
             </div>
             <div className="space-y-4 text-sm text-[#c3c6d7] leading-relaxed">
               <p>
-                Ontologi menggunakan namespace <code className="text-[#b4c5ff] bg-[#1b1b1b] px-1.5 py-0.5 rounded text-xs">http://webdev.id/ontology#</code>.
-                Semua kelas teknologi merupakan subclass dari <code className="text-[#b4c5ff] bg-[#1b1b1b] px-1.5 py-0.5 rounded text-xs">ex:Technology</code>.
+                The ontology uses the namespace <code className="text-[#b4c5ff] bg-[#1b1b1b] px-1.5 py-0.5 rounded text-xs">http://webdev.id/ontology#</code>.
+                All technology classes are subclasses of <code className="text-[#b4c5ff] bg-[#1b1b1b] px-1.5 py-0.5 rounded text-xs">ex:Technology</code>.
               </p>
               <div className="bg-[#0e0e0e] border border-[#333333] rounded-xl p-5">
-                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider mb-3">Hierarki Kelas</p>
+                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider mb-3">Class Hierarchy</p>
                 <pre className="text-xs font-mono text-[#c3c6d7] leading-relaxed overflow-x-auto">
 {`ex:Technology
 ├── ex:Framework
@@ -151,15 +151,15 @@ export default function DocsPage() {
 ├── ex:CloudProvider
 ├── ex:DeploymentTool
 ├── ex:CITool
-└── ... (30+ kategori)`}
+└── ... (30+ categories)`}
                 </pre>
               </div>
               <div className="bg-[#0e0e0e] border border-[#333333] rounded-xl p-5">
-                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider mb-3">Prefix yang Digunakan</p>
+                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider mb-3">Prefixes Used</p>
                 <pre className="text-xs font-mono text-[#b4c5ff] leading-relaxed">{PREFIX_BLOCK}</pre>
               </div>
               <div className="bg-[#0e0e0e] border border-[#333333] rounded-xl p-5">
-                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider mb-3">Contoh Deklarasi Teknologi (Turtle)</p>
+                <p className="text-[10px] font-mono text-[#838383] uppercase tracking-wider mb-3">Example Technology Declaration (Turtle)</p>
                 <pre className="text-xs font-mono text-[#c3c6d7] leading-relaxed">
 {`ex:NextJS a ex:Framework ;
     rdfs:label "Next.js" ;
@@ -176,13 +176,13 @@ export default function DocsPage() {
             </div>
           </section>
 
-          {/* Kategori */}
-          <section id="kategori">
+          {/* Categories */}
+          <section id="categories">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-lg bg-[#b4c5ff]/10 border border-[#b4c5ff]/20 flex items-center justify-center">
                 <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">category</span>
               </div>
-              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Kategori Teknologi</h2>
+              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Technology Categories</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {CATEGORIES.filter((c) => c.value !== "all").map((cat) => (
@@ -200,22 +200,22 @@ export default function DocsPage() {
             </div>
           </section>
 
-          {/* Relasi */}
-          <section id="relasi">
+          {/* Relations */}
+          <section id="relations">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-lg bg-[#b4c5ff]/10 border border-[#b4c5ff]/20 flex items-center justify-center">
                 <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">swap_horiz</span>
               </div>
-              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Predikat & Relasi</h2>
+              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Predicates & Relations</h2>
             </div>
             <p className="text-sm text-[#838383] mb-6">
-              Ontologi mendefinisikan 20 predikat object property yang menghubungkan antar teknologi.
+              The ontology defines 20 object property predicates that connect technologies to one another.
             </p>
             <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl overflow-hidden">
               <div className="grid grid-cols-[1fr_1fr_2fr] text-[10px] font-mono text-[#838383] uppercase tracking-widest px-5 py-3 border-b border-[#333333] bg-[#131313]">
-                <span>Predikat</span>
+                <span>Predicate</span>
                 <span>Domain → Range</span>
-                <span>Deskripsi</span>
+                <span>Description</span>
               </div>
               <div className="divide-y divide-[#222222]">
                 {RELATIONS.map((rel) => (
@@ -243,63 +243,63 @@ export default function DocsPage() {
             </div>
             <div className="space-y-4 text-sm text-[#c3c6d7]">
               <p>
-                Query SPARQL dijalankan oleh <strong>engine bawaan (Comunica)</strong> di server, langsung atas file ontologi lokal — tidak butuh server terpisah. Apache Jena Fuseki tetap bisa dipakai sebagai opsi.
+                SPARQL queries are executed by the <strong>built-in engine (Comunica)</strong> on the server, directly over the local ontology file — no separate server required. Apache Jena Fuseki can still be used as an option.
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">offline_bolt</span>
-                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Engine Bawaan (Default)</p>
+                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Built-in Engine (Default)</p>
                   </div>
-                  <p className="text-xs text-[#838383] mb-3">Comunica menjalankan SPARQL 1.1 langsung atas ontologi lokal, server-side.</p>
+                  <p className="text-xs text-[#838383] mb-3">Comunica runs SPARQL 1.1 directly over the local ontology, server-side.</p>
                   <code className="block text-[10px] font-mono text-[#b4c5ff] bg-[#0e0e0e] px-3 py-2 rounded-lg">
                     Comunica · ontology/webdev.ttl
                   </code>
-                  <p className="text-[10px] text-[#838383] mt-2">Aktif otomatis — tanpa konfigurasi tambahan.</p>
+                  <p className="text-[10px] text-[#838383] mt-2">Enabled automatically — no extra configuration.</p>
                 </div>
                 <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="material-symbols-outlined text-emerald-400 text-[18px]">cloud</span>
-                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Fuseki (Opsional)</p>
+                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Fuseki (Optional)</p>
                   </div>
-                  <p className="text-xs text-[#838383] mb-3">Triplestore Apache Jena Fuseki untuk SPARQL server penuh.</p>
+                  <p className="text-xs text-[#838383] mb-3">Apache Jena Fuseki triplestore for a full SPARQL server.</p>
                   <code className="block text-[10px] font-mono text-[#b4c5ff] bg-[#0e0e0e] px-3 py-2 rounded-lg">
                     env: FUSEKI_ENDPOINT
                   </code>
-                  <p className="text-[10px] text-[#838383] mt-2">Dipakai bila FUSEKI_ENDPOINT di-set; jika tidak, pakai engine bawaan.</p>
+                  <p className="text-[10px] text-[#838383] mt-2">Used when FUSEKI_ENDPOINT is set; otherwise the built-in engine is used.</p>
                 </div>
               </div>
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex gap-3">
                 <span className="material-symbols-outlined text-amber-400 text-lg mt-0.5 flex-shrink-0">tips_and_updates</span>
                 <p className="text-xs text-[#c3c6d7]">
-                  Production cukup deploy ke Vercel — engine bawaan langsung jalan tanpa server tambahan. Untuk memakai Fuseki
-                  (lokal: <code className="text-[#b4c5ff] mx-1">setup-fuseki.bat</code>), set env
-                  <code className="text-[#b4c5ff] mx-1">FUSEKI_ENDPOINT</code> ke URL endpoint-nya.
+                  For production, simply deploy to Vercel — the built-in engine runs without any extra server. To use Fuseki
+                  (locally: <code className="text-[#b4c5ff] mx-1">setup-fuseki.bat</code>), set the
+                  <code className="text-[#b4c5ff] mx-1">FUSEKI_ENDPOINT</code> env to its endpoint URL.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Contoh Query */}
-          <section id="contoh">
+          {/* Example Queries */}
+          <section id="examples">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-lg bg-[#b4c5ff]/10 border border-[#b4c5ff]/20 flex items-center justify-center">
                 <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">code</span>
               </div>
-              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Contoh Query SPARQL</h2>
+              <h2 className="text-xl font-headline font-bold text-[#e5e2e1]">Example SPARQL Queries</h2>
             </div>
             <div className="space-y-6">
               {[
                 {
-                  title: "Semua Teknologi dengan Tipenya",
+                  title: "All Technologies with Their Type",
                   code: `${PREFIX_BLOCK}\n\nSELECT DISTINCT ?label ?typeLabel\nWHERE {\n  ?tech a ?type .\n  ?type rdfs:subClassOf* ex:Technology .\n  OPTIONAL { ?tech rdfs:label ?label }\n  OPTIONAL { ?type rdfs:label ?typeLabel }\n  FILTER(?type != ex:Technology)\n}\nORDER BY ?typeLabel ?label`,
                 },
                 {
-                  title: "ORM dan Database yang Didukung",
+                  title: "ORMs and Their Supported Databases",
                   code: `${PREFIX_BLOCK}\n\nSELECT ?ormLabel ?dbLabel\nWHERE {\n  ?orm a ex:ORM ;\n       ex:isORMFor ?db .\n  OPTIONAL { ?orm rdfs:label ?ormLabel }\n  OPTIONAL { ?db rdfs:label ?dbLabel }\n}\nORDER BY ?ormLabel`,
                 },
                 {
-                  title: "Framework Berdasarkan Bahasa Pemrograman",
+                  title: "Frameworks by Programming Language",
                   code: `${PREFIX_BLOCK}\n\nSELECT ?fwLabel ?langLabel\nWHERE {\n  ?fw a ex:Framework ;\n      ex:usesLanguage ?lang .\n  OPTIONAL { ?fw rdfs:label ?fwLabel }\n  OPTIONAL { ?lang rdfs:label ?langLabel }\n}\nORDER BY ?langLabel ?fwLabel`,
                 },
               ].map((item) => (
@@ -311,7 +311,7 @@ export default function DocsPage() {
                       className="text-[10px] font-mono text-[#b4c5ff] hover:underline flex items-center gap-1"
                     >
                       <span className="material-symbols-outlined text-[12px]">open_in_new</span>
-                      Coba di Lab
+                      Try in Lab
                     </Link>
                   </div>
                   <pre className="text-xs font-mono text-[#c3c6d7] p-5 overflow-x-auto leading-relaxed bg-[#0e0e0e]">

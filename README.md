@@ -5,33 +5,33 @@
 
 # WebDev Semantic Directory
 
-Portal pencarian teknologi web development berbasis Semantic Web menggunakan RDF Turtle, SPARQL, dan Apache Jena Fuseki.
+A Semantic Web–based search portal for web development technologies, using RDF Turtle, SPARQL, and Apache Jena Fuseki.
 
-## Daftar Isi
+## Table of Contents
 
-1. [Ringkasan](#ringkasan)
-2. [Arsitektur](#arsitektur)
-3. [Stack Teknologi](#stack-teknologi)
-4. [Persyaratan](#persyaratan)
-5. [Quick Start Windows](#quick-start-windows)
-6. [Menjalankan Fuseki](#menjalankan-fuseki)
-7. [Menjalankan Frontend](#menjalankan-frontend)
-8. [Halaman Aplikasi](#halaman-aplikasi)
-9. [Update TTL](#update-ttl)
-10. [Validasi Hasil](#validasi-hasil)
-11. [Struktur Folder](#struktur-folder)
-12. [Ontologi](#ontologi)
+1. [Overview](#overview)
+2. [Architecture](#architecture)
+3. [Technology Stack](#technology-stack)
+4. [Requirements](#requirements)
+5. [Quick Start (Windows)](#quick-start-windows)
+6. [Running Fuseki](#running-fuseki)
+7. [Running the Frontend](#running-the-frontend)
+8. [Application Pages](#application-pages)
+9. [Updating the TTL](#updating-the-ttl)
+10. [Validating the Results](#validating-the-results)
+11. [Folder Structure](#folder-structure)
+12. [Ontology](#ontology)
 13. [API Endpoints](#api-endpoints)
 14. [Troubleshooting](#troubleshooting)
-15. [Referensi](#referensi)
+15. [References](#references)
 
-## Ringkasan
+## Overview
 
-Data utama disimpan di [ontology/webdev.ttl](ontology/webdev.ttl), dimuat ke Fuseki, lalu di-query lewat API route Next.js.
+The main data lives in [ontology/webdev.ttl](ontology/webdev.ttl), is loaded into Fuseki, and is then queried through Next.js API routes.
 
-Jika Fuseki tidak aktif, backend tetap bisa membaca data dari TTL lokal melalui parser n3 (fallback), sehingga aplikasi tetap berjalan tanpa triplestore.
+If Fuseki is not running, the backend can still read the data from the local TTL via the n3 parser (fallback), so the app keeps working without a triplestore.
 
-## Arsitektur
+## Architecture
 
 ```text
 Browser (Next.js Frontend)
@@ -47,29 +47,29 @@ SPARQL Query Builder (lib/queries.ts)
   +--> Local TTL Fallback (lib/localOntology.ts)
 ```
 
-## Stack Teknologi
+## Technology Stack
 
-| Komponen | Teknologi |
+| Component | Technology |
 |---|---|
 | Frontend | Next.js 14 (App Router), React 18 |
-| Bahasa | TypeScript |
+| Language | TypeScript |
 | Styling | Tailwind CSS |
 | Triplestore | Apache Jena Fuseki 4.10.0 |
 | Data Format | RDF Turtle (.ttl) |
 | Query | SPARQL 1.1 |
 | Local Parser | n3 |
 
-## Persyaratan
+## Requirements
 
-| Tool | Minimum | Catatan |
+| Tool | Minimum | Notes |
 |---|---|---|
-| Node.js | v20+ | Menjalankan Next.js |
-| npm | v9+ | Umumnya sudah ikut Node.js |
-| Java | v17+ | Menjalankan Fuseki 4.10.0 |
+| Node.js | v20+ | Runs Next.js |
+| npm | v9+ | Usually bundled with Node.js |
+| Java | v17+ | Runs Fuseki 4.10.0 |
 
-## Quick Start Windows
+## Quick Start (Windows)
 
-Jalankan dari root project:
+Run from the project root:
 
 ```bat
 npm install
@@ -77,43 +77,43 @@ setup-fuseki.bat
 npm run dev
 ```
 
-Lalu buka:
+Then open:
 
 - App: http://localhost:3000
 - Fuseki UI: http://localhost:3030
 - SPARQL endpoint: http://localhost:3030/webdev/sparql
 
-## Menjalankan Fuseki
+## Running Fuseki
 
-### Opsi A - Script otomatis (disarankan)
+### Option A - Automated script (recommended)
 
-Script [setup-fuseki.bat](setup-fuseki.bat) akan:
+The [setup-fuseki.bat](setup-fuseki.bat) script will:
 
-- Mengecek instalasi Java.
-- Mengunduh & mengekstrak Fuseki 4.10.0 jika belum ada.
-- Menjalankan Fuseki dengan dataset in-memory `webdev` (`--update --mem /webdev`).
+- Check the Java installation.
+- Download & extract Fuseki 4.10.0 if it is not present.
+- Run Fuseki with an in-memory dataset `webdev` (`--update --mem /webdev`).
 - Upload [ontology/webdev.ttl](ontology/webdev.ttl) via curl.
 
-Perintah:
+Command:
 
 ```bat
 setup-fuseki.bat
 ```
 
-> Catatan: dataset dijalankan secara in-memory, jadi data hilang saat Fuseki dimatikan. Jalankan ulang `setup-fuseki.bat` untuk menyalakan dan meng-upload ulang TTL.
+> Note: the dataset runs in-memory, so the data is lost when Fuseki is stopped. Re-run `setup-fuseki.bat` to start it again and re-upload the TTL.
 
-### Opsi B - Manual dari Fuseki lokal di repo
+### Option B - Manual, from the local Fuseki in the repo
 
-Repo sudah menyertakan [apache-jena-fuseki-4.10.0](apache-jena-fuseki-4.10.0).
+The repo already includes [apache-jena-fuseki-4.10.0](apache-jena-fuseki-4.10.0).
 
-1. Jalankan Fuseki:
+1. Start Fuseki:
 
 ```bat
 cd apache-jena-fuseki-4.10.0
 java -jar fuseki-server.jar --update --mem /webdev
 ```
 
-2. Upload TTL:
+2. Upload the TTL:
 
 ```powershell
 Invoke-WebRequest -Uri "http://localhost:3030/webdev/data" `
@@ -122,46 +122,46 @@ Invoke-WebRequest -Uri "http://localhost:3030/webdev/data" `
   -InFile "ontology\webdev.ttl"
 ```
 
-## Menjalankan Frontend
+## Running the Frontend
 
-Setelah Fuseki aktif, jalankan frontend dari root:
+Once Fuseki is running, start the frontend from the root:
 
 ```bat
 npm run dev
 ```
 
-Mode production:
+Production mode:
 
 ```bat
 npm run build
 npm start
 ```
 
-Endpoint Fuseki dapat di-override lewat environment variable `FUSEKI_ENDPOINT` (default `http://localhost:3030/webdev/sparql`).
+The Fuseki endpoint can be overridden via the `FUSEKI_ENDPOINT` environment variable (default `http://localhost:3030/webdev/sparql`).
 
 ## Deployment
 
-Cukup deploy ke **Vercel** — lihat [DEPLOY.md](DEPLOY.md). Query SPARQL dijalankan oleh engine bawaan (Comunica) di server atas `ontology/webdev.ttl`, jadi **tidak perlu meng-host Fuseki** dan **tidak ada env var wajib**. Fuseki tetap opsional via `FUSEKI_ENDPOINT`.
+Just deploy to **Vercel** — see [DEPLOY.md](DEPLOY.md). SPARQL queries are executed by the built-in engine (Comunica) on the server over `ontology/webdev.ttl`, so you **do not need to host Fuseki** and there are **no required env vars**. Fuseki remains optional via `FUSEKI_ENDPOINT`.
 
-## Halaman Aplikasi
+## Application Pages
 
-| Route | Deskripsi |
+| Route | Description |
 |---|---|
-| `/` | Explorer - daftar & pencarian teknologi dengan filter kategori |
-| `/tech/[name]` | Detail satu teknologi beserta relasinya |
-| `/sparql` | SPARQL playground - tulis & jalankan query langsung ke endpoint |
-| `/docs` | Dokumentasi ontologi: kategori, predikat/relasi, dan contoh query |
+| `/` | Explorer - list & search technologies with category filters |
+| `/tech/[name]` | Detail page for a single technology and its relations |
+| `/sparql` | SPARQL playground - write & run queries directly against the endpoint |
+| `/docs` | Ontology documentation: categories, predicates/relations, and example queries |
 
-## Update TTL
+## Updating the TTL
 
-Setiap kali [ontology/webdev.ttl](ontology/webdev.ttl) berubah:
+Every time [ontology/webdev.ttl](ontology/webdev.ttl) changes:
 
-1. Simpan file TTL.
-2. Clear dataset atau restart Fuseki.
-3. Upload ulang TTL.
-4. Hard refresh browser (Ctrl+F5).
+1. Save the TTL file.
+2. Clear the dataset or restart Fuseki.
+3. Re-upload the TTL.
+4. Hard refresh the browser (Ctrl+F5).
 
-Contoh clear dan upload ulang:
+Example clear and re-upload:
 
 ```powershell
 Invoke-WebRequest -Uri "http://localhost:3030/webdev/update" `
@@ -175,17 +175,17 @@ Invoke-WebRequest -Uri "http://localhost:3030/webdev/data" `
   -InFile "ontology\webdev.ttl"
 ```
 
-## Validasi Hasil
+## Validating the Results
 
-Checklist cepat setelah run:
+Quick checklist after a run:
 
-1. Buka app di http://localhost:3000.
-2. Cek statistik kategori di http://localhost:3000/api/sparql?stats=true.
-3. Pastikan kategori semantic web baru muncul, misalnya SemanticWebSpec dan Triplestore.
-4. Cek detail node, misalnya /api/tech/Fuseki.
-5. Coba jalankan query di halaman /sparql.
+1. Open the app at http://localhost:3000.
+2. Check the category stats at http://localhost:3000/api/sparql?stats=true.
+3. Make sure the new semantic web categories show up, e.g. SemanticWebSpec and Triplestore.
+4. Check a node's detail, e.g. /api/tech/Fuseki.
+5. Try running a query on the /sparql page.
 
-## Struktur Folder
+## Folder Structure
 
 ```text
 semantic-webdev/
@@ -225,54 +225,54 @@ semantic-webdev/
 |- README.md
 ```
 
-## Ontologi
+## Ontology
 
-Ontology utama ada di [ontology/webdev.ttl](ontology/webdev.ttl) dengan fokus:
+The main ontology lives in [ontology/webdev.ttl](ontology/webdev.ttl) and focuses on:
 
-- Kelas teknologi web: Framework, Library, ORM, Database, Runtime, dan lainnya.
-- Kelas semantic web: SemanticWebSpec, Triplestore.
-- Relasi utama: isBuiltOn, compatibleWith, connectsTo, alternativeTo, implementsSpec, dan lainnya.
+- Web technology classes: Framework, Library, ORM, Database, Runtime, and more.
+- Semantic web classes: SemanticWebSpec, Triplestore.
+- Key relations: isBuiltOn, compatibleWith, connectsTo, alternativeTo, implementsSpec, and more.
 
-Contoh entitas semantic web yang sudah dimodelkan:
+Example semantic web entities already modeled:
 
 - RDF, RDFS, OWL2, SPARQL, TurtleSyntax, JSONLD, SHACL
 - ApacheJena, Fuseki, GraphDB, Blazegraph, Virtuoso
 - Comunica, N3JS, RDFJS
 
-Daftar lengkap kategori dan predikat relasi dapat dilihat di halaman `/docs`.
+The full list of categories and relation predicates can be seen on the `/docs` page.
 
 ## API Endpoints
 
 ### GET /api/sparql
 
-Ambil list teknologi.
+Fetch the technology list.
 
 Query params:
 
-- `category=<ClassName>` contoh `category=Triplestore`
-- `q=<keyword>` contoh `q=sparql`
-- `stats=true` untuk statistik per kategori
+- `category=<ClassName>` e.g. `category=Triplestore`
+- `q=<keyword>` e.g. `q=sparql`
+- `stats=true` for per-category statistics
 
 ### GET /api/search?q=<keyword>
 
-Pencarian cepat teknologi berdasarkan keyword.
+Quick technology search by keyword.
 
 ### GET /api/tech/[name]
 
-Detail satu teknologi beserta relasi.
+Detail for a single technology and its relations.
 
-Contoh:
+Examples:
 
 - `/api/tech/Fuseki`
 - `/api/tech/NextJS`
 
 ### GET /api/relations
 
-Mengembalikan seluruh triple relasi dari ontologi lokal (digunakan untuk graph relasi).
+Returns all relation triples from the local ontology (used for the relation graph).
 
 ### POST /api/sparql/run
 
-Menjalankan query SPARQL bebas terhadap endpoint Fuseki.
+Runs an arbitrary SPARQL query against the Fuseki endpoint.
 
 Body (JSON):
 
@@ -280,39 +280,39 @@ Body (JSON):
 { "query": "SELECT * WHERE { ?s ?p ?o } LIMIT 10" }
 ```
 
-Respons berisi `vars` (daftar variabel) dan `bindings` (hasil baris).
+The response contains `vars` (the list of variables) and `bindings` (the result rows).
 
 ## Troubleshooting
 
-### Fuseki tidak terhubung
+### Fuseki not connected
 
-- Pastikan Java 17+ terinstall.
-- Pastikan Fuseki berjalan di http://localhost:3030.
-- Pastikan dataset webdev tersedia.
+- Make sure Java 17+ is installed.
+- Make sure Fuseki is running at http://localhost:3030.
+- Make sure the webdev dataset is available.
 
-### Data belum berubah setelah update TTL
+### Data has not changed after updating the TTL
 
-- Pastikan dataset sudah di-clear atau server Fuseki di-restart.
-- Upload ulang TTL.
-- Hard refresh browser.
+- Make sure the dataset has been cleared or the Fuseki server has been restarted.
+- Re-upload the TTL.
+- Hard refresh the browser.
 
 ### SPARQL 404
 
-- Endpoint atau dataset salah.
-- Cek endpoint di [lib/sparql.ts](lib/sparql.ts) atau set `FUSEKI_ENDPOINT`.
+- Wrong endpoint or dataset.
+- Check the endpoint in [lib/sparql.ts](lib/sparql.ts) or set `FUSEKI_ENDPOINT`.
 
-### UI kosong padahal API sudah ada data
+### UI is empty even though the API has data
 
-- Buka tab baru atau hard refresh.
-- Jika perlu, hapus folder `.next` lalu jalankan ulang `npm run dev`.
+- Open a new tab or hard refresh.
+- If needed, delete the `.next` folder and re-run `npm run dev`.
 
-### Port 3030 dipakai proses lain
+### Port 3030 is used by another process
 
 ```bat
 netstat -ano | findstr :3030
 ```
 
-## Referensi
+## References
 
 - Apache Jena Fuseki: https://jena.apache.org/documentation/fuseki2/
 - SPARQL 1.1: https://www.w3.org/TR/sparql11-query/

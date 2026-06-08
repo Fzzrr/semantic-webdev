@@ -5,8 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import TechLogo from "@/components/TechLogo";
-import FilterTab from "@/components/FilterTab";
-import { CATEGORIES } from "@/lib/types";
 
 interface TechDetail {
   uri: string;
@@ -56,8 +54,6 @@ export default function TechDetailPage() {
   const [tech, setTech] = useState<TechDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // Mobile: open/close the category filter drawer
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     if (!name) return;
@@ -85,47 +81,8 @@ export default function TechDetailPage() {
 
       <div className="flex pt-16 min-h-screen">
 
-        {/* Mobile: filter pull-tab (pinned to the left edge) */}
-        {!filtersOpen && <FilterTab onClick={() => setFiltersOpen(true)} />}
-
-        {/* Backdrop drawer (mobile) — fade */}
-        <div
-          className={`md:hidden fixed inset-0 top-16 z-30 bg-black/60 transition-opacity duration-300 ${
-            filtersOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-          onClick={() => setFiltersOpen(false)}
-          aria-hidden="true"
-        />
-
-        {/* Sidebar — slide */}
-        <aside className={`flex flex-col fixed left-0 top-16 bottom-0 w-64 bg-[#1b1b1b] border-r border-[#333333] py-6 overflow-y-auto custom-scrollbar z-40 transition-transform duration-300 ease-out ${
-          filtersOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`}>
-          <div className="px-4 mb-4">
-            <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Categories</p>
-          </div>
-          <div className="px-4 space-y-1">
-            {CATEGORIES.map((cat) => {
-              const isCurrentType = tech && (tech.type === cat.value || tech.typeLabel === cat.value);
-              return (
-                <button
-                  key={cat.value}
-                  onClick={() => { setFiltersOpen(false); router.push(cat.value === "all" ? "/" : `/?category=${cat.value}`); }}
-                  className={`w-full flex items-center justify-between py-2.5 px-4 rounded-lg text-left font-body text-xs transition-colors ${
-                    isCurrentType
-                      ? "text-[#b4c5ff] bg-[#2563eb]/10 font-bold border-l-2 border-[#2563eb]"
-                      : "text-[#c3c6d7] hover:bg-[#2a2a2a] hover:text-[#e5e2e1]"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-
         {/* Main Content */}
-        <main className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8 min-h-screen">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 min-h-screen">
           <div className="max-w-[1100px] mx-auto w-full">
 
             {/* Back */}

@@ -5,26 +5,26 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
 
 const RELATIONS = [
-  { pred: "isFrameworkOf",       label: "isFrameworkOf",       desc: "Menghubungkan framework dengan library/teknologi yang menjadi dasarnya.",         domain: "Framework", range: "Library / Runtime" },
-  { pred: "isORMFor",            label: "isORMFor",            desc: "Menghubungkan ORM dengan database yang didukungnya.",                              domain: "ORM", range: "Database" },
-  { pred: "isBuiltOn",           label: "isBuiltOn",           desc: "Teknologi yang dibangun di atas runtime atau platform tertentu.",                  domain: "Framework / Library", range: "Runtime / Language" },
-  { pred: "implementsSpec",      label: "implementsSpec",      desc: "Implementasi dari standar atau spesifikasi web semantik.",                         domain: "Triplestore / Tool", range: "SemanticWebSpec" },
-  { pred: "usesLanguage",        label: "usesLanguage",        desc: "Bahasa pemrograman yang digunakan oleh suatu teknologi.",                          domain: "Framework / Library", range: "Language" },
-  { pred: "compatibleWith",      label: "compatibleWith",      desc: "Kompatibilitas langsung antara dua teknologi.",                                    domain: "Technology", range: "Technology" },
-  { pred: "alternativeTo",       label: "alternativeTo",       desc: "Teknologi yang dapat digunakan sebagai alternatif satu sama lain.",                domain: "Technology", range: "Technology" },
-  { pred: "connectsTo",          label: "connectsTo",          desc: "Teknologi yang terhubung secara langsung dalam ekosistem.",                        domain: "Technology", range: "Technology" },
-  { pred: "integratesWith",      label: "integratesWith",      desc: "Integrasi resmi atau umum antara dua teknologi.",                                  domain: "Technology", range: "Technology" },
-  { pred: "testedWith",          label: "testedWith",          desc: "Alat testing yang direkomendasikan atau umum digunakan.",                          domain: "Framework / Library", range: "TestingTool" },
-  { pred: "deployedOn",          label: "deployedOn",          desc: "Platform cloud atau infrastruktur tempat teknologi di-deploy.",                    domain: "Framework / Runtime", range: "CloudProvider / DeploymentTool" },
-  { pred: "managedBy",           label: "managedBy",           desc: "Teknologi yang dikelola oleh package manager tertentu.",                           domain: "Library / Framework", range: "PackageManager" },
-  { pred: "hostedBy",            label: "hostedBy",            desc: "Layanan hosting yang menyediakan teknologi tersebut.",                             domain: "Database / Storage", range: "CloudProvider" },
-  { pred: "monitoredBy",         label: "monitoredBy",         desc: "Alat monitoring yang digunakan untuk memantau performa.",                          domain: "Technology", range: "MonitoringTool" },
-  { pred: "ciWith",              label: "ciWith",              desc: "Pipeline CI/CD yang digunakan dalam proses deployment.",                           domain: "Framework / Runtime", range: "CITool" },
-  { pred: "usesBroker",          label: "usesBroker",          desc: "Message broker yang digunakan untuk komunikasi antar layanan.",                    domain: "Framework / Runtime", range: "MessageBroker" },
-  { pred: "searchedWith",        label: "searchedWith",        desc: "Search engine yang digunakan untuk pencarian full-text.",                          domain: "Database / Framework", range: "SearchTool" },
-  { pred: "storedWith",          label: "storedWith",          desc: "Layanan penyimpanan objek atau file yang digunakan.",                              domain: "Framework / Runtime", range: "StorageService" },
-  { pred: "designedWith",        label: "designedWith",        desc: "Alat desain yang digunakan dalam workflow pengembangan UI.",                       domain: "Framework / UILib", range: "DesignTool" },
-  { pred: "versionControlledBy", label: "versionControlledBy", desc: "Sistem version control yang digunakan untuk mengelola kode.",                     domain: "Technology", range: "VersionControl" },
+  { pred: "isFrameworkOf",       label: "isFrameworkOf",       desc: "Links a framework to the library/technology it is built upon.",                    domain: "Framework", range: "Library / Runtime" },
+  { pred: "isORMFor",            label: "isORMFor",            desc: "Links an ORM to the databases it supports.",                                       domain: "ORM", range: "Database" },
+  { pred: "isBuiltOn",           label: "isBuiltOn",           desc: "A technology built on top of a specific runtime or platform.",                     domain: "Framework / Library", range: "Runtime / Language" },
+  { pred: "implementsSpec",      label: "implementsSpec",      desc: "Implementation of a semantic web standard or specification.",                      domain: "Triplestore / Tool", range: "SemanticWebSpec" },
+  { pred: "usesLanguage",        label: "usesLanguage",        desc: "The programming language used by a technology.",                                   domain: "Framework / Library", range: "Language" },
+  { pred: "compatibleWith",      label: "compatibleWith",      desc: "Direct compatibility between two technologies.",                                   domain: "Technology", range: "Technology" },
+  { pred: "alternativeTo",       label: "alternativeTo",       desc: "Technologies that can be used as alternatives to one another.",                    domain: "Technology", range: "Technology" },
+  { pred: "connectsTo",          label: "connectsTo",          desc: "Technologies that connect directly within the ecosystem.",                         domain: "Technology", range: "Technology" },
+  { pred: "integratesWith",      label: "integratesWith",      desc: "Official or common integration between two technologies.",                         domain: "Technology", range: "Technology" },
+  { pred: "testedWith",          label: "testedWith",          desc: "Recommended or commonly used testing tools.",                                      domain: "Framework / Library", range: "TestingTool" },
+  { pred: "deployedOn",          label: "deployedOn",          desc: "Cloud platform or infrastructure where the technology is deployed.",               domain: "Framework / Runtime", range: "CloudProvider / DeploymentTool" },
+  { pred: "managedBy",           label: "managedBy",           desc: "A technology managed by a particular package manager.",                            domain: "Library / Framework", range: "PackageManager" },
+  { pred: "hostedBy",            label: "hostedBy",            desc: "The hosting service that provides the technology.",                                domain: "Database / Storage", range: "CloudProvider" },
+  { pred: "monitoredBy",         label: "monitoredBy",         desc: "Monitoring tools used to track performance.",                                      domain: "Technology", range: "MonitoringTool" },
+  { pred: "ciWith",              label: "ciWith",              desc: "CI/CD pipeline used in the deployment process.",                                   domain: "Framework / Runtime", range: "CITool" },
+  { pred: "usesBroker",          label: "usesBroker",          desc: "Message broker used for inter-service communication.",                             domain: "Framework / Runtime", range: "MessageBroker" },
+  { pred: "searchedWith",        label: "searchedWith",        desc: "Search engine used for full-text search.",                                         domain: "Database / Framework", range: "SearchTool" },
+  { pred: "storedWith",          label: "storedWith",          desc: "Object or file storage service used.",                                             domain: "Framework / Runtime", range: "StorageService" },
+  { pred: "designedWith",        label: "designedWith",        desc: "Design tools used in the UI development workflow.",                                domain: "Framework / UILib", range: "DesignTool" },
+  { pred: "versionControlledBy", label: "versionControlledBy", desc: "Version control system used to manage the code.",                                  domain: "Technology", range: "VersionControl" },
 ];
 
 const PREFIX_BLOCK = `PREFIX ex:   <http://webdev.id/ontology#>
@@ -243,37 +243,38 @@ export default function DocsPage() {
             </div>
             <div className="space-y-4 text-sm text-[#c3c6d7]">
               <p>
-                Aplikasi mendukung dua mode query: Apache Jena Fuseki (eksternal) dan N3.js local parser (built-in fallback).
+                Query SPARQL dijalankan oleh <strong>engine bawaan (Comunica)</strong> di server, langsung atas file ontologi lokal — tidak butuh server terpisah. Apache Jena Fuseki tetap bisa dipakai sebagai opsi.
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="material-symbols-outlined text-emerald-400 text-[18px]">cloud</span>
-                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Fuseki (Online)</p>
+                    <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">offline_bolt</span>
+                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Engine Bawaan (Default)</p>
                   </div>
-                  <p className="text-xs text-[#838383] mb-3">Server SPARQL penuh. Mendukung semua fitur SPARQL 1.1.</p>
+                  <p className="text-xs text-[#838383] mb-3">Comunica menjalankan SPARQL 1.1 langsung atas ontologi lokal, server-side.</p>
                   <code className="block text-[10px] font-mono text-[#b4c5ff] bg-[#0e0e0e] px-3 py-2 rounded-lg">
-                    http://localhost:3030/webdev/sparql
+                    Comunica · ontology/webdev.ttl
                   </code>
-                  <p className="text-[10px] text-[#838383] mt-2">Method: POST | Content-Type: application/sparql-query</p>
+                  <p className="text-[10px] text-[#838383] mt-2">Aktif otomatis — tanpa konfigurasi tambahan.</p>
                 </div>
                 <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">offline_bolt</span>
-                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Local (Offline)</p>
+                    <span className="material-symbols-outlined text-emerald-400 text-[18px]">cloud</span>
+                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Fuseki (Opsional)</p>
                   </div>
-                  <p className="text-xs text-[#838383] mb-3">Parser N3.js yang membaca langsung dari file ontologi lokal.</p>
+                  <p className="text-xs text-[#838383] mb-3">Triplestore Apache Jena Fuseki untuk SPARQL server penuh.</p>
                   <code className="block text-[10px] font-mono text-[#b4c5ff] bg-[#0e0e0e] px-3 py-2 rounded-lg">
-                    ontology/webdev.ttl
+                    env: FUSEKI_ENDPOINT
                   </code>
-                  <p className="text-[10px] text-[#838383] mt-2">Otomatis digunakan saat Fuseki tidak tersedia.</p>
+                  <p className="text-[10px] text-[#838383] mt-2">Dipakai bila FUSEKI_ENDPOINT di-set; jika tidak, pakai engine bawaan.</p>
                 </div>
               </div>
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex gap-3">
                 <span className="material-symbols-outlined text-amber-400 text-lg mt-0.5 flex-shrink-0">tips_and_updates</span>
                 <p className="text-xs text-[#c3c6d7]">
-                  Untuk menjalankan Fuseki secara lokal: unduh <strong>Apache Jena Fuseki</strong>, buat dataset bernama
-                  <code className="text-[#b4c5ff] mx-1">webdev</code>, lalu upload file <code className="text-[#b4c5ff]">ontology/webdev.ttl</code>.
+                  Production cukup deploy ke Vercel — engine bawaan langsung jalan tanpa server tambahan. Untuk memakai Fuseki
+                  (lokal: <code className="text-[#b4c5ff] mx-1">setup-fuseki.bat</code>), set env
+                  <code className="text-[#b4c5ff] mx-1">FUSEKI_ENDPOINT</code> ke URL endpoint-nya.
                 </p>
               </div>
             </div>

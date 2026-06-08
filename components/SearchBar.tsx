@@ -78,9 +78,9 @@ export default function SearchBar({ onSearch, isLoading }: SearchBarProps) {
         type="text"
         value={value}
         onChange={handleChange}
-        placeholder="Cari teknologi, framework, atau dependensi..."
+        placeholder="Search technologies, frameworks, or dependencies..."
         className="w-full bg-[#212121] border border-[#333333] rounded-xl py-3 px-12 font-headline text-base focus:ring-1 focus:ring-[#b4c5ff] focus:border-[#b4c5ff] outline-none text-[#e5e2e1] transition-all shadow-sm focus:outline-none"
-        aria-label="Cari teknologi"
+        aria-label="Search technologies"
         onFocus={() => { if (suggestions.length) setShowSuggestions(true); }}
         onBlur={() => { setTimeout(() => setShowSuggestions(false), 150); }}
       />
@@ -91,7 +91,7 @@ export default function SearchBar({ onSearch, isLoading }: SearchBarProps) {
           <button
             onClick={handleClear}
             className="text-[#838383] hover:text-[#e5e2e1] transition-colors p-1"
-            aria-label="Hapus pencarian"
+            aria-label="Clear search"
           >
             <span className="material-symbols-outlined">close</span>
           </button>

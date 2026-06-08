@@ -383,20 +383,6 @@ export default function RelationsMapPage() {
     }
   };
 
-  // Solid hex per category, used for the SVG stroke of an edge
-  const getEdgeColor = (type: string) => {
-    const t = type.toLowerCase();
-    if (t === "framework") return "#38bdf8";
-    if (t === "database" || t === "triplestore") return "#f97316";
-    if (t === "language" || t === "runtime") return "#2563eb";
-    if (t === "apitool" || t === "semanticwebspec") return "#14b8a6";
-    if (["buildtool", "packagemanager", "linter", "monorepo"].includes(t)) return "#10b981";
-    if (t === "testingtool") return "#eab308";
-    if (t === "deploymenttool") return "#f43f5e";
-    if (t === "orm") return "#f59e0b";
-    if (t === "cssframework") return "#06b6d4";
-    return "#a78bfa";
-  };
 
   return (
     <div className="min-h-screen bg-[#131313] tech-grid-bg text-[#e5e2e1] font-body selection:bg-primary selection:text-on-primary">

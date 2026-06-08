@@ -141,7 +141,7 @@ Endpoint Fuseki dapat di-override lewat environment variable `FUSEKI_ENDPOINT` (
 
 ## Deployment
 
-Untuk men-deploy ke production (Vercel untuk app + Render gratis untuk Fuseki), lihat panduan langkah demi langkah di [DEPLOY.md](DEPLOY.md). Ringkasnya: satu-satunya env var yang wajib di-set adalah `FUSEKI_ENDPOINT`, dan aplikasi tetap berjalan via fallback parser lokal walau Fuseki tidak tersedia.
+Cukup deploy ke **Vercel** — lihat [DEPLOY.md](DEPLOY.md). Query SPARQL dijalankan oleh engine bawaan (Comunica) di server atas `ontology/webdev.ttl`, jadi **tidak perlu meng-host Fuseki** dan **tidak ada env var wajib**. Fuseki tetap opsional via `FUSEKI_ENDPOINT`.
 
 ## Halaman Aplikasi
 

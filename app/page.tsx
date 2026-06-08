@@ -1,6 +1,6 @@
 "use client";
 // app/page.tsx
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import TechCard from "@/components/TechCard";
 import SearchBar from "@/components/SearchBar";
@@ -16,29 +16,6 @@ import { CATEGORIES } from "@/lib/types";
 interface TechDetail extends Technology {
   relations: Record<string, { name: string; label: string; website?: string }[]>;
 }
-
-const RELATION_LABELS: Record<string, { label: string; emoji: string }> = {
-  isFrameworkOf:       { label: "Framework of",       emoji: "layers" },
-  isORMFor:            { label: "Supports Database",   emoji: "database" },
-  isBuiltOn:           { label: "Built on",            emoji: "terminal" },
-  implementsSpec:      { label: "Implements Spec",     emoji: "rule_settings" },
-  usesLanguage:        { label: "Uses Language",       emoji: "code" },
-  compatibleWith:      { label: "Compatible with",     emoji: "swap_horiz" },
-  alternativeTo:       { label: "Alternative to",      emoji: "compare_arrows" },
-  connectsTo:          { label: "Connects to",         emoji: "hub" },
-  integratesWith:      { label: "Integrates with",     emoji: "extension" },
-  testedWith:          { label: "Tested with",         emoji: "check_circle" },
-  deployedOn:          { label: "Deployed on",         emoji: "cloud" },
-  managedBy:           { label: "Managed by",          emoji: "settings" },
-  hostedBy:            { label: "Hosted on",           emoji: "cloud_upload" },
-  monitoredBy:         { label: "Monitored by",        emoji: "monitor_heart" },
-  ciWith:              { label: "CI/CD with",          emoji: "loop" },
-  usesBroker:          { label: "Uses message broker", emoji: "message" },
-  searchedWith:        { label: "Search via",          emoji: "search" },
-  storedWith:          { label: "Storage",             emoji: "storage" },
-  designedWith:        { label: "Designed with",       emoji: "design_services" },
-  versionControlledBy: { label: "Version control",     emoji: "source_control" },
-};
 
 function sortTechnologies(items: Technology[], sortBy: string) {
   const next = [...items];

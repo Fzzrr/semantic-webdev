@@ -444,9 +444,9 @@ export default function SPARQLPage() {
                 </div>
 
                 <div className="mt-6 p-3 bg-[#1b1b1b] border border-[#333333] rounded-xl">
-                  <p className="text-[9px] font-mono text-[#838383] uppercase tracking-wider mb-2">Endpoint</p>
-                  <p className="text-[10px] font-mono text-[#b4c5ff] break-all">via API aplikasi</p>
-                  <p className="text-[9px] text-[#838383] mt-2">Query dijalankan server-side ke Apache Jena Fuseki.</p>
+                  <p className="text-[9px] font-mono text-[#838383] uppercase tracking-wider mb-2">Engine</p>
+                  <p className="text-[10px] font-mono text-[#b4c5ff] break-all">SPARQL bawaan (Comunica)</p>
+                  <p className="text-[9px] text-[#838383] mt-2">Query dijalankan server-side atas ontology lokal. Fuseki opsional via FUSEKI_ENDPOINT.</p>
                 </div>
               </aside>
 
@@ -500,7 +500,7 @@ export default function SPARQLPage() {
                           <div>
                             <p className="text-xs font-mono font-bold text-red-400 mb-1">Query gagal dijalankan</p>
                             <p className="text-xs font-mono text-[#838383] whitespace-pre-wrap">{queryResult.error}</p>
-                            <p className="text-[10px] text-[#555555] mt-2">Pastikan Apache Jena Fuseki dapat dijangkau oleh server.</p>
+                            <p className="text-[10px] text-[#555555] mt-2">Periksa kembali sintaks query SPARQL Anda.</p>
                           </div>
                         </div>
                       </div>

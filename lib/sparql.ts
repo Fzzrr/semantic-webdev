@@ -48,29 +48,6 @@ export function localName(uri: string): string {
   return parts[parts.length - 1] || uri;
 }
 
-// Helper: format local name with spaces (e.g. "NextJS" -> "Next.js")
-const DISPLAY_NAMES: Record<string, string> = {
-  NextJS: "Next.js",
-  NuxtJS: "Nuxt.js",
-  NodeJS: "Node.js",
-  TailwindCSS: "Tailwind CSS",
-  TypeORM: "TypeORM",
-  PostgreSQL: "PostgreSQL",
-  MySQL: "MySQL",
-  MongoDB: "MongoDB",
-  SQLite: "SQLite",
-  Redis: "Redis",
-  JavaScript: "JavaScript",
-  TypeScript: "TypeScript",
-  Python: "Python",
-  PHP: "PHP",
-};
-
-export function displayName(uri: string): string {
-  const local = localName(uri);
-  return DISPLAY_NAMES[local] || local.replace(/([A-Z])/g, " $1").trim();
-}
-
 // Category color map
 export const CATEGORY_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   Framework:        { bg: "bg-violet-500/10",  text: "text-violet-400",  dot: "bg-violet-400" },

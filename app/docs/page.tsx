@@ -243,39 +243,38 @@ export default function DocsPage() {
             </div>
             <div className="space-y-4 text-sm text-[#c3c6d7]">
               <p>
-                Aplikasi mendukung dua mode query: Apache Jena Fuseki (eksternal) dan N3.js local parser (built-in fallback).
+                Query SPARQL dijalankan oleh <strong>engine bawaan (Comunica)</strong> di server, langsung atas file ontologi lokal — tidak butuh server terpisah. Apache Jena Fuseki tetap bisa dipakai sebagai opsi.
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="material-symbols-outlined text-emerald-400 text-[18px]">cloud</span>
-                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Fuseki (Server)</p>
+                    <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">offline_bolt</span>
+                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Engine Bawaan (Default)</p>
                   </div>
-                  <p className="text-xs text-[#838383] mb-3">Server SPARQL penuh. Mendukung semua fitur SPARQL 1.1.</p>
+                  <p className="text-xs text-[#838383] mb-3">Comunica menjalankan SPARQL 1.1 langsung atas ontologi lokal, server-side.</p>
                   <code className="block text-[10px] font-mono text-[#b4c5ff] bg-[#0e0e0e] px-3 py-2 rounded-lg">
-                    Apache Jena Fuseki (via API aplikasi)
+                    Comunica · ontology/webdev.ttl
                   </code>
-                  <p className="text-[10px] text-[#838383] mt-2">Query dijalankan server-side; endpoint diatur lewat env FUSEKI_ENDPOINT.</p>
+                  <p className="text-[10px] text-[#838383] mt-2">Aktif otomatis — tanpa konfigurasi tambahan.</p>
                 </div>
                 <div className="bg-[#1b1b1b] border border-[#333333] rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="material-symbols-outlined text-[#b4c5ff] text-[18px]">offline_bolt</span>
-                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Local (Offline)</p>
+                    <span className="material-symbols-outlined text-emerald-400 text-[18px]">cloud</span>
+                    <p className="text-sm font-mono font-bold text-[#e5e2e1]">Fuseki (Opsional)</p>
                   </div>
-                  <p className="text-xs text-[#838383] mb-3">Parser N3.js yang membaca langsung dari file ontologi lokal.</p>
+                  <p className="text-xs text-[#838383] mb-3">Triplestore Apache Jena Fuseki untuk SPARQL server penuh.</p>
                   <code className="block text-[10px] font-mono text-[#b4c5ff] bg-[#0e0e0e] px-3 py-2 rounded-lg">
-                    ontology/webdev.ttl
+                    env: FUSEKI_ENDPOINT
                   </code>
-                  <p className="text-[10px] text-[#838383] mt-2">Otomatis digunakan saat Fuseki tidak tersedia.</p>
+                  <p className="text-[10px] text-[#838383] mt-2">Dipakai bila FUSEKI_ENDPOINT di-set; jika tidak, pakai engine bawaan.</p>
                 </div>
               </div>
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex gap-3">
                 <span className="material-symbols-outlined text-amber-400 text-lg mt-0.5 flex-shrink-0">tips_and_updates</span>
                 <p className="text-xs text-[#c3c6d7]">
-                  Lokal: jalankan <code className="text-[#b4c5ff] mx-1">setup-fuseki.bat</code> untuk mengunduh
-                  <strong className="mx-1">Apache Jena Fuseki</strong>, membuat dataset <code className="text-[#b4c5ff] mx-1">webdev</code>, dan
-                  meng-upload <code className="text-[#b4c5ff] mx-1">ontology/webdev.ttl</code>. Production: host Fuseki secara
-                  eksternal lalu arahkan env <code className="text-[#b4c5ff] mx-1">FUSEKI_ENDPOINT</code> ke URL-nya.
+                  Production cukup deploy ke Vercel — engine bawaan langsung jalan tanpa server tambahan. Untuk memakai Fuseki
+                  (lokal: <code className="text-[#b4c5ff] mx-1">setup-fuseki.bat</code>), set env
+                  <code className="text-[#b4c5ff] mx-1">FUSEKI_ENDPOINT</code> ke URL endpoint-nya.
                 </p>
               </div>
             </div>

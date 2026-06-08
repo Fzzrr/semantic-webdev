@@ -17,11 +17,8 @@ const nextConfig = {
       },
     ],
   },
-  env: {
-    FUSEKI_ENDPOINT: process.env.FUSEKI_ENDPOINT || "http://localhost:3030/webdev/sparql",
-    FUSEKI_UPDATE: process.env.FUSEKI_UPDATE || "http://localhost:3030/webdev/update",
-    FUSEKI_DATA: process.env.FUSEKI_DATA || "http://localhost:3030/webdev/data",
-  },
+  // FUSEKI_* are read server-side only (see lib/sparql.ts). They are intentionally
+  // NOT exposed to the client bundle so the backend endpoint URL stays private.
 };
 
 module.exports = nextConfig;

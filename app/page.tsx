@@ -191,7 +191,7 @@ export default function Home() {
         {/* Left SideNavBar: Shared Component Filter */}
         <aside className="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-64 py-6 bg-[#1b1b1b] border-r border-[#333333] custom-scrollbar overflow-y-auto">
 <div className="px-4 space-y-1">
-            <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Kategori Utama</p>
+            <p className="px-4 py-2 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Categories</p>
             {CATEGORIES.map((cat) => {
               const isActive = category === cat.value;
 
@@ -230,36 +230,7 @@ export default function Home() {
             })}
           </div>
 
-          <div className="px-4 mt-8 space-y-4">
-            <p className="px-4 text-[10px] font-mono text-[#838383] uppercase tracking-widest">Ontologi TTL</p>
-            <div className="px-4 space-y-3">
-              <div className="rounded-lg border border-[#333333] bg-[#131313] p-4 space-y-2">
-                <p className="text-xs text-[#c3c6d7] leading-relaxed">
-                  Kategori dan relasi diambil dari kelas RDFS pada <span className="text-[#b4c5ff]">ontology/webdev.ttl</span>.
-                </p>
-                <div className="flex items-center justify-between text-[10px] font-mono text-[#838383] uppercase tracking-widest">
-                  <span>Kelas terbaca</span>
-                  <span>{Object.keys(categoryCounts).length || CATEGORIES.length - 1}</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="mt-auto px-4 pb-4">
-            <button className="w-full bg-[#2a2a2a] border border-[#333333] py-2 rounded font-headline text-xs font-bold text-[#e5e2e1] hover:bg-[#353535] transition-colors mb-4">
-              Contribute Technology
-            </button>
-            <div className="space-y-1">
-              <a href="#" className="flex items-center gap-3 py-2 text-xs text-[#c3c6d7] pl-4 hover:text-[#b4c5ff] transition-colors">
-                <span className="material-symbols-outlined text-[16px]">settings</span>
-                <span>Settings</span>
-              </a>
-              <a href="#" className="flex items-center gap-3 py-2 text-xs text-[#c3c6d7] pl-4 hover:text-[#b4c5ff] transition-colors">
-                <span className="material-symbols-outlined text-[16px]">sensors</span>
-                <span>API Status</span>
-              </a>
-            </div>
-          </div>
         </aside>
 
         {/* Main Content Area (Canvas) */}
@@ -269,9 +240,20 @@ export default function Home() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
               <div>
-                <h1 className="font-headline text-4xl font-bold text-[#e5e2e1] mb-2">Explorer Teknologi</h1>
-                <p className="text-sm font-body text-[#838383] max-w-2xl">
-                  Navigasi direktori semantik terlengkap untuk ekosistem pengembangan web modern. Temukan relasi antar alat dan bahasa.
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2563eb]/40 bg-[#2563eb]/10 text-[10px] font-mono text-[#b4c5ff] uppercase tracking-widest">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#b4c5ff] animate-pulse" />
+                    Semantic Web
+                  </span>
+                </div>
+                <h1 className="font-headline text-5xl font-bold leading-tight mb-3">
+                  <span className="text-[#e5e2e1]">Web Dev </span>
+                  <span className="bg-gradient-to-r from-[#b4c5ff] via-[#7c9fff] to-[#4f7bff] bg-clip-text text-transparent">
+                    Knowledge Graph
+                  </span>
+                </h1>
+                <p className="text-sm font-body text-[#838383] max-w-xl leading-relaxed">
+                  Explore technologies, frameworks, and tools through their semantic relations — powered by RDF ontology and SPARQL.
                 </p>
               </div>
               
@@ -317,10 +299,10 @@ export default function Home() {
                     onChange={(e) => setSortBy(e.target.value)}
                     className="appearance-none w-full bg-[#131313] border border-[#333333] rounded-lg px-4 pr-10 py-2.5 text-xs text-[#e5e2e1] focus:border-[#b4c5ff] focus:ring-1 focus:ring-[#b4c5ff] cursor-pointer focus:outline-none font-mono"
                   >
-                    <option value="relevance">Urutkan: Relevansi</option>
-                    <option value="newest">Terbaru (Versi)</option>
-                    <option value="popularity">Populer (Bintang)</option>
-                    <option value="az">Nama A-Z</option>
+                    <option value="relevance">Sort: Relevance</option>
+                    <option value="newest">Newest (Version)</option>
+                    <option value="popularity">Popular (Stars)</option>
+                    <option value="az">Name A-Z</option>
                   </select>
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#838383] text-sm">
                     expand_more
@@ -347,7 +329,7 @@ export default function Home() {
                   <div className="text-center py-20 bg-[#1b1b1b] border border-[#333333] rounded-xl">
                     <span className="material-symbols-outlined text-5xl text-[#838383] mb-4">find_in_page</span>
                     <p className="text-sm text-[#838383]">
-                      Tidak ada hasil yang cocok dengan kriteria filter semantik atau pencarian.
+                      No results match the current semantic filter or search criteria.
                     </p>
                   </div>
                 )}
@@ -396,17 +378,17 @@ export default function Home() {
                       <div className="space-y-4 mb-8">
                         <div>
                           <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-1">
-                            Deskripsi
+                            Description
                           </span>
                           <p className="font-body text-xs text-[#c3c6d7] leading-relaxed">
-                            {selectedTechDetail?.description || selectedTech.description || "Tidak ada rincian deskripsi untuk entitas semantik ini."}
+                            {selectedTechDetail?.description || selectedTech.description || "No description details for this semantic entity."}
                           </p>
                         </div>
 
                         {(selectedTechDetail?.version || selectedTech.version) && (
                           <div>
                             <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-1">
-                              Versi Rilis
+                              Release Version
                             </span>
                             <p className="font-mono text-xs text-[#e5e2e1]">v{selectedTechDetail?.version || selectedTech.version}</p>
                           </div>
@@ -415,7 +397,7 @@ export default function Home() {
                         {(selectedTechDetail?.website || selectedTech.website) && (
                           <div>
                             <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-1">
-                              Situs Resmi
+                              Official Website
                             </span>
                             <a
                               href={selectedTechDetail?.website || selectedTech.website || "#"}
@@ -433,7 +415,7 @@ export default function Home() {
                       {/* Direct Graph Widget */}
                       <div className="mb-6">
                         <span className="text-[#838383] text-[10px] uppercase tracking-widest font-mono block mb-3">
-                          Relasi Langsung (Ontology)
+                          Direct Relations (Ontology)
                         </span>
                         <div className="min-h-48 bg-[#131313] rounded-lg border border-[#333333] p-4">
                           {isDetailLoading ? (
@@ -453,7 +435,7 @@ export default function Home() {
                             if (relationEntries.length === 0) {
                               return (
                                 <div className="h-full flex items-center justify-center text-center text-[#838383] text-xs leading-relaxed">
-                                  Ontologi belum mengembalikan relasi langsung untuk entitas ini.
+                                  The ontology has no direct relations for this entity yet.
                                 </div>
                               );
                             }
@@ -461,7 +443,7 @@ export default function Home() {
                             return (
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between text-[10px] font-mono text-[#838383] uppercase tracking-widest">
-                                  <span>Relasi Langsung</span>
+                                  <span>Direct Relations</span>
                                   <span>{relationEntries.length}</span>
                                 </div>
                                 <RelationGraph
@@ -485,14 +467,14 @@ export default function Home() {
                         href={`/tech/${selectedTech.name}`}
                         className="w-full bg-[#2563eb] hover:bg-blue-600 text-[#eeefff] py-3 rounded-lg font-headline text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                       >
-                        <span>Lihat Detail Lengkap</span>
+                        <span>View Full Details</span>
                         <span className="material-symbols-outlined text-xs">arrow_forward</span>
                       </Link>
                     </div>
                   ) : (
                     <div className="text-center py-12 text-[#838383]">
                       <span className="material-symbols-outlined text-4xl mb-3">ads_click</span>
-                      <p className="text-xs">Pilih teknologi untuk melihat visualisasi dan relasi semantik detail.</p>
+                      <p className="text-xs">Select a technology to see its visualization and detailed semantic relations.</p>
                     </div>
                   )}
                 </div>

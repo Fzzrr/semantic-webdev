@@ -6,34 +6,46 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/",          label: "Explorer" },
-    { href: "/relations", label: "Peta Relasi" },
-    { href: "/sparql",    label: "SPARQL" },
-    { href: "/docs",      label: "Docs" },
+    { href: "/",          label: "Explorer",    icon: "explore" },
+    { href: "/relations", label: "Relation Map", icon: "hub" },
+    { href: "/sparql",    label: "SPARQL",       icon: "terminal" },
+    { href: "/docs",      label: "Docs",         icon: "description" },
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#131313]/80 backdrop-blur-md border-b border-[#333333]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#131313]/90 backdrop-blur-xl border-b border-[#ffffff08]">
       <div className="flex justify-between items-center w-full px-8 h-16 max-w-[1440px] mx-auto">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-headline text-lg font-bold text-[#b4c5ff] tracking-tight">
-              WebDev <span className="text-[#e5e2e1]">Semantic</span>
-            </span>
+
+        {/* Brand */}
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2563eb] to-[#4f7bff] flex items-center justify-center shadow-lg shadow-[#2563eb]/20">
+              <span className="material-symbols-outlined text-white text-[16px]">schema</span>
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="font-headline text-[13px] font-bold text-[#e5e2e1] tracking-tight">WebDev</span>
+              <span className="font-mono text-[9px] text-[#b4c5ff] tracking-widest uppercase">Semantic</span>
+            </div>
           </Link>
-          <nav className="hidden md:flex gap-6 ml-6">
-            {navLinks.map(({ href, label }) => {
+
+          {/* Divider */}
+          <div className="hidden md:block w-px h-5 bg-[#333333]" />
+
+          {/* Nav Links */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navLinks.map(({ href, label, icon }) => {
               const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`font-body text-sm transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body font-medium transition-all ${
                     isActive
-                      ? "text-[#b4c5ff] border-b-2 border-[#b4c5ff] pb-1 font-semibold"
-                      : "text-[#c3c6d7] hover:text-[#b4c5ff]"
+                      ? "bg-[#2563eb]/15 text-[#b4c5ff]"
+                      : "text-[#838383] hover:text-[#c3c6d7] hover:bg-[#ffffff06]"
                   }`}
                 >
+                  <span className="material-symbols-outlined text-[14px]">{icon}</span>
                   {label}
                 </Link>
               );
@@ -41,19 +53,32 @@ export default function Navbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:flex items-center bg-[#2a2a2a] px-3 py-1.5 rounded-lg border border-[#333333] group focus-within:border-[#b4c5ff] transition-all">
-            <span className="material-symbols-outlined text-[#c3c6d7] group-focus-within:text-[#b4c5ff] mr-2 text-[18px]">
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2 bg-[#1b1b1b] border border-[#2a2a2a] hover:border-[#333333] px-3 py-2 rounded-lg transition-colors group focus-within:border-[#2563eb]/50 focus-within:bg-[#1b1b1b]">
+            <span className="material-symbols-outlined text-[#555555] group-focus-within:text-[#b4c5ff] text-[16px] transition-colors">
               search
             </span>
             <input
-              className="bg-transparent border-none outline-none text-xs font-mono w-40 text-[#e5e2e1] placeholder:text-[#838383] focus:ring-0 focus:outline-none"
-              placeholder="Shortcut (Ctrl + K)"
+              className="bg-transparent border-none outline-none text-xs font-mono w-36 text-[#e5e2e1] placeholder:text-[#555555] focus:ring-0"
+              placeholder="Search..."
               type="text"
             />
+            <kbd className="hidden xl:inline-flex items-center px-1.5 py-0.5 rounded border border-[#333333] text-[9px] font-mono text-[#555555] bg-[#131313]">
+              ⌘K
+            </kbd>
           </div>
 
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#2a2a2a] text-[#555555] hover:text-[#c3c6d7] hover:border-[#333333] transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">code</span>
+          </a>
         </div>
+
       </div>
     </header>
   );

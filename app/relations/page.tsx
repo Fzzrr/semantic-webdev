@@ -93,7 +93,7 @@ export default function RelationsMapPage() {
   // Active sidebar category filter (drives the focus dropdown + node emphasis)
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  // Mobile: buka/tutup drawer filter kategori
+  // Mobile: open/close the category filter drawer
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Graph view states
@@ -336,7 +336,7 @@ export default function RelationsMapPage() {
   // Sidebar category click: filter the graph context to that category and
   // jump focus to the first matching technology (stays on this page).
   const selectCategory = (cat: string) => {
-    setFiltersOpen(false); // tutup drawer setelah pilih (mobile)
+    setFiltersOpen(false); // close the drawer after selecting (mobile)
     if (cat === "all") {
       setActiveCategory("all");
       return;
@@ -394,7 +394,7 @@ export default function RelationsMapPage() {
       <Navbar />
 
       <div className="flex pt-16 min-h-screen">
-        {/* Mobile: pull-tab penarik filter (menempel di tepi kiri) */}
+        {/* Mobile: filter pull-tab (pinned to the left edge) */}
         {!filtersOpen && <FilterTab onClick={() => setFiltersOpen(true)} />}
         {/* Backdrop drawer (mobile) — fade */}
         <div

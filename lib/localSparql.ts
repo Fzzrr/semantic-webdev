@@ -1,6 +1,6 @@
 // lib/localSparql.ts
-// Menjalankan query SPARQL 1.1 langsung di server (tanpa Fuseki) menggunakan
-// Comunica sebagai engine, atas N3.Store yang dimuat dari ontology/webdev.ttl.
+// Runs SPARQL 1.1 queries directly on the server (without Fuseki) using
+// Comunica as the engine, over an N3.Store loaded from ontology/webdev.ttl.
 import fs from "node:fs/promises";
 import path from "node:path";
 import { Parser, Store } from "n3";
@@ -27,8 +27,8 @@ async function getStore(): Promise<Store> {
   return storePromise;
 }
 
-// Engine dibuat lazy (sekali, saat query pertama dijalankan) agar Comunica TIDAK
-// dievaluasi saat build/import — ini mencegah error "Failed to collect page data".
+// The engine is created lazily (once, on the first query) so that Comunica is NOT
+// evaluated during build/import — this prevents the "Failed to collect page data" error.
 let engine: QueryEngine | null = null;
 function getEngine(): QueryEngine {
   if (!engine) engine = new QueryEngine();
@@ -72,6 +72,6 @@ export async function runLocalSparql(query: string): Promise<LocalSparqlResult> 
     return { vars, bindings };
   }
 
-  // resultType "void" (mis. update) — tidak didukung di engine read-only.
+  // resultType "void" (e.g. update) — not supported by the read-only engine.
   return { vars: [], bindings: [] };
 }

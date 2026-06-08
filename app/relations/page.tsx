@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import FilterTab from "@/components/FilterTab";
 import { CATEGORIES } from "@/lib/types";
 
 interface RelationTriple {
@@ -91,6 +92,9 @@ export default function RelationsMapPage() {
 
   // Active sidebar category filter (drives the focus dropdown + node emphasis)
   const [activeCategory, setActiveCategory] = useState<string>("all");
+
+  // Mobile: buka/tutup drawer filter kategori
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Graph view states
   const [scale, setScale] = useState<number>(1);
@@ -332,6 +336,7 @@ export default function RelationsMapPage() {
   // Sidebar category click: filter the graph context to that category and
   // jump focus to the first matching technology (stays on this page).
   const selectCategory = (cat: string) => {
+    setFiltersOpen(false); // tutup drawer setelah pilih (mobile)
     if (cat === "all") {
       setActiveCategory("all");
       return;
@@ -389,8 +394,20 @@ export default function RelationsMapPage() {
       <Navbar />
 
       <div className="flex pt-16 min-h-screen">
-        {/* SideNavBar */}
-        <aside className="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-64 bg-[#1b1b1b] border-r border-[#333333] py-6 overflow-y-auto">
+        {/* Mobile: pull-tab penarik filter (menempel di tepi kiri) */}
+        {!filtersOpen && <FilterTab onClick={() => setFiltersOpen(true)} />}
+        {/* Backdrop drawer (mobile) — fade */}
+        <div
+          className={`md:hidden fixed inset-0 top-16 z-30 bg-black/60 transition-opacity duration-300 ${
+            filtersOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+          onClick={() => setFiltersOpen(false)}
+          aria-hidden="true"
+        />
+        {/* SideNavBar — slide */}
+        <aside className={`flex flex-col fixed left-0 top-16 bottom-0 w-64 bg-[#1b1b1b] border-r border-[#333333] py-6 overflow-y-auto z-40 transition-transform duration-300 ease-out ${
+          filtersOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}>
           <div className="px-5 mb-2">
             <p className="text-[10px] font-mono text-[#5f5f5f] uppercase tracking-widest">Filter by category</p>
           </div>
@@ -442,12 +459,12 @@ export default function RelationsMapPage() {
         </aside>
 
         {/* Main Graph Content */}
-        <main className="flex-1 lg:ml-64 p-8 min-h-screen">
+        <main className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8 min-h-screen">
           <div className="max-w-[1200px] mx-auto w-full">
             {/* Title Info */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
-                <h1 className="font-headline text-3xl font-bold text-[#e5e2e1] mb-2">Semantic Relation Map</h1>
+                <h1 className="font-headline text-2xl sm:text-3xl font-bold text-[#e5e2e1] mb-2">Semantic Relation Map</h1>
                 <p className="text-sm text-[#838383]">
                   An ontology graph of how technologies relate. Click a satellite node to shift focus, or click the
                   center node to open its detail page.
@@ -755,7 +772,7 @@ export default function RelationsMapPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#131313] border-t border-[#333333] mt-12 lg:ml-64">
+      <footer className="bg-[#131313] border-t border-[#333333] mt-12 md:ml-64">
         <div className="flex flex-col md:flex-row justify-between items-center py-6 px-8 max-w-[1440px] mx-auto">
           <div className="flex flex-col items-center md:items-start gap-1 mb-4 md:mb-0">
             <span className="text-xs font-mono text-[#e5e2e1]">WebDev Semantic Directory</span>

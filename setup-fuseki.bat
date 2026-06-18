@@ -1,6 +1,6 @@
 @echo off
 REM setup-fuseki.bat
-REM Script untuk setup Apache Jena Fuseki di Windows
+REM Script to set up Apache Jena Fuseki on Windows
 
 echo.
 echo ============================================
@@ -11,19 +11,19 @@ echo.
 REM Check Java
 java -version >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] Java tidak ditemukan. Install Java 17+ terlebih dahulu:
+    echo [ERROR] Java not found. Please install Java 17+ first:
     echo         https://adoptium.net/
     pause
     exit /b 1
 )
-echo [OK] Java ditemukan.
+echo [OK] Java found.
 
 SET FUSEKI_VERSION=4.10.0
 SET FUSEKI_DIR=apache-jena-fuseki-%FUSEKI_VERSION%
 SET DATASET=webdev
 SET TTL_FILE=ontology\webdev.ttl
 
-REM Download jika belum ada
+REM Download if not present
 IF NOT EXIST "%FUSEKI_DIR%" (
     echo.
     echo Downloading Apache Jena Fuseki %FUSEKI_VERSION%...
@@ -31,44 +31,44 @@ IF NOT EXIST "%FUSEKI_DIR%" (
     echo Extracting...
     powershell -Command "Expand-Archive -Path fuseki.zip -DestinationPath . -Force"
     del fuseki.zip
-    echo [OK] Fuseki berhasil diekstrak.
+    echo [OK] Fuseki extracted successfully.
 ) ELSE (
-    echo [OK] Fuseki sudah ada di ./%FUSEKI_DIR%
+    echo [OK] Fuseki already exists at ./%FUSEKI_DIR%
 )
 
 IF NOT EXIST "%TTL_FILE%" (
-    echo [ERROR] File ontologi tidak ditemukan: %TTL_FILE%
+    echo [ERROR] Ontology file not found: %TTL_FILE%
     pause
     exit /b 1
 )
-echo [OK] File ontologi ditemukan: %TTL_FILE%
+echo [OK] Ontology file found: %TTL_FILE%
 
 echo.
-echo Menjalankan Fuseki...
+echo Starting Fuseki...
 cd %FUSEKI_DIR%
 start "Fuseki Server" java -jar fuseki-server.jar --update --mem /%DATASET%
 cd ..
 
-echo Menunggu Fuseki siap...
+echo Waiting for Fuseki to be ready...
 timeout /t 5 /nobreak > nul
 
 echo.
-echo Mengupload ontologi ke dataset '%DATASET%'...
+echo Uploading ontology to dataset '%DATASET%'...
 curl -X POST -H "Content-Type: text/turtle" --data-binary @%TTL_FILE% http://localhost:3030/%DATASET%/data
 echo.
 
 echo.
 echo ============================================
-echo   Setup Selesai!
+echo   Setup Complete!
 echo ============================================
 echo.
 echo   Fuseki SPARQL:  http://localhost:3030/%DATASET%/sparql
 echo   Fuseki Web UI:  http://localhost:3030
 echo.
-echo   Jalankan Next.js:
+echo   Start Next.js:
 echo     npm install
 echo     npm run dev
 echo.
-echo   Buka browser:   http://localhost:3000
+echo   Open browser:   http://localhost:3000
 echo.
 pause

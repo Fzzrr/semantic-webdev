@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { querySPARQL } from "@/lib/sparql";
 import { runLocalSparql } from "@/lib/localSparql";
 
-// Comunica + n3 butuh runtime Node (bukan Edge). Selalu dinamis (tak di-prerender).
+// Comunica + n3 need the Node runtime (not Edge). Always dynamic (never prerendered).
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
   const fusekiEndpoint = process.env.FUSEKI_ENDPOINT?.trim();
 
   try {
-    // Pakai Fuseki hanya jika endpoint di-set secara eksplisit (mis. dev lokal).
-    // Bila gagal/tidak di-set, jalankan engine SPARQL bawaan (Comunica) atas TTL lokal.
+    // Use Fuseki only if the endpoint is set explicitly (e.g. local dev).
+    // If it fails/is not set, run the built-in SPARQL engine (Comunica) over the local TTL.
     if (fusekiEndpoint) {
       try {
         const result = await querySPARQL(query);
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         );
         return NextResponse.json({ vars, bindings });
       } catch {
-        // Fuseki tidak terjangkau → fallback ke engine bawaan.
+        // Fuseki unreachable → fall back to the built-in engine.
       }
     }
 

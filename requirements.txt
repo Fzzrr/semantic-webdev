@@ -1,0 +1,36 @@
+# ──────────────────────────────────────────────────────────────
+# WebDev Semantic Directory — Requirements
+#
+# NOTE: This is a Next.js + TypeScript project; dependencies are
+# managed by npm via package.json. This file is documentation only
+# (it is NOT consumed by pip). Run `npm install` to install deps.
+# ──────────────────────────────────────────────────────────────
+
+# ===== System Requirements =====
+# Node.js  >= 20    runs Next.js
+# npm      >= 9     bundled with Node.js
+# Java     >= 17    optional — only for Apache Jena Fuseki 4.10.0
+
+# ===== Runtime Dependencies (npm — see package.json) =====
+@comunica/query-sparql-rdfjs==5.2.3
+n3==2.0.3
+next==14.2.5
+react==18
+react-dom==18
+
+# ===== Dev Dependencies (npm) =====
+typescript==5
+tailwindcss==3.4.1
+eslint==8
+eslint-config-next==14.2.5
+autoprefixer==10.0.1
+postcss==8
+@types/node==20
+@types/react==18
+@types/react-dom==18
+@types/n3==1.26.1
+
+# ===== Install & Run =====
+# npm install        # install all npm dependencies
+# setup-fuseki.bat   # (optional) start Fuseki + upload TTL
+# npm run dev        # run dev server at http://localhost:3000

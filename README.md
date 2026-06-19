@@ -13,17 +13,20 @@ A Semantic Web–based search portal for web development technologies, using RDF
 2. [Architecture](#architecture)
 3. [Technology Stack](#technology-stack)
 4. [Requirements](#requirements)
-5. [Quick Start (Windows)](#quick-start-windows)
-6. [Running Fuseki](#running-fuseki)
-7. [Running the Frontend](#running-the-frontend)
-8. [Application Pages](#application-pages)
-9. [Updating the TTL](#updating-the-ttl)
-10. [Validating the Results](#validating-the-results)
-11. [Folder Structure](#folder-structure)
-12. [Ontology](#ontology)
-13. [API Endpoints](#api-endpoints)
-14. [Troubleshooting](#troubleshooting)
-15. [References](#references)
+5. [Installation Guide](#installation-guide)
+6. [Quick Start (Windows)](#quick-start-windows)
+7. [Running Fuseki](#running-fuseki)
+8. [Running the Frontend](#running-the-frontend)
+9. [Application Pages](#application-pages)
+10. [User Guide](#user-guide)
+11. [Example Results](#example-results)
+12. [Updating the TTL](#updating-the-ttl)
+13. [Validating the Results](#validating-the-results)
+14. [Folder Structure](#folder-structure)
+15. [Ontology](#ontology)
+16. [API Endpoints](#api-endpoints)
+17. [Troubleshooting](#troubleshooting)
+18. [References](#references)
 
 ## Overview
 
@@ -66,6 +69,64 @@ SPARQL Query Builder (lib/queries.ts)
 | Node.js | v20+ | Runs Next.js |
 | npm | v9+ | Usually bundled with Node.js |
 | Java | v17+ | Runs Fuseki 4.10.0 |
+
+A full list of prerequisites and dependencies is also available in [requirements.txt](requirements.txt).
+
+## Installation Guide
+
+Step-by-step setup from a clean clone.
+
+### 1. Install the prerequisites
+
+- **Node.js v20+** — download from https://nodejs.org (the LTS build includes npm).
+  Verify:
+
+  ```bat
+  node -v
+  npm -v
+  ```
+
+- **Java 17+** (optional, only if you want to run Apache Jena Fuseki). Verify:
+
+  ```bat
+  java -version
+  ```
+
+### 2. Get the project
+
+```bat
+git clone <repository-url>
+cd semantic-webdev
+```
+
+### 3. Install npm dependencies
+
+```bat
+npm install
+```
+
+This reads [package.json](package.json) and installs every runtime and dev
+dependency listed in [requirements.txt](requirements.txt).
+
+### 4. (Optional) Configure environment variables
+
+Copy the example file and edit it only if you want to point at a Fuseki server:
+
+```bat
+copy .env.example .env.local
+```
+
+Leave `FUSEKI_ENDPOINT` commented out to use the built-in SPARQL engine
+(Comunica) over the local ontology — no triplestore required.
+
+### 5. Start the app
+
+```bat
+npm run dev
+```
+
+Open http://localhost:3000. To also run the triplestore, see
+[Running Fuseki](#running-fuseki).
 
 ## Quick Start (Windows)
 
@@ -151,6 +212,113 @@ Just deploy to **Vercel** — see [DEPLOY.md](DEPLOY.md). SPARQL queries are exe
 | `/tech/[name]` | Detail page for a single technology and its relations |
 | `/sparql` | SPARQL playground - write & run queries directly against the endpoint |
 | `/docs` | Ontology documentation: categories, predicates/relations, and example queries |
+
+## User Guide
+
+How to use the app once it is running at http://localhost:3000.
+
+### Explore technologies (`/`)
+
+1. The home page lists every technology as a card.
+2. Type a keyword in the **search bar** (e.g. `sparql`, `react`) to filter by name.
+3. Use the **category filter** (sidebar / drawer on mobile) to narrow the list to a
+   single class, e.g. `Triplestore`, `Framework`, or `SemanticWebSpec`.
+4. Click any card to open its detail page.
+
+### View a technology's detail (`/tech/[name]`)
+
+- Shows the description and all semantic relations of the selected technology
+  (e.g. `isBuiltOn`, `compatibleWith`, `alternativeTo`).
+- Related technologies are clickable, so you can navigate the graph node by node.
+
+### Run your own SPARQL queries (`/sparql`)
+
+1. Open the **SPARQL playground**.
+2. Write or paste a SPARQL 1.1 query in the editor.
+3. Click **Run** to execute it against the endpoint (Fuseki if configured,
+   otherwise the built-in Comunica engine over the local TTL).
+4. Results are shown as a table of variable bindings.
+
+### Read the ontology docs (`/docs`)
+
+- Browse the list of categories (classes), relation predicates, and ready-to-copy
+  example queries that explain how the data is modeled.
+
+## Example Results
+
+### Example 1 — Filter by category (REST API)
+
+Request:
+
+```text
+GET http://localhost:3000/api/sparql?category=Triplestore
+```
+
+Sample response (truncated):
+
+```json
+[
+  {
+    "uri": "http://webdev.id/ontology#Fuseki",
+    "name": "Fuseki",
+    "label": "Apache Jena Fuseki",
+    "type": "Triplestore",
+    "typeLabel": "Triplestore",
+    "description": "A SPARQL server providing RDF graph storage, query endpoints, and update operations over HTTP."
+  },
+  {
+    "uri": "http://webdev.id/ontology#GraphDB",
+    "name": "GraphDB",
+    "label": "GraphDB",
+    "type": "Triplestore",
+    "typeLabel": "Triplestore"
+  }
+]
+```
+
+### Example 2 — Category statistics
+
+Request:
+
+```text
+GET http://localhost:3000/api/sparql?stats=true
+```
+
+Sample response (truncated):
+
+```json
+[
+  { "type": "Framework",       "typeLabel": "Framework",                   "count": 12 },
+  { "type": "Triplestore",     "typeLabel": "Triplestore",                 "count": 5 },
+  { "type": "SemanticWebSpec", "typeLabel": "Semantic Web Specification",  "count": 7 }
+]
+```
+
+### Example 3 — Custom SPARQL query (`/sparql` page or `POST /api/sparql/run`)
+
+Query:
+
+```sparql
+PREFIX ex:   <http://webdev.id/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?tech ?label WHERE {
+  ?tech a ex:Triplestore ;
+        rdfs:label ?label .
+}
+LIMIT 10
+```
+
+Sample result:
+
+| tech | label |
+|---|---|
+| ex:Fuseki | Apache Jena Fuseki |
+| ex:GraphDB | GraphDB |
+| ex:Blazegraph | Blazegraph |
+
+> The exact values depend on the current contents of
+> [ontology/webdev.ttl](ontology/webdev.ttl); the shapes above show the response
+> format you should expect.
 
 ## Updating the TTL
 
